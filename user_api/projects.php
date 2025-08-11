@@ -1,0 +1,236 @@
+<?php
+session_start();
+header('Content-Type: application/json');
+
+if (empty($_SESSION['user_logged_in']) || empty($_SESSION['user_id'])) {
+    http_response_code(401);
+    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+    exit;
+}
+
+require_once __DIR__ . '/../library/Database.php';
+require_once __DIR__ . '/../library/Session.php';
+require_once __DIR__ . '/../library/Token.php';
+
+$db = new Database();
+$pdo = $db->getConnection();
+$userId = (int) $_SESSION['user_id'];
+
+$method = $_SERVER['REQUEST_METHOD'];
+
+if ($method === 'GET') {
+    // List projects visible to the user: owned or where user is a member
+    try {
+        $sql = "
+            SELECT p.id, p.name, p.owner_id
+            FROM projects p
+            LEFT JOIN project_members pm ON pm.project_id = p.id AND pm.user_id = :uid
+            WHERE p.owner_id = :uid OR pm.user_id = :uid
+            GROUP BY p.id
+            ORDER BY p.id DESC
+        ";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':uid' => $userId]);
+        $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Fetch members per project
+        $projectIds = array_map(fn($p) => (int)$p['id'], $projects);
+        $membersByProject = [];
+        if ($projectIds) {
+            $in = implode(',', array_fill(0, count($projectIds), '?'));
+            $stmtM = $pdo->prepare("SELECT pm.project_id, u.username FROM project_members pm JOIN users u ON u.id = pm.user_id WHERE pm.project_id IN ($in)");
+            $stmtM->execute($projectIds);
+            while ($row = $stmtM->fetch(PDO::FETCH_ASSOC)) {
+                $pid = (int)$row['project_id'];
+                if (!isset($membersByProject[$pid])) $membersByProject[$pid] = [];
+                $membersByProject[$pid][] = $row['username'];
+            }
+        }
+
+        $projects = array_map(function($p) use ($membersByProject) {
+            $pid = (int)$p['id'];
+            return [
+                'id' => $pid,
+                'name' => $p['name'],
+                'owner_id' => (int)$p['owner_id'],
+                'members' => $membersByProject[$pid] ?? []
+            ];
+        }, $projects);
+
+        echo json_encode(['success' => true, 'projects' => $projects]);
+    } catch (Exception $e) {
+        http_response_code(500);
+        echo json_encode(['success' => false, 'message' => 'Failed to fetch projects']);
+    }
+    exit;
+}
+
+if ($method === 'POST') {
+    // CSRF
+    $csrf = $_POST['csrf_token'] ?? '';
+    if (!Token::check($csrf)) {
+        $newToken = Session::put('csrf_token', md5(uniqid()));
+        http_response_code(419);
+        echo json_encode(['success' => false, 'message' => 'Invalid CSRF token', 'csrf_token' => $newToken]);
+        exit;
+    }
+    $nextToken = Session::put('csrf_token', md5(uniqid()));
+
+    $action = $_POST['action'] ?? '';
+
+    if ($action === 'create') {
+        $name = trim($_POST['name'] ?? '');
+        if ($name === '') {
+            http_response_code(422);
+            echo json_encode(['success' => false, 'message' => 'Name is required']);
+            exit;
+        }
+        try {
+            $stmt = $pdo->prepare('INSERT INTO projects (name, owner_id, created_at) VALUES (?, ?, NOW())');
+            $stmt->execute([$name, $userId]);
+            $projectId = (int)$pdo->lastInsertId();
+            // Owner is implicitly a member as well
+            $pdo->prepare('INSERT IGNORE INTO project_members (project_id, user_id) VALUES (?, ?)')->execute([$projectId, $userId]);
+            echo json_encode(['success' => true, 'id' => $projectId, 'csrf_token' => $nextToken]);
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => 'Failed to create project', 'csrf_token' => $nextToken]);
+        }
+        exit;
+    }
+
+    if ($action === 'update') {
+        $projectId = (int)($_POST['project_id'] ?? 0);
+        $name = trim($_POST['name'] ?? '');
+        if (!$projectId || $name === '') {
+            http_response_code(422);
+            echo json_encode(['success' => false, 'message' => 'Invalid input']);
+            exit;
+        }
+        try {
+            $ownerCheck = $pdo->prepare('SELECT owner_id FROM projects WHERE id = ?');
+            $ownerCheck->execute([$projectId]);
+            $ownerId = (int)($ownerCheck->fetchColumn() ?: 0);
+            if ($ownerId !== $userId) {
+                http_response_code(403);
+                echo json_encode(['success' => false, 'message' => 'Only project owner can update project']);
+                exit;
+            }
+            $stmt = $pdo->prepare('UPDATE projects SET name = ? WHERE id = ?');
+            $stmt->execute([$name, $projectId]);
+            echo json_encode(['success' => true, 'csrf_token' => $nextToken]);
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => 'Failed to update project', 'csrf_token' => $nextToken]);
+        }
+        exit;
+    }
+
+    if ($action === 'delete') {
+        $projectId = (int)($_POST['project_id'] ?? 0);
+        if (!$projectId) {
+            http_response_code(422);
+            echo json_encode(['success' => false, 'message' => 'Invalid input']);
+            exit;
+        }
+        try {
+            $ownerCheck = $pdo->prepare('SELECT owner_id FROM projects WHERE id = ?');
+            $ownerCheck->execute([$projectId]);
+            $ownerId = (int)($ownerCheck->fetchColumn() ?: 0);
+            if ($ownerId !== $userId) {
+                http_response_code(403);
+                echo json_encode(['success' => false, 'message' => 'Only project owner can delete project']);
+                exit;
+            }
+            // Null out project_id in tasks (fk set null should handle, but ensure order)
+            $pdo->prepare('UPDATE tasks SET project_id = NULL WHERE project_id = ?')->execute([$projectId]);
+            // Delete project (members cascade via FK)
+            $pdo->prepare('DELETE FROM projects WHERE id = ?')->execute([$projectId]);
+            echo json_encode(['success' => true, 'csrf_token' => $nextToken]);
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => 'Failed to delete project', 'csrf_token' => $nextToken]);
+        }
+        exit;
+    }
+
+    if ($action === 'remove_member') {
+        $projectId = (int)($_POST['project_id'] ?? 0);
+        $username = trim($_POST['username'] ?? '');
+        if (!$projectId || $username === '') {
+            http_response_code(422);
+            echo json_encode(['success' => false, 'message' => 'Invalid input']);
+            exit;
+        }
+        try {
+            $ownerCheck = $pdo->prepare('SELECT owner_id FROM projects WHERE id = ?');
+            $ownerCheck->execute([$projectId]);
+            $ownerId = (int)($ownerCheck->fetchColumn() ?: 0);
+            if ($ownerId !== $userId) {
+                http_response_code(403);
+                echo json_encode(['success' => false, 'message' => 'Only project owner can remove member']);
+                exit;
+            }
+            $stmtU = $pdo->prepare('SELECT id FROM users WHERE username = ?');
+            $stmtU->execute([$username]);
+            $memberId = (int)($stmtU->fetchColumn() ?: 0);
+            if (!$memberId) {
+                http_response_code(404);
+                echo json_encode(['success' => false, 'message' => 'User not found']);
+                exit;
+            }
+            $pdo->prepare('DELETE FROM project_members WHERE project_id = ? AND user_id = ?')->execute([$projectId, $memberId]);
+            echo json_encode(['success' => true, 'csrf_token' => $nextToken]);
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => 'Failed to remove member', 'csrf_token' => $nextToken]);
+        }
+        exit;
+    }
+
+    if ($action === 'add_member') {
+        $projectId = (int)($_POST['project_id'] ?? 0);
+        $username = trim($_POST['username'] ?? '');
+        if (!$projectId || $username === '') {
+            http_response_code(422);
+            echo json_encode(['success' => false, 'message' => 'Invalid input']);
+            exit;
+        }
+        try {
+            // Only owner can add members
+            $ownerCheck = $pdo->prepare('SELECT owner_id FROM projects WHERE id = ?');
+            $ownerCheck->execute([$projectId]);
+            $ownerId = (int)($ownerCheck->fetchColumn() ?: 0);
+            if ($ownerId !== $userId) {
+                http_response_code(403);
+                echo json_encode(['success' => false, 'message' => 'Only project owner can add members']);
+                exit;
+            }
+            // Find user by username
+            $stmtU = $pdo->prepare('SELECT id FROM users WHERE username = ?');
+            $stmtU->execute([$username]);
+            $memberId = (int)($stmtU->fetchColumn() ?: 0);
+            if (!$memberId) {
+                http_response_code(404);
+                echo json_encode(['success' => false, 'message' => 'User not found']);
+                exit;
+            }
+            // Insert membership
+            $stmt = $pdo->prepare('INSERT IGNORE INTO project_members (project_id, user_id) VALUES (?, ?)');
+            $stmt->execute([$projectId, $memberId]);
+            echo json_encode(['success' => true, 'csrf_token' => $nextToken]);
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => 'Failed to add member', 'csrf_token' => $nextToken]);
+        }
+        exit;
+    }
+
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => 'Unknown action', 'csrf_token' => $nextToken]);
+    exit;
+}
+
+http_response_code(405);
+echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+

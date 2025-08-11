@@ -14,14 +14,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'All fields are required.';
     } else {
         try {
-            $stmt = $conn->prepare("SELECT id, username, hashed_password FROM users WHERE username = ?");
+            $stmt = $conn->prepare("SELECT id, username, hashed_password, COALESCE(is_active,1) as is_active FROM users WHERE username = ?");
             $stmt->execute([$username]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($username && Hash::verify($password, $user['hashed_password'])) {
+            if ($user && (int)$user['is_active'] === 1 && Hash::verify($password, $user['hashed_password'])) {
                 $_SESSION['user_logged_in'] = true;
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
+                $_SESSION['role'] = 'user';
                 header('Location: user_dashboard.php');
                 exit;
             } else {

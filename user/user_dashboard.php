@@ -1,6 +1,8 @@
 <?php
  session_start();
-if (empty($_SESSION['user_logged_in'])) {
+ require_once __DIR__ . '/../library/Session.php';
+ require_once __DIR__ . '/../library/Token.php';
+ if (empty($_SESSION['user_logged_in']) || ($_SESSION['role'] ?? '') !== 'user') {
     header('Location: user_login.php');
     exit;
 }
@@ -21,8 +23,23 @@ $username = $_SESSION['username'] ?? 'User';
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <!-- Custom CSS -->
     <link href="../assets/user_style.css" rel="stylesheet">
+    <!-- Admin theme styles to match admin/index.html theme -->
+    <link rel="stylesheet" href="../assets/style.css">
+    <link rel="stylesheet" href="../assets/index.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
 <body class="bg-cream">
+    <!-- CSRF token for API requests -->
+    <?php echo Token::input(); ?>
+    <input type="hidden" id="csrfTokenInput" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? ''); ?>">
+    <script>
+        window.currentUser = {
+            id: <?php echo json_encode($_SESSION['user_id'] ?? null); ?>,
+            username: <?php echo json_encode($username); ?>
+        };
+    </script>
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-cream border-bottom">
         <div class="container">
@@ -31,7 +48,7 @@ $username = $_SESSION['username'] ?? 'User';
             </a>
             <div class="navbar-nav ms-auto">
                 <a class="nav-link text-olive" href="#"><i class="bi bi-person-circle me-1"></i>Profile</a>
-                <a class="nav-link text-olive" href="user_logout.php"><i class="bi bi-box-arrow-right me-1"></i>Logout</a>
+                <a class="nav-link text-olive" id="logoutLink" href="user_logout.php"><i class="bi bi-box-arrow-right me-1"></i>Logout</a>
             </div>
         </div>
     </nav>
@@ -106,12 +123,6 @@ $username = $_SESSION['username'] ?? 'User';
                                 <div class="col-md-2">
                                     <label for="taskDueDate" class="form-label">Due date</label>
                                     <input type="date" class="form-control" id="taskDueDate">
-                                </div>
-                                <div class="col-md-2">
-                                    <label for="taskAssignee" class="form-label">Assignee</label>
-                                    <select class="form-select" id="taskAssignee">
-                                        <option value="">Select assignee</option>
-                                    </select>
                                 </div>
                                 <div class="col-md-2">
                                     <label for="taskProject" class="form-label">Project</label>
@@ -214,7 +225,7 @@ $username = $_SESSION['username'] ?? 'User';
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom JS -->
+    <!-- Dashboard JS -->
     <script src="../assets/user_script.js"></script>
 </body>
 </html>
