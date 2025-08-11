@@ -1,5 +1,4 @@
 <?php
-session_start();
 $hostname = $_SERVER['HTTP_HOST'];
 if($hostname == 'localhost'){
     error_reporting(1);

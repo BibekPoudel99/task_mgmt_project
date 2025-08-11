@@ -412,9 +412,11 @@ class TaskFlowApp {
         const body = new FormData();
         body.append('action', 'delete');
         body.append('project_id', projectId);
+        body.append('csrf_token', this.getCsrf());
         try {
             const res = await fetch('../user_api/projects.php', { method: 'POST', body });
             const data = await res.json();
+            if (data.csrf_token) this.setCsrf(data.csrf_token);
             if (data.success) {
                 if (String(this.selectedProjectId) === String(projectId)) this.selectedProjectId = null;
                 await Promise.all([this.fetchProjects(), this.fetchTasks()]);
@@ -433,9 +435,11 @@ class TaskFlowApp {
         body.append('action', 'assign');
         body.append('task_id', taskId);
         body.append('username', username);
+        body.append('csrf_token', this.getCsrf());
         try {
             const res = await fetch('../user_api/tasks.php', { method: 'POST', body });
             const data = await res.json();
+            if (data.csrf_token) this.setCsrf(data.csrf_token);
             if (data.success) {
                 await this.fetchTasks();
                 this.render();
@@ -452,9 +456,11 @@ class TaskFlowApp {
         body.append('action', 'update_due');
         body.append('task_id', taskId);
         body.append('due_date', dueDate || '');
+        body.append('csrf_token', this.getCsrf());
         try {
             const res = await fetch('../user_api/tasks.php', { method: 'POST', body });
             const data = await res.json();
+            if (data.csrf_token) this.setCsrf(data.csrf_token);
             if (data.success) {
                 await this.fetchTasks();
                 this.render();
@@ -498,9 +504,11 @@ class TaskFlowApp {
         body.append('action', 'update_title');
         body.append('task_id', taskId);
         body.append('title', title);
+        body.append('csrf_token', this.getCsrf());
         try {
             const res = await fetch('../user_api/tasks.php', { method: 'POST', body });
             const data = await res.json();
+            if (data.csrf_token) this.setCsrf(data.csrf_token);
             if (!data.success) this.showToast(data.message || 'Failed to update task title', 'error');
         } catch (_) {
             this.showToast('Network error while updating title', 'error');
@@ -512,9 +520,11 @@ class TaskFlowApp {
         const body = new FormData();
         body.append('action', 'delete');
         body.append('task_id', taskId);
+        body.append('csrf_token', this.getCsrf());
         try {
             const res = await fetch('../user_api/tasks.php', { method: 'POST', body });
             const data = await res.json();
+            if (data.csrf_token) this.setCsrf(data.csrf_token);
             if (data.success) {
                 await this.fetchTasks();
                 this.render();
