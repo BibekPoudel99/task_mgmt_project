@@ -1,0 +1,317 @@
+:root {
+    --cream: #faf8f3;
+    --cream-dark: #f5f2eb;
+    --olive: #7c8471;
+    --olive-light: #9ca08f;
+    --olive-dark: #6b7260;
+    --sage: #a8b5a0;
+    --warm-gray: #8b8680;
+    --soft-white: #ffffff;
+    --shadow-subtle: 0 2px 8px rgba(124, 132, 113, 0.1);
+    --shadow-elevated: 0 4px 16px rgba(124, 132, 113, 0.15);
+    --border-radius: 8px;
+    --transition: all 0.3s ease;
+}
+
+/* Base Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--cream);
+    color: #333;
+    line-height: 1.6;
+}
+
+.bg-cream {
+    background-color: var(--cream) !important;
+}
+
+.text-olive {
+    color: var(--olive) !important;
+}
+
+.text-olive-light {
+    color: var(--olive-light) !important;
+}
+
+/* Custom Button Styles */
+.btn-olive {
+    background-color: var(--olive);
+    border-color: var(--olive);
+    color: white;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.btn-olive:hover {
+    background-color: var(--olive-dark);
+    border-color: var(--olive-dark);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-elevated);
+}
+
+.btn-olive:focus {
+    box-shadow: 0 0 0 0.2rem rgba(124, 132, 113, 0.25);
+}
+
+.btn-sage {
+    background-color: var(--sage);
+    border-color: var(--sage);
+    color: white;
+    border-radius: var(--border-radius);
+}
+
+.btn-sage:hover {
+    background-color: var(--olive);
+    border-color: var(--olive);
+    color: white;
+}
+
+/* Navigation Styles */
+.navbar {
+    box-shadow: var(--shadow-subtle);
+    background: linear-gradient(135deg, var(--cream), var(--cream-dark));
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.nav-link {
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.nav-link:hover {
+    color: var(--olive-dark) !important;
+}
+
+/* Tab Styles */
+.nav-tabs .nav-link {
+    border: none;
+    color: var(--warm-gray);
+    font-weight: 500;
+    padding: 12px 20px;
+    transition: var(--transition);
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: transparent;
+    background-color: var(--cream-dark);
+    color: var(--olive);
+}
+
+.nav-tabs .nav-link.active {
+    background-color: var(--soft-white);
+    border-color: var(--olive) var(--olive) var(--soft-white);
+    color: var(--olive);
+    box-shadow: var(--shadow-subtle);
+}
+
+/* Card Styles */
+.card {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-subtle);
+    transition: var(--transition);
+    background-color: var(--soft-white);
+}
+
+.card:hover {
+    box-shadow: var(--shadow-elevated);
+}
+
+.card-header {
+    background-color: var(--cream-dark) !important;
+    border-bottom: 1px solid rgba(124, 132, 113, 0.1);
+    border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
+}
+
+.card-title {
+    color: var(--olive);
+    font-weight: 600;
+}
+
+/* Form Styles */
+.form-control, .form-select {
+    border: 2px solid var(--cream-dark);
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+    background-color: var(--soft-white);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--olive);
+    box-shadow: 0 0 0 0.2rem rgba(124, 132, 113, 0.15);
+    background-color: var(--soft-white);
+}
+
+.form-label {
+    color: var(--olive);
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+
+/* Badge Styles */
+.badge {
+    font-weight: 500;
+    border-radius: 20px;
+    padding: 6px 12px;
+}
+
+.badge-olive {
+    background-color: var(--olive);
+    color: white;
+}
+
+.badge-sage {
+    background-color: var(--sage);
+    color: white;
+}
+
+.badge-cream {
+    background-color: var(--cream-dark);
+    color: var(--olive);
+}
+
+/* Task Item Styles */
+.task-item {
+    padding: 12px;
+    border: 1px solid var(--cream-dark);
+    border-radius: var(--border-radius);
+    margin-bottom: 8px;
+    background-color: var(--soft-white);
+    transition: var(--transition);
+}
+
+.task-item:hover {
+    background-color: var(--cream);
+    border-color: var(--olive-light);
+}
+
+.task-item.completed {
+    background-color: var(--cream-dark);
+    opacity: 0.7;
+}
+
+.task-item.completed .task-title {
+    text-decoration: line-through;
+    color: var(--warm-gray);
+}
+
+/* Project Item Styles */
+.project-item {
+    padding: 12px;
+    border: 1px solid var(--cream-dark);
+    border-radius: var(--border-radius);
+    margin-bottom: 8px;
+    background-color: var(--soft-white);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.project-item:hover {
+    background-color: var(--cream);
+    border-color: var(--olive-light);
+}
+
+.project-item.active {
+    background-color: var(--sage);
+    border-color: var(--olive);
+    color: white;
+}
+
+.project-item.active .badge {
+    background-color: var(--soft-white);
+    color: var(--olive);
+}
+
+/* Member Badge Styles */
+.member-badge {
+    background-color: var(--sage);
+    color: white;
+    border-radius: 20px;
+    padding: 4px 12px;
+    margin: 2px;
+    display: inline-block;
+    font-size: 0.875rem;
+}
+
+/* Toast Styles */
+.toast {
+    background-color: var(--soft-white);
+    border: 1px solid var(--olive-light);
+    color: var(--olive);
+}
+
+.toast-header {
+    background-color: var(--cream-dark);
+    color: var(--olive);
+}
+
+/* Checkbox Styles */
+.form-check-input:checked {
+    background-color: var(--olive);
+    border-color: var(--olive);
+}
+
+.form-check-input:focus {
+    border-color: var(--olive-light);
+    box-shadow: 0 0 0 0.25rem rgba(124, 132, 113, 0.25);
+}
+
+/* Utility Classes */
+.text-completed {
+    text-decoration: line-through;
+    color: var(--warm-gray) !important;
+}
+
+.border-olive {
+    border-color: var(--olive) !important;
+}
+
+.bg-olive-light {
+    background-color: var(--olive-light) !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1.25rem;
+    }
+    
+    .display-4 {
+        font-size: 2rem;
+    }
+    
+    .nav-tabs .nav-link {
+        padding: 8px 12px;
+        font-size: 0.875rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+}
+
+/* Animation Classes */
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.slide-in {
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(-10px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
