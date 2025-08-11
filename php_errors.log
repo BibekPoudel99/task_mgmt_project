@@ -1,0 +1,3 @@
+[11-Aug-2025 17:57:28 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\task_mgmt\config\config.php on line 2
+[11-Aug-2025 17:57:31 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\task_mgmt\config\config.php on line 2
+[11-Aug-2025 17:57:38 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\task_mgmt\config\config.php on line 2
