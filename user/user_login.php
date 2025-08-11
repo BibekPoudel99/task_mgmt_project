@@ -1,6 +1,8 @@
 <?php
-session_start();
-require_once '../library/Database.php'; // Adjust path if needed
+require_once '../library/Hash.php';
+require_once '../library/Database.php';
+$db = new Database();
+$conn = $db->getConnection();
 
 $error = '';
 
@@ -11,13 +13,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($username === '' || $password === '') {
         $error = 'All fields are required.';
     } else {
-        // Assuming $conn is your PDO connection from Database.php
         try {
-            $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username = ?");
+            $stmt = $conn->prepare("SELECT id, username, hashed_password FROM users WHERE username = ?");
             $stmt->execute([$username]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($user && password_verify($password, $user['password'])) {
+            if ($username && Hash::verify($password, $user['hashed_password'])) {
                 $_SESSION['user_logged_in'] = true;
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];

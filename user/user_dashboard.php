@@ -1,10 +1,10 @@
 <?php
-session_start();
+ session_start();
 if (empty($_SESSION['user_logged_in'])) {
     header('Location: user_login.php');
     exit;
 }
-$username = $_SESSION['username'] ?? 'User';
+$username = $_SESSION['username'] ?? 'User'; 
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -31,7 +31,7 @@ $username = $_SESSION['username'] ?? 'User';
             </a>
             <div class="navbar-nav ms-auto">
                 <a class="nav-link text-olive" href="#"><i class="bi bi-person-circle me-1"></i>Profile</a>
-                <a class="nav-link text-olive" href="#"><i class="bi bi-box-arrow-right me-1"></i>Logout</a>
+                <a class="nav-link text-olive" href="user_logout.php"><i class="bi bi-box-arrow-right me-1"></i>Logout</a>
             </div>
         </div>
     </nav>

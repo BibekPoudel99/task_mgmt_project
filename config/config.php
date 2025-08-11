@@ -17,7 +17,7 @@ $GLOBALS['configs'] = [
 	'database' => [
 		'host' => 'localhost',
 		'username' => 'root',
-		'password' => '',
+		'password' => 'zxcVBNM@0192',
 		'name' => 'task_mgmt',
         'port' => 3306,
 	],

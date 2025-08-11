@@ -1,6 +1,7 @@
 <?php
-session_start();
 require_once '../library/Database.php'; // Make sure $conn is your PDO connection
+$db = new Database();
+$conn = $db->getConnection();
 
 $error = '';
 $success = '';
@@ -25,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Hash the password
                 $hashed_password = password_hash($password, PASSWORD_DEFAULT);
                 // Insert new user
-                $stmt = $conn->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
+                $stmt = $conn->prepare("INSERT INTO users (username, hashed_password) VALUES (?, ?)");
                 $stmt->execute([$username, $hashed_password]);
                 $success = 'Registration successful! You can now <a href="user_login.php">login</a>.';
             }
