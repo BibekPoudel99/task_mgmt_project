@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once '../library/Hash.php';
 require_once '../library/Database.php';
 $db = new Database();
