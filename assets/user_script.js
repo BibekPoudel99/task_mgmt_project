@@ -9,8 +9,17 @@ class TaskFlowApp {
 
     async init() {
         this.bindEvents();
-        await this.refreshAll();
-        this.render();
+        this.setCsrf(document.getElementById('csrfTokenInput').value);
+        
+        // Force update missed tasks on page load
+        try {
+            await fetch('../user_api/missed_tasks.php');
+            await this.refreshAll();
+        } catch (error) {
+            console.error('Error updating missed tasks:', error);
+            // Still try to load data even if missed tasks update fails
+            await this.refreshAll();
+        }
     }
 
     bindEvents() {
@@ -133,23 +142,31 @@ class TaskFlowApp {
     }
 
     async toggleTask(taskId) {
-        try {
-            const body = new FormData();
-            body.append('action', 'toggle');
-            body.append('task_id', taskId);
-            body.append('csrf_token', this.getCsrf());
-            const res = await fetch('../user_api/tasks.php', { method: 'POST', body });
-            const data = await res.json();
-            if (data.csrf_token) this.setCsrf(data.csrf_token);
-            if (data.success) {
-                await this.fetchTasks();
-                this.render();
-            } else {
-                this.showToast(data.message || 'Failed to update task', 'error');
+    // Find the task to check if it's missed
+    const task = this.tasks.find(t => String(t.id) === String(taskId));
+    if (task && task.is_missed) {
+        this.showToast('Cannot complete a missed task. The due date has passed.', 'error');
+        return;
+    }
+
+    try {
+        const body = new FormData();
+        body.append('action', 'toggle');
+        body.append('task_id', taskId);
+        body.append('csrf_token', this.getCsrf());
+        const res = await fetch('../user_api/tasks.php', { method: 'POST', body });
+        const data = await res.json();
+        if (data.csrf_token) this.setCsrf(data.csrf_token);
+        if (data.success) {
+            await this.fetchTasks();
+            this.render();
+        } else {
+            this.showToast(data.message || 'Failed to update task', 'error');
             }
-        } catch (_) {
-            this.showToast('Network error while updating task', 'error');
-        }
+    } 
+    catch (_) {
+        this.showToast('Network error while updating task', 'error');
+    }
     }
 
     // Project Management
@@ -240,17 +257,36 @@ class TaskFlowApp {
         }
         container.innerHTML = this.tasks.map(task => {
             const project = this.projects.find(p => String(p.id) === String(task.project_id));
+            const isCompleted = task.completed == 1;
+            const isMissed = task.is_missed == 1;
+            
+            let statusBadge = '';
+            let actionButton = '';
+            
+            if (isMissed) {
+                // Task is missed - show missed badge, no complete button
+                statusBadge = '<span class="badge bg-danger">Missed</span>';
+                actionButton = '<span class="text-muted small">Task overdue</span>';
+            } else if (isCompleted) {
+                // Task is completed
+                statusBadge = '<span class="badge bg-success">Completed</span>';
+                actionButton = `<button class="btn btn-sm btn-secondary me-3" onclick="app.toggleTask('${task.id}')">Reopen</button>`;
+            } else {
+                // Task is pending
+                statusBadge = '<span class="badge bg-warning">Pending</span>';
+                actionButton = `<button class="btn btn-sm btn-sage me-3" onclick="app.toggleTask('${task.id}')">Mark as completed</button>`;
+            }
+
             return `
-                <div class="task-item ${task.completed ? 'completed' : ''} fade-in">
+                <div class="task-item ${task.completed ? 'completed' : ''} ${isMissed ? 'missed' : ''} fade-in">
                     <div class="d-flex align-items-center">
-                        <button class="btn btn-sm ${task.completed ? 'btn-secondary' : 'btn-sage'} me-3" onclick="app.toggleTask('${task.id}')">
-                            ${task.completed ? 'Reopen' : 'Mark as completed'}
-                        </button>
+                        ${actionButton}
                         <div class="flex-grow-1 d-flex align-items-center" style="gap:8px;">
-                            <input class="form-control form-control-sm" value="${this.escapeHtml(task.title)}" onchange="app.updateTaskTitle('${task.id}', this.value)"/>
+                            <input class="form-control form-control-sm" value="${this.escapeHtml(task.title)}" onchange="app.updateTaskTitle('${task.id}', this.value)" ${isMissed ? 'readonly' : ''}/>
                             <div class="mt-1">
                                 ${task.due_date ? `<span class="badge bg-secondary me-2">Due ${task.due_date}</span>` : ''}
                                 ${project ? `<span class="badge badge-cream">${project.name}</span>` : ''}
+                                ${statusBadge}
                             </div>
                         </div>
                         <button class="btn btn-sm btn-outline-danger ms-2" onclick="app.deleteTask('${task.id}')"><i class="bi bi-trash"></i></button>
@@ -590,6 +626,8 @@ class TaskFlowApp {
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#39;');
     }
+
+    
 }
 
 document.addEventListener('DOMContentLoaded', () => {

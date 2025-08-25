@@ -59,6 +59,7 @@ $username = $_SESSION['username'] ?? 'User';
         <section class="mb-5">
             <h1 class="display-4 fw-bold text-olive mb-2">TaskFlow Dashboard</h1>
             <p class="lead text-muted">Stay organized across your day, tasks, and projects. Collaborate with your team and track progress at a glance.</p>
+            
         </section>
 
         <!-- Tabs Navigation -->
@@ -86,6 +87,13 @@ $username = $_SESSION['username'] ?? 'User';
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="calendar-tab" data-bs-toggle="tab" data-bs-target="#calendar" type="button" role="tab">
                     <i class="bi bi-calendar me-2"></i>Calendar
+                </button>
+            </li>
+
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="missed-tab" data-bs-toggle="tab" data-bs-target="#missed" type="button" role="tab">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Missed Tasks
+                    <span class="badge bg-danger ms-1" style="display: none;">0</span>
                 </button>
             </li>
         </ul>
@@ -217,6 +225,16 @@ $username = $_SESSION['username'] ?? 'User';
                     </div>
                 </div>
             </div>
+            <div class="tab-pane fade" id="missed" role="tabpanel" aria-labelledby="missed-tab">
+            <div id="missed-tasks-content">
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading missed tasks...</p>
+                </div>
+            </div>
+        </div>
         </div>
     </main>
 
@@ -227,5 +245,6 @@ $username = $_SESSION['username'] ?? 'User';
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Dashboard JS -->
     <script src="../assets/user_script.js"></script>
+    <script src="../assets/missed_tasks.js"></script>
 </body>
 </html>

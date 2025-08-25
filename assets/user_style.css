@@ -202,6 +202,25 @@ body {
     color: var(--warm-gray);
 }
 
+/* Missed Tasks Styles */
+.bg-light-danger {
+    background-color: #f8d7da !important;
+    border-left: 4px solid #dc3545;
+}
+
+.task-item.missed {
+    opacity: 0.8;
+}
+
+.table-warning {
+    --bs-table-bg: #fff3cd;
+}
+
+/* Missed tasks alert styling */
+.alert-warning .badge {
+    background-color: #dc3545 !important;
+}
+
 /* Project Item Styles */
 .project-item {
     padding: 12px;

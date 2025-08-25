@@ -22,10 +22,15 @@ $userId = (int) $_SESSION['user_id'];
 $method = $_SERVER['REQUEST_METHOD'];
 
 if ($method === 'GET') {
+    // Update missed tasks first
+    require_once __DIR__ . '/../library/TaskUtils.php';
+    $taskUtils = new TaskUtils();
+    $taskUtils->updateMissedTasks();
+    
     // List tasks owned by user or assigned to user
     try {
         $sql = "
-            SELECT t.id, t.title, t.project_id, t.due_date, t.completed, t.owner_id, t.assignee_id,
+            SELECT t.id, t.title, t.project_id, t.due_date, t.completed, t.owner_id, t.assignee_id, t.is_missed,
                    au.username AS assignee
             FROM tasks t
             LEFT JOIN users au ON au.id = t.assignee_id
@@ -44,6 +49,7 @@ if ($method === 'GET') {
                 'owner_id' => (int)$t['owner_id'],
                 'assignee_id' => $t['assignee_id'] ? (int)$t['assignee_id'] : null,
                 'assignee' => $t['assignee'] ?? null,
+                'is_missed' => (bool)$t['is_missed'], // Add this line
             ];
         }, $stmt->fetchAll(PDO::FETCH_ASSOC));
         echo json_encode(['success' => true, 'tasks' => $tasks]);
