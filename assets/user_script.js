@@ -296,13 +296,17 @@ class TaskFlowApp {
         const project = this.projects.find(p => String(p.id) === String(this.selectedProjectId));
         const projectTasks = this.tasks.filter(t => String(t.project_id) === String(this.selectedProjectId));
         const memberOptions = this.users.map(u => `<option value="${u.username}">${u.username}</option>`).join('');
+        const isProjectOwner = String(project?.owner_id) === String(window.currentUser?.id);
         container.innerHTML = `
             <div class="row mb-4">
                 <div class="col-md-8">
                     <h6 class="text-olive">Add team member</h6>
-                    <div class="input-group mb-3">
-                        <select class="form-select" id="newMemberInput"><option value="">Select user</option>${memberOptions}</select>
-                        <button class="btn btn-olive" onclick="app.addMemberToSelected()">Add</button>
+                    <div class="mb-3">
+                        <input class="form-control" id="newMemberInput" list="usersDatalist" placeholder="Type at least 3 characters to search" autocomplete="off" />
+                        <datalist id="usersDatalist">${memberOptions}</datalist>
+                        <div class="mt-2">
+                            <button class="btn btn-olive" onclick="app.addMemberToSelected()">Add</button>
+                        </div>
                     </div>
                     <div class="mb-3">
                         ${(project.members || []).length === 0 ?
@@ -332,19 +336,35 @@ class TaskFlowApp {
                                         <input type="date" class="form-control form-control-sm" style="width:auto" value="${task.due_date || ''}" onchange="app.updateDueDate('${task.id}', this.value)">
                                     </div>
                                 </div>
+                                ${isProjectOwner ? `
                                 <div class="mt-2 d-flex align-items-center" style="gap:10px;">
                                     <label class="text-olive small mb-0">Assignee</label>
                                     <select class="form-select form-select-sm w-auto" onchange="app.assignTask('${task.id}', this.value)">
                                         <option value="">Unassigned</option>
-                                        ${(project.members || []).map(member => `<option value="${member}" ${task.assignee === member ? 'selected' : ''}>${member}</option>`).join('')}
+                                        ${(project.members || []).map(member => `<option value=\"${member}\" ${task.assignee === member ? 'selected' : ''}>${member}</option>`).join('')}
                                     </select>
-                                </div>
+                                </div>` : ''}
                             </div>
                         </div>
                     </div>
                 `).join('')}
             </div>
         `;
+
+        // Typeahead behavior: show datalist suggestions only after 3 chars and filter progressively
+        const memberInput = document.getElementById('newMemberInput');
+        const datalist = document.getElementById('usersDatalist');
+        if (memberInput && datalist) {
+            memberInput.addEventListener('input', () => {
+                const query = memberInput.value.toLowerCase();
+                const optionsHtml = this.users
+                    .filter(u => query.length >= 3 && u.username.toLowerCase().includes(query))
+                    .slice(0, 20)
+                    .map(u => `<option value="${u.username}">${u.username}</option>`)
+                    .join('');
+                datalist.innerHTML = optionsHtml;
+            });
+        }
     }
 
     renderTeam() {

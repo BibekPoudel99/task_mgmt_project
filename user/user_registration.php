@@ -42,22 +42,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <title>User Registration</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/style.css">
+    <link rel="stylesheet" href="../assets/index.css">
     <style>
-        body { background: #f8f9fa; }
+        body { background: #FAF7F2; }
         .register-container {
-            max-width: 400px;
-            margin: 80px auto;
+            max-width: 420px;
+            margin: 10vh auto;
             padding: 2rem;
             background: #fff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.08);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.06);
         }
-        .register-title { font-weight: 700; color: #343a40; margin-bottom: 1.5rem; text-align: center; }
-        .btn-theme { background-color: #007bff; color: #fff; font-weight: 600; }
-        .btn-theme:hover { background-color: #0056b3; }
+        .register-title { font-weight: 800; color: #2D3B2D; margin-bottom: 1.25rem; text-align: center; }
+        .btn-theme { background-color: #7AA874; color: #fff; font-weight: 600; border: none; }
+        .btn-theme:hover { background-color: #6A9767; }
     </style>
 </head>
-<body>
+<body class="bg-cream">
     <div class="register-container">
         <div class="register-title">User Registration</div>
         <?php if ($error): ?>
