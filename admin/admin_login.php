@@ -10,7 +10,7 @@ $error = '';
 // Explicit admin list by username (adjust as needed)
 $admins = [
   'admin',
-  'superuser'
+  
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
