@@ -121,11 +121,9 @@ if ($method === 'POST') {
                 exit;
             }
             $projectId = (int)($task['project_id'] ?? 0);
-            // Only task owner or project owner may assign
+            // Only project owner may assign tasks within the project
             $allowed = false;
-            if ((int)$task['owner_id'] === $userId) {
-                $allowed = true;
-            } elseif ($projectId) {
+            if ($projectId) {
                 $ownStmt = $pdo->prepare('SELECT owner_id FROM projects WHERE id = ?');
                 $ownStmt->execute([$projectId]);
                 $projOwnerId = (int)($ownStmt->fetchColumn() ?: 0);
