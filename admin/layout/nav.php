@@ -13,12 +13,10 @@
             <a href="#" class="thq-link thq-body-small"><span>Tasks</span></a>
           </nav>
           <div class="navbar-buttons1">
-            <button class="navbar-action11 thq-button-animated thq-button-filled" onclick="window.location.href='../user/user_login.php'">
-              <span class="thq-body-small">Login</span>
+            <button class="navbar-action11 thq-button-animated thq-button-filled" onclick="window.location.href='/task_mgmt/admin/layout/logout.php'">
+              <span class="thq-body-small">Logout</span>
             </button>
-            <button class="navbar-action21 thq-button-outline thq-button-animated" onclick="window.location.href='../user/user_registration.php'">
-              <span class="thq-body-small">Register</span>
-            </button>
+            
           </div>
         </div>
       </header>

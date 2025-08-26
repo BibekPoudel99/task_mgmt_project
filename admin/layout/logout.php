@@ -1,5 +1,5 @@
 <?php
 session_start();
 session_destroy();
-header('Location: login.php');
+header('Location: /task_mgmt/login_choice.php');
 exit;

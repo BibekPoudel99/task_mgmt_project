@@ -19,7 +19,7 @@ session_start();
     <div class="card-header bg-light"><h5 class="mb-0">Choose Login Type</h5></div>
     <div class="card-body p-4">
       <div class="d-grid gap-3">
-        <a class="btn btn-olive btn-lg" href="admin/admin_login.php">Login as Admin</a>
+        <a class="btn btn-olive btn-lg" href="admin/layout/login.php">Login as Admin</a>
         <a class="btn btn-sage btn-lg" href="user/user_login.php">Login as User</a>
       </div>
       <p class="mt-4 text-muted small mb-0">

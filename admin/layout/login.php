@@ -12,6 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($username === $admin_username && $password === $admin_password) {
         $_SESSION['admin_logged_in'] = true;
+        $_SESSION['role'] = 'admin';
         header('Location: ../dashboard.php');
         exit;
     } else {
@@ -92,6 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <button type="submit" class="btn btn-theme w-100">Login</button>
         </form>
+        <div class="mt-3 text-center"><a href="../../login_choice.php">Back</a></div>
     </div>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
