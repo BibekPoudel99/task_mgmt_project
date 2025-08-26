@@ -78,6 +78,14 @@ if ($method === 'POST') {
         $title = trim($_POST['title'] ?? '');
         $projectId = (int)($_POST['project_id'] ?? 0);
         $dueDate = $_POST['due_date'] ?? null;
+        if ($dueDate) {
+            $today = date('Y-m-d');
+            if ($dueDate < $today) {
+                http_response_code(422);
+                echo json_encode(['success' => false, 'message' => 'Due date cannot be before today']);
+                exit;
+            }
+        }
 
         if ($title === '') {
             http_response_code(422);
@@ -175,6 +183,14 @@ if ($method === 'POST') {
     if ($action === 'update_due') {
         $taskId = (int)($_POST['task_id'] ?? 0);
         $dueDate = trim($_POST['due_date'] ?? '');
+        if ($dueDate) {
+            $today = date('Y-m-d');
+            if ($dueDate < $today) {
+                http_response_code(422);
+                echo json_encode(['success' => false, 'message' => 'Due date cannot be before today']);
+                exit;
+            }
+        }
         if (!$taskId) {
             http_response_code(422);
             echo json_encode(['success' => false, 'message' => 'Invalid task']);

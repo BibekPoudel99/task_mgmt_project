@@ -10,14 +10,11 @@ class TaskFlowApp {
     async init() {
         this.bindEvents();
         this.setCsrf(document.getElementById('csrfTokenInput').value);
-        
-        // Force update missed tasks on page load
         try {
             await fetch('../user_api/missed_tasks.php');
             await this.refreshAll();
         } catch (error) {
             console.error('Error updating missed tasks:', error);
-            // Still try to load data even if missed tasks update fails
             await this.refreshAll();
         }
     }
@@ -27,12 +24,9 @@ class TaskFlowApp {
         if (logoutLink) {
             logoutLink.addEventListener('click', (e) => {
                 const ok = confirm('Are you sure you want to logout?');
-                if (!ok) {
-                    e.preventDefault();
-                }
+                if (!ok) e.preventDefault();
             });
         }
-
         const addTaskForm = document.getElementById('addTaskForm');
         if (addTaskForm) {
             addTaskForm.addEventListener('submit', async (e) => {
@@ -40,7 +34,6 @@ class TaskFlowApp {
                 await this.addTask();
             });
         }
-
         const addProjectForm = document.getElementById('addProjectForm');
         if (addProjectForm) {
             addProjectForm.addEventListener('submit', async (e) => {
@@ -48,7 +41,6 @@ class TaskFlowApp {
                 await this.addProject();
             });
         }
-
         document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
             tab.addEventListener('shown.bs.tab', () => {
                 this.render();
@@ -109,21 +101,17 @@ class TaskFlowApp {
         }
     }
 
-    // Task Management
     async addTask() {
         const title = document.getElementById('taskTitle').value.trim();
         const dueDate = document.getElementById('taskDueDate').value;
         const projectId = document.getElementById('taskProject').value;
-
         if (!title) return;
-
         const body = new FormData();
         body.append('action', 'create');
         body.append('title', title);
         if (dueDate) body.append('due_date', dueDate);
         if (projectId) body.append('project_id', projectId);
         body.append('csrf_token', this.getCsrf());
-
         try {
             const res = await fetch('../user_api/tasks.php', { method: 'POST', body });
             const data = await res.json();
@@ -142,34 +130,30 @@ class TaskFlowApp {
     }
 
     async toggleTask(taskId) {
-    // Find the task to check if it's missed
-    const task = this.tasks.find(t => String(t.id) === String(taskId));
-    if (task && task.is_missed) {
-        this.showToast('Cannot complete a missed task. The due date has passed.', 'error');
-        return;
-    }
-
-    try {
-        const body = new FormData();
-        body.append('action', 'toggle');
-        body.append('task_id', taskId);
-        body.append('csrf_token', this.getCsrf());
-        const res = await fetch('../user_api/tasks.php', { method: 'POST', body });
-        const data = await res.json();
-        if (data.csrf_token) this.setCsrf(data.csrf_token);
-        if (data.success) {
-            await this.fetchTasks();
-            this.render();
-        } else {
-            this.showToast(data.message || 'Failed to update task', 'error');
+        const task = this.tasks.find(t => String(t.id) === String(taskId));
+        if (task && task.is_missed) {
+            this.showToast('Cannot complete a missed task. The due date has passed.', 'error');
+            return;
+        }
+        try {
+            const body = new FormData();
+            body.append('action', 'toggle');
+            body.append('task_id', taskId);
+            body.append('csrf_token', this.getCsrf());
+            const res = await fetch('../user_api/tasks.php', { method: 'POST', body });
+            const data = await res.json();
+            if (data.csrf_token) this.setCsrf(data.csrf_token);
+            if (data.success) {
+                await this.fetchTasks();
+                this.render();
+            } else {
+                this.showToast(data.message || 'Failed to update task', 'error');
             }
-    } 
-    catch (_) {
-        this.showToast('Network error while updating task', 'error');
-    }
+        } catch (_) {
+            this.showToast('Network error while updating task', 'error');
+        }
     }
 
-    // Project Management
     async addProject() {
         const name = document.getElementById('projectName').value.trim();
         if (!name) return;
@@ -222,7 +206,6 @@ class TaskFlowApp {
         }
     }
 
-    // Rendering Methods
     render() {
         this.renderMyDay();
         this.renderTasks();
@@ -231,6 +214,7 @@ class TaskFlowApp {
         this.renderCalendar();
     }
 
+    // ...existing renderMyDay, renderTasks+, renderProjects, renderProjectDetails, renderTeam, renderCalendar, addMemberToSelected, updateDueDate, addQuickTask, updateTaskTitle, deleteTask, updateProjectOptions, showToast, escapeHtml methods...
     renderMyDay() {
         const today = new Date().toISOString().split('T')[0];
         const todayTasks = this.tasks.filter(t => !t.completed && t.due_date === today);
@@ -626,8 +610,6 @@ class TaskFlowApp {
             .replace(/"/g, '&quot;')
             .replace(/'/g, '&#39;');
     }
-
-    
 }
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -47,7 +47,7 @@ $username = $_SESSION['username'] ?? 'User';
                 <i class="bi bi-check-circle-fill me-2"></i>TaskFlow
             </a>
             <div class="navbar-nav ms-auto">
-                <a class="nav-link text-olive" href="#"><i class="bi bi-person-circle me-1"></i>Profile</a>
+                <a class="nav-link text-olive" href="user_profile.php"><i class="bi bi-person-circle me-1"></i>Profile</a>
                 <a class="nav-link text-olive" id="logoutLink" href="user_logout.php"><i class="bi bi-box-arrow-right me-1"></i>Logout</a>
             </div>
         </div>
@@ -89,7 +89,6 @@ $username = $_SESSION['username'] ?? 'User';
                     <i class="bi bi-calendar me-2"></i>Calendar
                 </button>
             </li>
-
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="missed-tab" data-bs-toggle="tab" data-bs-target="#missed" type="button" role="tab">
                     <i class="bi bi-exclamation-triangle me-2"></i>Missed Tasks
@@ -130,7 +129,7 @@ $username = $_SESSION['username'] ?? 'User';
                                 </div>
                                 <div class="col-md-2">
                                     <label for="taskDueDate" class="form-label">Due date</label>
-                                    <input type="date" class="form-control" id="taskDueDate">
+                                    <input type="date" class="form-control" id="taskDueDate" min="<?php echo date('Y-m-d'); ?>">
                                 </div>
                                 <div class="col-md-2">
                                     <label for="taskProject" class="form-label">Project</label>
