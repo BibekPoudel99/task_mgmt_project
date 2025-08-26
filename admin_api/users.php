@@ -1,7 +1,7 @@
 <?php
 session_start();
 header('Content-Type: application/json');
-if (empty($_SESSION['user_logged_in']) || ($_SESSION['role'] ?? '') !== 'admin') {
+if (empty($_SESSION['admin_logged_in']) || ($_SESSION['role'] ?? '') !== 'admin') {
     http_response_code(401);
     echo json_encode(['success' => false, 'message' => 'Unauthorized']);
     exit;

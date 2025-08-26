@@ -1,6 +1,6 @@
 <?php /* Admin nav layout */ ?>
 <link rel="stylesheet" href="../assets/style.css" />
-<div class="home-container">
+<div class="home-container" style="min-height: 10px;">
   <navbar-wrapper class="navbar-wrapper">
     <header class="navbar-container">
       <header data-thq="thq-navbar" class="navbar-navbar-interactive">
