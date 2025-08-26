@@ -249,15 +249,15 @@ class TaskFlowApp {
             
             if (isMissed) {
                 // Task is missed - show missed badge, no complete button
-                statusBadge = '<span class="badge bg-danger">Missed</span>';
+                statusBadge = '<span class="badge bg-danger task-status">Missed</span>';
                 actionButton = '<span class="text-muted small">Task overdue</span>';
             } else if (isCompleted) {
                 // Task is completed
-                statusBadge = '<span class="badge bg-success">Completed</span>';
+                statusBadge = '<span class="badge bg-success task-status">Completed</span>';
                 actionButton = `<button class="btn btn-sm btn-secondary me-3" onclick="app.toggleTask('${task.id}')">Reopen</button>`;
             } else {
                 // Task is pending
-                statusBadge = '<span class="badge bg-warning">Pending</span>';
+                statusBadge = '<span class="badge bg-warning task-status">Pending</span>';
                 actionButton = `<button class="btn btn-sm btn-sage me-3" onclick="app.toggleTask('${task.id}')">Mark as completed</button>`;
             }
 
@@ -266,9 +266,9 @@ class TaskFlowApp {
                     <div class="d-flex align-items-center">
                         ${actionButton}
                         <div class="flex-grow-1 d-flex align-items-center" style="gap:8px;">
-                            <input class="form-control form-control-sm" value="${this.escapeHtml(task.title)}" onchange="app.updateTaskTitle('${task.id}', this.value)" ${isMissed ? 'readonly' : ''}/>
+                            <input class="form-control form-control-sm task-title" value="${this.escapeHtml(task.title)}" onchange="app.updateTaskTitle('${task.id}', this.value)" ${isMissed ? 'readonly' : ''}/>
                             <div class="mt-1">
-                                ${task.due_date ? `<span class="badge bg-secondary me-2">Due ${task.due_date}</span>` : ''}
+                                ${task.due_date ? `<span class="badge bg-secondary me-2 task-due-date">Due ${task.due_date}</span>` : ''}
                                 ${project ? `<span class="badge badge-cream">${project.name}</span>` : ''}
                                 ${statusBadge}
                             </div>
@@ -353,7 +353,7 @@ class TaskFlowApp {
                                 <div class="d-flex align-items-center justify-content-between">
                                     <span class="task-title ${task.completed ? 'text-completed' : ''}">${task.title}</span>
                                     <div class="d-flex align-items-center ms-2" style="gap:8px;">
-                                        <input type="date" class="form-control form-control-sm" style="width:auto" value="${task.due_date || ''}" onchange="app.updateDueDate('${task.id}', this.value)">
+                                        <input type="date" class="form-control form-control-sm task-due-date" style="width:auto" value="${task.due_date || ''}" onchange="app.updateDueDate('${task.id}', this.value)">
                                     </div>
                                 </div>
                                 ${isProjectOwner ? `

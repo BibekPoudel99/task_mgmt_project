@@ -30,7 +30,7 @@ $username = $_SESSION['username'] ?? 'User';
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 </head>
-<body class="bg-cream">
+<body style="background-color: #fcfcfa; min-height: 100vh;">
     <!-- CSRF token for API requests -->
     <?php echo Token::input(); ?>
     <input type="hidden" id="csrfTokenInput" name="csrf_token" value="<?php echo htmlspecialchars($_SESSION['csrf_token'] ?? ''); ?>">
@@ -41,29 +41,28 @@ $username = $_SESSION['username'] ?? 'User';
         };
     </script>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-cream border-bottom">
-        <div class="container">
-            <a class="navbar-brand fw-bold text-olive" href="#">
-                <i class="bi bi-check-circle-fill me-2"></i>TaskFlow
+    <nav class="navbar navbar-expand-lg navbar-light" style="background: linear-gradient(135deg, #faf8f3, #f5f2eb); box-shadow: 0 2px 8px rgba(124,132,113,0.07);">
+        <div class="container" style="max-width: 1100px;">
+            <a class="navbar-brand fw-bold" style="color: #6b7260; font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 2rem; letter-spacing: 1px;" href="#">
+                <i class="bi bi-check-circle-fill me-2" style="color: #7c8471;"></i>TaskFlow
             </a>
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link text-olive" href="user_profile.php"><i class="bi bi-person-circle me-1"></i>Profile</a>
-                <a class="nav-link text-olive" id="logoutLink" href="user_logout.php"><i class="bi bi-box-arrow-right me-1"></i>Logout</a>
+            <div class="navbar-nav ms-auto d-flex align-items-center gap-2">
+                <a class="nav-link" style="color: #7c8471; font-weight: 500;" href="user_profile.php"><i class="bi bi-person-circle me-1"></i>Profile</a>
+                <a class="nav-link" style="color: #7c8471; font-weight: 500;" id="logoutLink" href="user_logout.php"><i class="bi bi-box-arrow-right me-1"></i>Logout</a>
             </div>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="container py-5">
+    <main class="container py-5" style="max-width: 1200px; margin: 40px auto 0 auto; background: #fffefd; border-radius: 20px; box-shadow: 0 4px 24px rgba(124,132,113,0.10); padding: 40px 32px 32px 32px;">
         <!-- Header Section -->
-        <section class="mb-5">
-            <h1 class="display-4 fw-bold text-olive mb-2">TaskFlow Dashboard</h1>
-            <p class="lead text-muted">Stay organized across your day, tasks, and projects. Collaborate with your team and track progress at a glance.</p>
-            
+        <section class="mb-5 text-center">
+            <h1 class="fw-bold" style="font-family: 'Inter', 'Segoe UI', sans-serif; color: #4a5c3a; font-size: 2.5rem; margin-bottom: 0.5rem; letter-spacing: 0.5px;">TaskFlow Dashboard</h1>
+            <p class="lead" style="color: #7c8471; font-family: 'Inter', 'Segoe UI', sans-serif; font-size: 1.15rem;">Stay organized across your day, tasks, and projects. Collaborate with your team and track progress at a glance.</p>
         </section>
 
         <!-- Tabs Navigation -->
-        <ul class="nav nav-tabs mb-4" id="dashboardTabs" role="tablist">
+    <ul class="nav nav-tabs mb-4 justify-content-center" id="dashboardTabs" role="tablist" style="border-bottom: 2px solid #e5e3db;">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="myday-tab" data-bs-toggle="tab" data-bs-target="#myday" type="button" role="tab">
                     <i class="bi bi-sun me-2"></i>My Day
@@ -98,16 +97,16 @@ $username = $_SESSION['username'] ?? 'User';
         </ul>
 
         <!-- Tab Content -->
-        <div class="tab-content" id="dashboardTabContent">
+    <div class="tab-content" id="dashboardTabContent" style="margin-top: 24px;">
             <!-- My Day Tab -->
             <div class="tab-pane fade show active" id="myday" role="tabpanel">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-light">
-                        <h5 class="card-title mb-0"><i class="bi bi-sun me-2"></i>Today</h5>
+                <div class="card shadow-sm" style="border-radius: 16px; background: #fffefb;">
+                    <div class="card-header bg-light" style="background: #f5f2eb !important; border-radius: 16px 16px 0 0;">
+                        <h5 class="card-title mb-0" style="color: #6b7260;"><i class="bi bi-sun me-2"></i>Today</h5>
                     </div>
                     <div class="card-body">
                         <div id="todayTasks">
-                            <p class="text-muted">No tasks due today. Add due dates in Tasks to see them here.</p>
+                            <p class="text-muted" style="color: #8b8680 !important;">No tasks due today. Add due dates in Tasks to see them here.</p>
                         </div>
                     </div>
                 </div>
@@ -116,18 +115,18 @@ $username = $_SESSION['username'] ?? 'User';
             <!-- Tasks Tab -->
             <div class="tab-pane fade" id="tasks" role="tabpanel">
                 <!-- Add Task Form -->
-                <div class="card shadow-sm mb-4">
-                    <div class="card-header bg-light">
-                        <h5 class="card-title mb-0"><i class="bi bi-plus-circle me-2"></i>Add Task</h5>
+                <div class="card shadow-sm mb-4" style="border-radius: 16px; background: #fffefb;">
+                    <div class="card-header bg-light" style="background: #f5f2eb !important; border-radius: 16px 16px 0 0;">
+                        <h5 class="card-title mb-0" style="color: #6b7260;"><i class="bi bi-plus-circle me-2"></i>Add Task</h5>
                     </div>
                     <div class="card-body">
                         <form id="addTaskForm">
-                            <div class="row g-3">
-                                <div class="col-md-4">
+                            <div class="row g-3 align-items-end">
+                                <div class="col-md-5">
                                     <label for="taskTitle" class="form-label">Title</label>
                                     <input type="text" class="form-control" id="taskTitle" placeholder="e.g. Prepare sprint board" required>
                                 </div>
-                                <div class="col-md-2">
+                                <div class="col-md-3">
                                     <label for="taskDueDate" class="form-label">Due date</label>
                                     <input type="date" class="form-control" id="taskDueDate" min="<?php echo date('Y-m-d'); ?>">
                                 </div>
@@ -137,9 +136,8 @@ $username = $_SESSION['username'] ?? 'User';
                                         <option value="">Optional</option>
                                     </select>
                                 </div>
-                                <div class="col-md-2">
-                                    <label class="form-label">&nbsp;</label>
-                                    <button type="submit" class="btn btn-olive w-100">Add Task</button>
+                                <div class="col-md-2 d-grid">
+                                    <button type="submit" class="btn btn-olive" style="border-radius: 24px; font-weight: 700; font-size: 1rem;">Add Task</button>
                                 </div>
                             </div>
                         </form>
@@ -147,13 +145,13 @@ $username = $_SESSION['username'] ?? 'User';
                 </div>
 
                 <!-- All Tasks -->
-                <div class="card shadow-sm">
-                    <div class="card-header bg-light">
-                        <h5 class="card-title mb-0"><i class="bi bi-list-task me-2"></i>All Tasks</h5>
+                <div class="card shadow-sm" style="border-radius: 16px; background: #fffefb;">
+                    <div class="card-header bg-light" style="background: #f5f2eb !important; border-radius: 16px 16px 0 0;">
+                        <h5 class="card-title mb-0" style="color: #6b7260;"><i class="bi bi-list-task me-2"></i>All Tasks</h5>
                     </div>
                     <div class="card-body">
-                        <div id="allTasks">
-                            <p class="text-muted">No tasks yet. Add your first task above.</p>
+                        <div id="allTasks" class="tasks-tab">
+                            <p class="text-muted" style="color: #8b8680 !important;">No tasks yet. Add your first task above.</p>
                         </div>
                     </div>
                 </div>
@@ -161,35 +159,35 @@ $username = $_SESSION['username'] ?? 'User';
 
             <!-- Projects Tab -->
             <div class="tab-pane fade" id="projects" role="tabpanel">
-                <div class="row">
-                    <div class="col-md-4">
+                <div class="row g-4">
+                    <div class="col-md-5">
                         <!-- Projects List -->
-                        <div class="card shadow-sm">
-                            <div class="card-header bg-light">
-                                <h5 class="card-title mb-0"><i class="bi bi-folder me-2"></i>Projects</h5>
+                        <div class="card shadow-sm" style="border-radius: 16px; background: #fffefb;">
+                            <div class="card-header bg-light" style="background: #f5f2eb !important; border-radius: 16px 16px 0 0;">
+                                <h5 class="card-title mb-0" style="color: #6b7260;"><i class="bi bi-folder me-2"></i>Projects</h5>
                             </div>
                             <div class="card-body">
                                 <form id="addProjectForm" class="mb-3">
                                     <div class="input-group">
                                         <input type="text" class="form-control" id="projectName" placeholder="New project name" required>
-                                        <button type="submit" class="btn btn-olive">Add</button>
+                                        <button type="submit" class="btn btn-olive" style="border-radius: 24px; font-weight: 700;">Add</button>
                                     </div>
                                 </form>
-                                <div id="projectsList">
+                                <div id="projectsList" class="project-item">
                                     <!-- Projects will be dynamically loaded here -->
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-8">
+                    <div class="col-md-7">
                         <!-- Project Details -->
-                        <div class="card shadow-sm">
-                            <div class="card-header bg-light">
-                                <h5 class="card-title mb-0"><i class="bi bi-people me-2"></i>Team & Tasks</h5>
+                        <div class="card shadow-sm" style="border-radius: 16px; background: #fffefb;">
+                            <div class="card-header bg-light" style="background: #f5f2eb !important; border-radius: 16px 16px 0 0;">
+                                <h5 class="card-title mb-0" style="color: #6b7260;"><i class="bi bi-people me-2"></i>Team & Tasks</h5>
                             </div>
                             <div class="card-body">
                                 <div id="projectDetails">
-                                    <p class="text-muted">Select or create a project to manage members and tasks.</p>
+                                    <p class="text-muted" style="color: #8b8680 !important;">Select or create a project to manage members and tasks.</p>
                                 </div>
                             </div>
                         </div>
@@ -199,13 +197,13 @@ $username = $_SESSION['username'] ?? 'User';
 
             <!-- Team Tab -->
             <div class="tab-pane fade" id="team" role="tabpanel">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-light">
-                        <h5 class="card-title mb-0"><i class="bi bi-people me-2"></i>Team Overview</h5>
+                <div class="card shadow-sm" style="border-radius: 16px; background: #fffefb;">
+                    <div class="card-header bg-light" style="background: #f5f2eb !important; border-radius: 16px 16px 0 0;">
+                        <h5 class="card-title mb-0" style="color: #6b7260;"><i class="bi bi-people me-2"></i>Team Overview</h5>
                     </div>
                     <div class="card-body">
                         <div id="teamOverview">
-                            <p class="text-muted">No team members yet. Add some under Projects.</p>
+                            <p class="text-muted" style="color: #8b8680 !important;">No team members yet. Add some under Projects.</p>
                         </div>
                     </div>
                 </div>
@@ -213,27 +211,27 @@ $username = $_SESSION['username'] ?? 'User';
 
             <!-- Calendar Tab -->
             <div class="tab-pane fade" id="calendar" role="tabpanel">
-                <div class="card shadow-sm">
-                    <div class="card-header bg-light">
-                        <h5 class="card-title mb-0"><i class="bi bi-calendar me-2"></i>Upcoming</h5>
+                <div class="card shadow-sm" style="border-radius: 16px; background: #fffefb;">
+                    <div class="card-header bg-light" style="background: #f5f2eb !important; border-radius: 16px 16px 0 0;">
+                        <h5 class="card-title mb-0" style="color: #6b7260;"><i class="bi bi-calendar me-2"></i>Upcoming</h5>
                     </div>
                     <div class="card-body">
                         <div id="upcomingTasks">
-                            <p class="text-muted">No due dates set yet.</p>
+                            <p class="text-muted" style="color: #8b8680 !important;">No due dates set yet.</p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="tab-pane fade" id="missed" role="tabpanel" aria-labelledby="missed-tab">
-            <div id="missed-tasks-content">
-                <div class="text-center py-4">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
+                <div id="missed-tasks-content">
+                    <div class="text-center py-4">
+                        <div class="spinner-border" style="color: #7c8471;" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2" style="color: #8b8680;">Loading missed tasks...</p>
                     </div>
-                    <p class="mt-2">Loading missed tasks...</p>
                 </div>
             </div>
-        </div>
         </div>
     </main>
 

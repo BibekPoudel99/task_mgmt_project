@@ -1,11 +1,11 @@
 :root {
-    --cream: #faf8f3;
-    --cream-dark: #f5f2eb;
-    --olive: #7c8471;
-    --olive-light: #9ca08f;
-    --olive-dark: #6b7260;
-    --sage: #a8b5a0;
-    --warm-gray: #8b8680;
+    --cream: #fdfdfb; /* more whitish */
+    --cream-dark: #fcfcfa; /* more whitish */
+    --olive: #101507; /* even darker green */
+    --olive-light: #7c8471; /* darkened */
+    --olive-dark: #101507; /* even darker green */
+    --sage: #7a8a6a; /* darkened */
+    --warm-gray: #5a5650; /* darkened */
     --soft-white: #ffffff;
     --shadow-subtle: 0 2px 8px rgba(124, 132, 113, 0.1);
     --shadow-elevated: 0 4px 16px rgba(124, 132, 113, 0.15);
@@ -17,8 +17,14 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: var(--cream);
-    color: #333;
+    color: var(--olive-dark);
     line-height: 1.6;
+    font-size: 1.05em;
+}
+
+/* Increase font size for all elements by 10% */
+* {
+    font-size: 105%;
 }
 
 .bg-cream {
@@ -80,6 +86,7 @@ body {
 }
 
 .nav-link {
+    color: var(--olive-dark) !important;
     font-weight: 500;
     transition: var(--transition);
 }
@@ -91,7 +98,7 @@ body {
 /* Tab Styles */
 .nav-tabs .nav-link {
     border: none;
-    color: var(--warm-gray);
+    color: var(--olive-dark);
     font-weight: 500;
     padding: 12px 20px;
     transition: var(--transition);
@@ -131,7 +138,7 @@ body {
 }
 
 .card-title {
-    color: var(--olive);
+    color: var(--olive-dark);
     font-weight: 600;
 }
 
@@ -150,7 +157,7 @@ body {
 }
 
 .form-label {
-    color: var(--olive);
+    color: var(--olive-dark);
     font-weight: 500;
     margin-bottom: 6px;
 }
@@ -179,7 +186,7 @@ body {
 
 /* Task Item Styles */
 .task-item {
-    padding: 12px;
+    padding: 20px 18px;
     border: 1px solid var(--cream-dark);
     border-radius: var(--border-radius);
     margin-bottom: 8px;
@@ -223,13 +230,20 @@ body {
 
 /* Project Item Styles */
 .project-item {
-    padding: 12px;
-    border: 1px solid var(--cream-dark);
-    border-radius: var(--border-radius);
-    margin-bottom: 8px;
-    background-color: var(--soft-white);
-    cursor: pointer;
-    transition: var(--transition);
+    /* Make tasks in project tab smaller */
+    font-size: 0.95em;
+}
+.project-item .task-item {
+    font-size: 0.80em;
+}
+.tasks-tab .task-item {
+    font-size: 1.18em;
+}
+.task-item.completed {
+    font-size: 0.92em;
+}
+.task-item.pending {
+    font-size: 0.92em;
 }
 
 .project-item:hover {
@@ -263,12 +277,12 @@ body {
 .toast {
     background-color: var(--soft-white);
     border: 1px solid var(--olive-light);
-    color: var(--olive);
+    color: var(--olive-dark);
 }
 
 .toast-header {
     background-color: var(--cream-dark);
-    color: var(--olive);
+    color: var(--olive-dark);
 }
 
 /* Checkbox Styles */
@@ -285,7 +299,7 @@ body {
 /* Utility Classes */
 .text-completed {
     text-decoration: line-through;
-    color: var(--warm-gray) !important;
+    color: var(--olive-dark) !important;
 }
 
 .border-olive {
@@ -317,6 +331,50 @@ body {
 }
 
 /* Animation Classes */
+
+
+/* TASKS TAB: Make task name big, due/status small and lighter */
+.tasks-tab .task-title {
+    font-size: 1em !important;
+    font-weight: 800 !important;
+    color: var(--olive-dark) !important;
+    line-height: 1.2;
+}
+
+.tasks-tab .task-due-date,
+.tasks-tab .task-status {
+    font-size: 0.5em !important;
+    color: #444 !important;
+    font-weight: 500 !important;
+    opacity: 1;
+    background: #f3f3f3 !important;
+    border-radius: 18px;
+    padding: 2px 16px;
+    margin-bottom: 2px;
+    box-shadow: none;
+}
+
+
+/* PROJECTS TAB: Project name visible and normal, project task name small */
+.project-item .project-name {
+    display: flex;
+    align-items: center;
+    font-size: 1.15rem !important;
+    font-weight: 600 !important;
+    color: var(--olive-dark) !important;
+    border-radius: 14px;
+    padding: 10px 18px;
+    background: var(--cream-dark);
+    margin-bottom: 8px;
+    word-break: break-word;
+    min-height: 44px;
+    transition: background 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(124,132,113,0.06);
+}
+.project-item .task-title {
+    font-size: 0.92em !important;
+    font-weight: 600 !important;
+}
 .fade-in {
     animation: fadeIn 0.3s ease-in;
 }
