@@ -2,10 +2,10 @@
     --cream: #fdfdfb; /* more whitish */
     --cream-dark: #fcfcfa; /* more whitish */
     --olive: #101507; /* even darker green */
-    --olive-light: #7c8471; /* darkened */
-    --olive-dark: #101507; /* even darker green */
+    --olive-light: #9a9e92; /* lighter for text */
+    --olive-dark: #4a5540; /* lighter for main text */
     --sage: #7a8a6a; /* darkened */
-    --warm-gray: #5a5650; /* darkened */
+    --warm-gray: #7a7670; /* lighter */
     --soft-white: #ffffff;
     --shadow-subtle: 0 2px 8px rgba(124, 132, 113, 0.1);
     --shadow-elevated: 0 4px 16px rgba(124, 132, 113, 0.15);
@@ -344,10 +344,10 @@ body {
 .tasks-tab .task-due-date,
 .tasks-tab .task-status {
     font-size: 0.5em !important;
-    color: #444 !important;
+    color: #888 !important;
     font-weight: 500 !important;
     opacity: 1;
-    background: #f3f3f3 !important;
+    background: #f8f8f8 !important;
     border-radius: 18px;
     padding: 2px 16px;
     margin-bottom: 2px;

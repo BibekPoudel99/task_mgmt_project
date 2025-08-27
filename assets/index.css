@@ -1444,6 +1444,9 @@
   align-items: center;
   flex-direction: column;
   justify-content: center;
+  max-width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
  
 .steps-max-width {
@@ -1603,8 +1606,13 @@
   display: flex;
   align-items: center;
   flex-direction: column;
+  max-width: 100%;
+  overflow-x: hidden;
+  margin: 0 auto;   /* ✅ centers it properly */
+  padding: 0;       /* ✅ remove unintended padding */
+  box-sizing: border-box;
 }
- 
+
 .testimonial-container10 {
   gap: var(--dl-layout-space-unit);
   display: flex;
@@ -1926,6 +1934,7 @@
 
 .footer-wrapper {
   display: contents;
+  margin-bottom: 10px;
 }
  
 .footer-footer1 {
@@ -2303,9 +2312,12 @@
 }
 
 .home-container {
-  width: 100%;
+  max-width: 100%;
   display: flex;
   min-height: 100vh;
   align-items: center;
   flex-direction: column;
+  overflow-x: hidden;
+  box-sizing: border-box;
+  margin-bottom: 20px;
 }
