@@ -115,34 +115,78 @@ $username = $_SESSION['username'] ?? 'User';
             <!-- Tasks Tab -->
             <div class="tab-pane fade" id="tasks" role="tabpanel">
                 <!-- Add Task Form -->
-                <div class="card shadow-sm mb-4" style="border-radius: 16px; background: #fffefb;">
-                    <div class="card-header bg-light" style="background: #f5f2eb !important; border-radius: 16px 16px 0 0;">
-                        <h5 class="card-title mb-0" style="color: #6b7260;"><i class="bi bi-plus-circle me-2"></i>Add Task</h5>
-                    </div>
-                    <div class="card-body">
-                        <form id="addTaskForm">
-                            <div class="row g-3 align-items-end">
-                                <div class="col-md-5">
-                                    <label for="taskTitle" class="form-label">Title</label>
-                                    <input type="text" class="form-control" id="taskTitle" placeholder="e.g. Prepare sprint board" required>
-                                </div>
-                                <div class="col-md-3">
-                                    <label for="taskDueDate" class="form-label">Due date</label>
-                                    <input type="date" class="form-control" id="taskDueDate" min="<?php echo date('Y-m-d'); ?>">
-                                </div>
-                                <div class="col-md-2">
-                                    <label for="taskProject" class="form-label">Project</label>
-                                    <select class="form-select" id="taskProject">
-                                        <option value="">Optional</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-2 d-grid">
-                                    <button type="submit" class="btn btn-olive" style="border-radius: 24px; font-weight: 700; font-size: 1rem;">Add Task</button>
-                                </div>
-                            </div>
-                        </form>
+                <div class="card shadow-sm mb-4" style="border-radius: 16px; background: linear-gradient(135deg, #ffffff, #fafbfc); border: 1px solid #e2e8f0;">
+    <div class="card-header" style="background: linear-gradient(135deg, #f8fafc, #f1f5f9); border-radius: 16px 16px 0 0; border-bottom: 1px solid #e2e8f0; padding: 20px 24px;">
+        <h5 class="card-title mb-0" style="color: #334155; font-weight: 600; display: flex; align-items: center;">
+            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #7c8471, #9a9e92); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+                <i class="bi bi-plus-circle" style="color: white; font-size: 18px;"></i>
+            </div>
+            Create New Task
+        </h5>
+        <p class="mb-0 mt-2" style="color: #64748b; font-size: 14px;">Add a new task to your workflow and stay organized</p>
+    </div>
+    <div class="card-body" style="padding: 24px;">
+        <form id="addTaskForm">
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label for="taskTitle" class="form-label" style="color: #374151; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center;">
+                            <i class="bi bi-pencil me-2" style="color: #7c8471;"></i>Task Title
+                        </label>
+                        <input type="text" class="form-control" id="taskTitle" 
+                               placeholder="e.g., Prepare sprint board, Review documentation..." 
+                               required
+                               style="border: 2px solid #e2e8f0; border-radius: 10px; padding: 12px 16px; font-size: 14px; transition: all 0.3s ease; background: #ffffff;"
+                               onfocus="this.style.borderColor='#7c8471'; this.style.boxShadow='0 0 0 3px rgba(124,132,113,0.1)'"
+                               onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'">
                     </div>
                 </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label for="taskDueDate" class="form-label" style="color: #374151; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center;">
+                            <i class="bi bi-calendar3 me-2" style="color: #7c8471;"></i>Due Date
+                        </label>
+                        <input type="date" class="form-control" id="taskDueDate" 
+                               min="<?php echo date('Y-m-d'); ?>"
+                               style="border: 2px solid #e2e8f0; border-radius: 10px; padding: 12px 16px; font-size: 14px; transition: all 0.3s ease; background: #ffffff;"
+                               onfocus="this.style.borderColor='#7c8471'; this.style.boxShadow='0 0 0 3px rgba(124,132,113,0.1)'"
+                               onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'">
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="form-group">
+                        <label for="taskProject" class="form-label" style="color: #374151; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center;">
+                            <i class="bi bi-folder me-2" style="color: #7c8471;"></i>Project
+                        </label>
+                        <select class="form-select" id="taskProject"
+                                style="border: 2px solid #e2e8f0; border-radius: 10px; padding: 12px 16px; font-size: 14px; transition: all 0.3s ease; background: #ffffff;"
+                                onfocus="this.style.borderColor='#7c8471'; this.style.boxShadow='0 0 0 3px rgba(124,132,113,0.1)'"
+                                onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'">
+                            <option value="">No project (Personal task)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="task-tips" style="display: flex; align-items: center; color: #64748b; font-size: 13px;">
+                            <i class="bi bi-lightbulb me-2" style="color: #f59e0b;"></i>
+                            <span>Pro tip: Add due dates to see tasks in your calendar and daily view</span>
+                        </div>
+                        <button type="submit" class="btn" 
+                                style="background: linear-gradient(135deg, #7c8471, #9a9e92); color: white; border: none; border-radius: 12px; padding: 12px 24px; font-weight: 600; font-size: 14px; transition: all 0.3s ease; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(124,132,113,0.2);"
+                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 16px rgba(124,132,113,0.3)'"
+                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(124,132,113,0.2)'">
+                            <i class="bi bi-plus-circle-fill me-2"></i>
+                            Create Task
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 
                 <!-- All Tasks -->
                 <div class="card shadow-sm" style="border-radius: 16px; background: #fffefb;">
@@ -187,7 +231,7 @@ $username = $_SESSION['username'] ?? 'User';
                             </div>
                             <div class="card-body">
                                 <div id="projectDetails">
-                                    <p class="text-muted" style="color: #8b8680 !important;">Select or create a project to manage members and tasks.</p>
+                                    <p class="text-muted" style="color: #fff !important;">Select or create a project to manage members and tasks.</p>
                                 </div>
                             </div>
                         </div>
