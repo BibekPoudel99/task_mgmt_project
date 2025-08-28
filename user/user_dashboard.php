@@ -54,7 +54,7 @@ $username = $_SESSION['username'] ?? 'User';
     </nav>
 
     <!-- Main Content -->
-    <main class="container py-5" style="max-width: 1200px; margin: 40px auto 0 auto; background: #fffefd; border-radius: 20px; box-shadow: 0 4px 24px rgba(124,132,113,0.10); padding: 40px 32px 32px 32px;">
+    <main class="container py-5" style="max-width: 1400px; margin: 40px auto 0 auto; background: #fffefd; border-radius: 24px; box-shadow: 0 8px 32px rgba(124,132,113,0.12); padding: 48px 40px 40px 40px;">
         <!-- Header Section -->
         <section class="mb-5 text-center">
             <h1 class="fw-bold" style="font-family: 'Inter', 'Segoe UI', sans-serif; color: #4a5c3a; font-size: 2.5rem; margin-bottom: 0.5rem; letter-spacing: 0.5px;">TaskFlow Dashboard</h1>
@@ -62,34 +62,55 @@ $username = $_SESSION['username'] ?? 'User';
         </section>
 
         <!-- Tabs Navigation -->
-    <ul class="nav nav-tabs mb-4 justify-content-center" id="dashboardTabs" role="tablist" style="border-bottom: 2px solid #e5e3db;">
+    <style>
+        .nav-tab-custom {
+            border-radius: 12px 12px 0 0 !important;
+            margin: 0 4px;
+            padding: 12px 20px !important;
+            font-weight: 500;
+            transition: all 0.2s ease !important;
+            border: 1px solid transparent !important;
+            background: transparent !important;
+        }
+        .nav-tab-custom:not(.active):hover {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9) !important;
+            border-color: #cbd5e1 !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+        }
+        .nav-tab-custom.active {
+            background: #fff !important;
+            border-color: #e5e3db #e5e3db #fff #e5e3db !important;
+        }
+    </style>
+    <ul class="nav nav-tabs mb-4 justify-content-center" id="dashboardTabs" role="tablist" style="border-bottom: 2px solid #e5e3db; gap: 8px;">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="myday-tab" data-bs-toggle="tab" data-bs-target="#myday" type="button" role="tab">
+                <button class="nav-link active nav-tab-custom" id="myday-tab" data-bs-toggle="tab" data-bs-target="#myday" type="button" role="tab">
                     <i class="bi bi-sun me-2"></i>My Day
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="tasks-tab" data-bs-toggle="tab" data-bs-target="#tasks" type="button" role="tab">
+                <button class="nav-link nav-tab-custom" id="tasks-tab" data-bs-toggle="tab" data-bs-target="#tasks" type="button" role="tab">
                     <i class="bi bi-check-square me-2"></i>Tasks
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="projects-tab" data-bs-toggle="tab" data-bs-target="#projects" type="button" role="tab">
+                <button class="nav-link nav-tab-custom" id="projects-tab" data-bs-toggle="tab" data-bs-target="#projects" type="button" role="tab">
                     <i class="bi bi-folder me-2"></i>Projects
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="team-tab" data-bs-toggle="tab" data-bs-target="#team" type="button" role="tab">
+                <button class="nav-link nav-tab-custom" id="team-tab" data-bs-toggle="tab" data-bs-target="#team" type="button" role="tab">
                     <i class="bi bi-people me-2"></i>Team
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="calendar-tab" data-bs-toggle="tab" data-bs-target="#calendar" type="button" role="tab">
+                <button class="nav-link nav-tab-custom" id="calendar-tab" data-bs-toggle="tab" data-bs-target="#calendar" type="button" role="tab">
                     <i class="bi bi-calendar me-2"></i>Calendar
                 </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="missed-tab" data-bs-toggle="tab" data-bs-target="#missed" type="button" role="tab">
+                <button class="nav-link nav-tab-custom" id="missed-tab" data-bs-toggle="tab" data-bs-target="#missed" type="button" role="tab">
                     <i class="bi bi-exclamation-triangle me-2"></i>Missed Tasks
                     <span class="badge bg-danger ms-1" style="display: none;">0</span>
                 </button>
@@ -207,17 +228,18 @@ $username = $_SESSION['username'] ?? 'User';
                     <div class="col-md-5">
                         <!-- Projects List -->
                         <div class="card shadow-sm" style="border-radius: 16px; background: #fffefb;">
-                            <div class="card-header bg-light" style="background: #f5f2eb !important; border-radius: 16px 16px 0 0;">
-                                <h5 class="card-title mb-0" style="color: #6b7260;"><i class="bi bi-folder me-2"></i>Projects</h5>
+                            <div class="card-header bg-light" style="background: #f5f2eb !important; border-radius: 16px 16px 0 0; padding: 20px 24px;">
+                                <h5 class="card-title mb-0" style="color: #6b7260; font-size: 1.4rem;"><i class="bi bi-folder me-2"></i>Projects</h5>
                             </div>
-                            <div class="card-body">
-                                <form id="addProjectForm" class="mb-3">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="projectName" placeholder="New project name" required>
-                                        <button type="submit" class="btn btn-olive" style="border-radius: 24px; font-weight: 700;">Add</button>
+                            <div class="card-body" style="padding: 28px 24px; min-height: 500px;">
+                                <form id="addProjectForm" class="mb-4">
+                                    <div class="input-group" style="height: 48px;">
+                                        <input type="text" class="form-control" id="projectName" placeholder="New project name" required 
+                                               style="font-size: 1.1rem; padding: 12px 16px; border: 2px solid #e2e8f0;">
+                                        <button type="submit" class="btn btn-olive" style="border-radius: 24px; font-weight: 700; font-size: 1rem; padding: 12px 20px;">Add</button>
                                     </div>
                                 </form>
-                                <div id="projectsList" class="project-item">
+                                <div id="projectsList" class="project-item" style="font-size: 1.1rem;">
                                     <!-- Projects will be dynamically loaded here -->
                                 </div>
                             </div>
@@ -226,12 +248,12 @@ $username = $_SESSION['username'] ?? 'User';
                     <div class="col-md-7">
                         <!-- Project Details -->
                         <div class="card shadow-sm" style="border-radius: 16px; background: #fffefb;">
-                            <div class="card-header bg-light" style="background: #f5f2eb !important; border-radius: 16px 16px 0 0;">
-                                <h5 class="card-title mb-0" style="color: #6b7260;"><i class="bi bi-people me-2"></i>Team & Tasks</h5>
+                            <div class="card-header bg-light" style="background: #f5f2eb !important; border-radius: 16px 16px 0 0; padding: 20px 24px;">
+                                <h5 class="card-title mb-0" style="color: #6b7260; font-size: 1.4rem;"><i class="bi bi-people me-2"></i>Team & Tasks</h5>
                             </div>
-                            <div class="card-body">
-                                <div id="projectDetails">
-                                    <p class="text-muted" style="color: #fff !important;">Select or create a project to manage members and tasks.</p>
+                            <div class="card-body" style="padding: 28px 24px; min-height: 500px;">
+                                <div id="projectDetails" style="font-size: 1.1rem;">
+                                    <p class="text-muted" style="color: #8b8680 !important; font-size: 1.1rem;">Select or create a project to manage members and tasks.</p>
                                 </div>
                             </div>
                         </div>
@@ -242,12 +264,12 @@ $username = $_SESSION['username'] ?? 'User';
             <!-- Team Tab -->
             <div class="tab-pane fade" id="team" role="tabpanel">
                 <div class="card shadow-sm" style="border-radius: 16px; background: #fffefb;">
-                    <div class="card-header bg-light" style="background: #f5f2eb !important; border-radius: 16px 16px 0 0;">
-                        <h5 class="card-title mb-0" style="color: #6b7260;"><i class="bi bi-people me-2"></i>Team Overview</h5>
+                    <div class="card-header bg-light" style="background: #f5f2eb !important; border-radius: 16px 16px 0 0; padding: 20px 24px;">
+                        <h5 class="card-title mb-0" style="color: #6b7260; font-size: 1.4rem;"><i class="bi bi-people me-2"></i>Team Overview</h5>
                     </div>
-                    <div class="card-body">
-                        <div id="teamOverview">
-                            <p class="text-muted" style="color: #8b8680 !important;">No team members yet. Add some under Projects.</p>
+                    <div class="card-body" style="padding: 28px 24px; min-height: 500px;">
+                        <div id="teamOverview" style="font-size: 1.1rem;">
+                            <p class="text-muted" style="color: #8b8680 !important; font-size: 1.1rem;">No team members yet. Add some under Projects.</p>
                         </div>
                     </div>
                 </div>
@@ -256,23 +278,30 @@ $username = $_SESSION['username'] ?? 'User';
             <!-- Calendar Tab -->
             <div class="tab-pane fade" id="calendar" role="tabpanel">
                 <div class="card shadow-sm" style="border-radius: 16px; background: #fffefb;">
-                    <div class="card-header bg-light" style="background: #f5f2eb !important; border-radius: 16px 16px 0 0;">
-                        <h5 class="card-title mb-0" style="color: #6b7260;"><i class="bi bi-calendar me-2"></i>Upcoming</h5>
+                    <div class="card-header bg-light" style="background: #f5f2eb !important; border-radius: 16px 16px 0 0; padding: 20px 24px;">
+                        <h5 class="card-title mb-0" style="color: #6b7260; font-size: 1.4rem;"><i class="bi bi-calendar me-2"></i>Upcoming Tasks</h5>
                     </div>
-                    <div class="card-body">
-                        <div id="upcomingTasks">
-                            <p class="text-muted" style="color: #8b8680 !important;">No due dates set yet.</p>
+                    <div class="card-body" style="padding: 28px 24px; min-height: 500px;">
+                        <div id="upcomingTasks" style="font-size: 1.1rem;">
+                             <p class="text-muted" style="color: #8b8680 !important; font-size: 1.1rem;">Loading upcoming tasks...</p>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="tab-pane fade" id="missed" role="tabpanel" aria-labelledby="missed-tab">
-                <div id="missed-tasks-content">
-                    <div class="text-center py-4">
-                        <div class="spinner-border" style="color: #7c8471;" role="status">
-                            <span class="visually-hidden">Loading...</span>
+                <div class="card shadow-sm" style="border-radius: 16px; background: #fffefb;">
+                    <div class="card-header bg-light" style="background: #f5f2eb !important; border-radius: 16px 16px 0 0; padding: 20px 24px;">
+                        <h5 class="card-title mb-0" style="color: #6b7260; font-size: 1.4rem;"><i class="bi bi-exclamation-triangle me-2"></i>Missed Tasks</h5>
+                    </div>
+                    <div class="card-body" style="padding: 28px 24px; min-height: 500px;">
+                        <div id="missed-tasks-content" style="font-size: 1.1rem;">
+                            <div class="text-center py-4">
+                                <div class="spinner-border" style="color: #7c8471;" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2" style="color: #8b8680; font-size: 1.1rem;">Loading missed tasks...</p>
+                            </div>
                         </div>
-                        <p class="mt-2" style="color: #8b8680;">Loading missed tasks...</p>
                     </div>
                 </div>
             </div>
