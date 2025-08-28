@@ -474,6 +474,13 @@ class TaskFlowApp {
     const isToday = context === 'today';
     const isMissed = task.is_missed;
     
+    // Check permissions: task owner, assignee, or project owner can edit
+    const currentUserId = String(window.currentUser?.id);
+    const isTaskOwner = String(task.owner_id) === currentUserId;
+    const isAssignee = String(task.assignee_id) === currentUserId;
+    const isProjectOwner = project && String(project.owner_id) === currentUserId;
+    const canEdit = isTaskOwner || isProjectOwner;
+    
     // Determine card styling based on context
     const cardStyle = isOverdue 
         ? 'background: linear-gradient(135deg, #fef2f2, #fee2e2); border: 1px solid #fecaca;'
@@ -510,11 +517,30 @@ class TaskFlowApp {
 
                 <!-- Task Details -->
                 <div class="task-details" style="flex-grow: 1; min-width: 0;">
-                    <!-- Task Title -->
+                    <!-- Task Title with Creator Info -->
                     <div class="task-title-section" style="margin-bottom: 12px;">
-                        <h6 class="task-title" style="margin: 0; font-size: 1.2rem; font-weight: 700; color: ${isOverdue ? '#dc2626' : '#1e293b'}; word-break: break-word; line-height: 1.3;">
+                        <h6 class="task-title" style="margin: 0 0 4px 0; font-size: 1.2rem; font-weight: 700; color: ${isOverdue ? '#dc2626' : '#1e293b'}; word-break: break-word; line-height: 1.3;">
                             ${this.escapeHtml(task.title)}
                         </h6>
+                        
+                        <!-- Creator and Permission Info -->
+                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                            ${task.owner_username ? `
+                                <span style="background: ${isTaskOwner ? '#dcfce7' : '#f3f4f6'}; color: ${isTaskOwner ? '#16a34a' : '#6b7280'}; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500;">
+                                    <i class="bi ${isTaskOwner ? 'bi-person-check-fill' : 'bi-person-fill'} me-1"></i>Created by ${task.owner_username}${isTaskOwner ? ' (You)' : ''}
+                                </span>
+                            ` : ''}
+                            
+                            ${!canEdit ? `
+                                <span style="background: #fef3c7; color: #d97706; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500;">
+                                    <i class="bi bi-eye me-1"></i>View Only
+                                </span>
+                            ` : isProjectOwner && !isTaskOwner ? `
+                                <span style="background: #dbeafe; color: #1e40af; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500;">
+                                    <i class="bi bi-shield-check me-1"></i>Project Owner Access
+                                </span>
+                            ` : ''}
+                        </div>
                     </div>
 
                     <!-- Task Meta Information -->
@@ -538,8 +564,8 @@ class TaskFlowApp {
                         
                         <!-- Assignee Badge -->
                         ${task.assignee ? `
-                            <span class="assignee-badge" style="background: #e0f2fe; color: #0369a1; padding: 7px 14px; border-radius: 16px; font-size: 13px; font-weight: 600; display: flex; align-items: center;">
-                                <i class="bi bi-person-check-fill me-2"></i>Assigned to ${this.escapeHtml(task.assignee)}
+                            <span class="assignee-badge" style="background: ${isAssignee ? '#dcfce7' : '#e0f2fe'}; color: ${isAssignee ? '#16a34a' : '#0369a1'}; padding: 7px 14px; border-radius: 16px; font-size: 13px; font-weight: 600; display: flex; align-items: center;">
+                                <i class="bi bi-person-check-fill me-2"></i>Assigned to ${this.escapeHtml(task.assignee)}${isAssignee ? ' (You)' : ''}
                             </span>
                         ` : ''}
                     </div>
@@ -573,13 +599,19 @@ class TaskFlowApp {
                                 </button>
                             ` : ''}
                             
-                            <button onclick="document.querySelector('[data-bs-target=\\"#tasks\\"]').click()" 
-                                    style="background: transparent; border: 1px solid #64748b; color: #64748b; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; transition: all 0.3s ease;"
-                                    onmouseover="this.style.background='#64748b'; this.style.color='white'"
-                                    onmouseout="this.style.background='transparent'; this.style.color='#64748b'"
-                                    title="Edit task">
-                                <i class="bi bi-pencil"></i>
-                            </button>
+                            ${canEdit ? `
+                                <button onclick="document.querySelector('[data-bs-target=\\"#tasks\\"]').click()" 
+                                        style="background: transparent; border: 1px solid #64748b; color: #64748b; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; transition: all 0.3s ease;"
+                                        onmouseover="this.style.background='#64748b'; this.style.color='white'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='#64748b'"
+                                        title="Edit task">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                            ` : `
+                                <span style="background: #f3f4f6; color: #6b7280; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 500;" title="No edit permission">
+                                    <i class="bi bi-shield-lock"></i>
+                                </span>
+                            `}
                         </div>
                     </div>
                 </div>
@@ -747,8 +779,13 @@ class TaskFlowApp {
         const isMissed = task.is_missed;
         const isUrgent = context === 'urgent';
         
-        // Check if current user is the task owner
-        const isTaskOwner = String(task.owner_id) === String(window.currentUser?.id);
+        // Check permissions: task owner, assignee, or project owner can edit
+        const currentUserId = String(window.currentUser?.id);
+        const isTaskOwner = String(task.owner_id) === currentUserId;
+        const isAssignee = String(task.assignee_id) === currentUserId;
+        const isProjectOwner = project && String(project.owner_id) === currentUserId;
+        const canEdit = isTaskOwner || isProjectOwner;
+        const canDelete = isTaskOwner || isProjectOwner;
         
         // Simple styling based on context
         const getCardStyle = () => {
@@ -784,11 +821,31 @@ class TaskFlowApp {
 
                     <!-- Task Details -->
                     <div style="flex-grow: 1;">
-                        <!-- Task Title -->
-                        <h6 style="margin: 0 0 12px 0; font-size: 1.1rem; font-weight: 600; color: ${isCompleted ? '#6b7280' : isMissed ? '#dc2626' : '#1f2937'}; ${isCompleted ? 'text-decoration: line-through;' : ''}">
-                            ${this.escapeHtml(task.title)}
-                            ${!isTaskOwner ? `<span style="background: #f3f4f6; color: #6b7280; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; margin-left: 8px;"><i class="bi bi-lock me-1"></i>Read Only</span>` : ''}
-                        </h6>
+                        <!-- Task Title with Creator Info -->
+                        <div style="margin-bottom: 12px;">
+                            <h6 style="margin: 0 0 4px 0; font-size: 1.1rem; font-weight: 600; color: ${isCompleted ? '#6b7280' : isMissed ? '#dc2626' : '#1f2937'}; ${isCompleted ? 'text-decoration: line-through;' : ''}">
+                                ${this.escapeHtml(task.title)}
+                            </h6>
+                            
+                            <!-- Creator and Permission Info -->
+                            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                ${task.owner_username ? `
+                                    <span style="background: ${isTaskOwner ? '#dcfce7' : '#f3f4f6'}; color: ${isTaskOwner ? '#16a34a' : '#6b7280'}; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500;">
+                                        <i class="bi ${isTaskOwner ? 'bi-person-check-fill' : 'bi-person-fill'} me-1"></i>Created by ${task.owner_username}${isTaskOwner ? ' (You)' : ''}
+                                    </span>
+                                ` : ''}
+                                
+                                ${!canEdit ? `
+                                    <span style="background: #fef3c7; color: #d97706; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500;">
+                                        <i class="bi bi-eye me-1"></i>View Only
+                                    </span>
+                                ` : isProjectOwner && !isTaskOwner ? `
+                                    <span style="background: #dbeafe; color: #1e40af; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500;">
+                                        <i class="bi bi-shield-check me-1"></i>Project Owner Access
+                                    </span>
+                                ` : ''}
+                            </div>
+                        </div>
 
                         <!-- Task Info -->
                         <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 16px;">
@@ -821,25 +878,14 @@ class TaskFlowApp {
                             
                             <!-- Assignee -->
                             ${task.assignee ? `
-                                <span style="background: #dbeafe; color: #1e40af; padding: 5px 14px; border-radius: 6px; font-size: 15px; font-weight: 500;">
-                                    <i class="bi bi-person me-1"></i>${this.escapeHtml(task.assignee)}
+                                <span style="background: ${isAssignee ? '#dcfce7' : '#dbeafe'}; color: ${isAssignee ? '#16a34a' : '#1e40af'}; padding: 5px 14px; border-radius: 6px; font-size: 15px; font-weight: 500;">
+                                    <i class="bi bi-person me-1"></i>${this.escapeHtml(task.assignee)}${isAssignee ? ' (You)' : ''}
                                 </span>
                             ` : ''}
-                            
-                            <!-- Task Owner -->
-                            ${isTaskOwner ? `
-                                <span style="background: #dcfce7; color: #16a34a; padding: 5px 14px; border-radius: 6px; font-size: 15px; font-weight: 500;">
-                                    <i class="bi bi-person-check me-1"></i>Your Task
-                                </span>
-                            ` : `
-                                <span style="background: #fef3c7; color: #d97706; padding: 5px 14px; border-radius: 6px; font-size: 15px; font-weight: 500;">
-                                    <i class="bi bi-person-workspace me-1"></i>Assigned Task
-                                </span>
-                            `}
                         </div>
 
-                        <!-- Edit Section - Only for task owner -->
-                        ${!isMissed && isTaskOwner ? `
+                        <!-- Edit Section - Only for those who can edit -->
+                        ${!isMissed && canEdit ? `
                             <div style="display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center;">
                                 <!-- Edit Title -->
                                 <input type="text" value="${this.escapeHtml(task.title)}" 
@@ -851,10 +897,10 @@ class TaskFlowApp {
                                        onchange="app.updateDueDate('${task.id}', this.value)"
                                        style="border: 1px solid #d1d5db; border-radius: 6px; padding: 10px 14px; font-size: 15px;">
                             </div>
-                        ` : !isMissed && !isTaskOwner ? `
+                        ` : !isMissed && !canEdit ? `
                             <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px; text-align: center;">
                                 <span style="color: #64748b; font-size: 15px; font-style: italic;">
-                                    <i class="bi bi-info-circle me-1"></i>Only the task creator can edit this task
+                                    <i class="bi bi-info-circle me-1"></i>Only task creator or project owner can edit this task
                                 </span>
                             </div>
                         ` : ''}
@@ -869,7 +915,7 @@ class TaskFlowApp {
                             </button>
                         ` : ''}
                         
-                        ${isTaskOwner ? `
+                        ${canDelete ? `
                             <button onclick="app.deleteTask('${task.id}')" 
                                     style="background: transparent; border: 1px solid #dc2626; color: #dc2626; padding: 8px 14px; border-radius: 6px; font-size: 15px;">
                                 <i class="bi bi-trash"></i>

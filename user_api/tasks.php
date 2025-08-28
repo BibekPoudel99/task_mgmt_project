@@ -27,14 +27,21 @@ if ($method === 'GET') {
     $taskUtils = new TaskUtils();
     $taskUtils->updateMissedTasks();
     
-    // List tasks owned by user or assigned to user
+    // List tasks owned by user, assigned to user, or in projects where user is a member
     try {
         $sql = "
-            SELECT t.id, t.title, t.project_id, t.due_date, t.completed, t.owner_id, t.assignee_id, t.is_missed,
-                   au.username AS assignee
+            SELECT DISTINCT t.id, t.title, t.project_id, t.due_date, t.completed, t.owner_id, t.assignee_id, t.is_missed,
+                   au.username AS assignee,
+                   ou.username AS owner_username
             FROM tasks t
             LEFT JOIN users au ON au.id = t.assignee_id
-            WHERE t.owner_id = :uid OR t.assignee_id = :uid
+            LEFT JOIN users ou ON ou.id = t.owner_id
+            LEFT JOIN projects p ON p.id = t.project_id
+            LEFT JOIN project_members pm ON pm.project_id = p.id
+            WHERE t.owner_id = :uid 
+               OR t.assignee_id = :uid
+               OR (p.owner_id = :uid)
+               OR (pm.user_id = :uid)
             ORDER BY t.id DESC
         ";
         $stmt = $pdo->prepare($sql);
@@ -47,9 +54,10 @@ if ($method === 'GET') {
                 'due_date' => $t['due_date'],
                 'completed' => (bool)$t['completed'],
                 'owner_id' => (int)$t['owner_id'],
+                'owner_username' => $t['owner_username'],
                 'assignee_id' => $t['assignee_id'] ? (int)$t['assignee_id'] : null,
                 'assignee' => $t['assignee'] ?? null,
-                'is_missed' => (bool)$t['is_missed'], // Add this line
+                'is_missed' => (bool)$t['is_missed'],
             ];
         }, $stmt->fetchAll(PDO::FETCH_ASSOC));
         echo json_encode(['success' => true, 'tasks' => $tasks]);
@@ -259,15 +267,23 @@ if ($method === 'POST') {
             exit;
         }
         try {
-            // Only owner or assignee can rename
-            $stmt = $pdo->prepare('SELECT owner_id, assignee_id FROM tasks WHERE id = ?');
+            // Only task owner, assignee, or project owner can rename
+            $stmt = $pdo->prepare('SELECT t.owner_id, t.assignee_id, t.project_id, p.owner_id AS project_owner_id FROM tasks t LEFT JOIN projects p ON p.id = t.project_id WHERE t.id = ?');
             $stmt->execute([$taskId]);
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            if (!$row || ($row['owner_id'] != $userId && $row['assignee_id'] != $userId)) {
-                http_response_code(403);
-                echo json_encode(['success' => false, 'message' => 'Not allowed']);
+            if (!$row) {
+                http_response_code(404);
+                echo json_encode(['success' => false, 'message' => 'Task not found']);
                 exit;
             }
+            
+            $allowed = ($row['owner_id'] == $userId || $row['assignee_id'] == $userId || $row['project_owner_id'] == $userId);
+            if (!$allowed) {
+                http_response_code(403);
+                echo json_encode(['success' => false, 'message' => 'Not allowed - only task creator, assignee, or project owner can edit']);
+                exit;
+            }
+            
             $upd = $pdo->prepare('UPDATE tasks SET title = ? WHERE id = ?');
             $upd->execute([$title, $taskId]);
             echo json_encode(['success' => true, 'csrf_token' => $nextToken]);
@@ -325,14 +341,25 @@ if ($method === 'POST') {
             exit;
         }
         try {
-            // Only owner can delete
-            $stmt = $pdo->prepare('DELETE FROM tasks WHERE id = ? AND owner_id = ?');
-            $stmt->execute([$taskId, $userId]);
-            if ($stmt->rowCount() === 0) {
-                http_response_code(403);
-                echo json_encode(['success' => false, 'message' => 'Not allowed']);
+            // Only task owner or project owner can delete
+            $stmt = $pdo->prepare('SELECT t.owner_id, t.project_id, p.owner_id AS project_owner_id FROM tasks t LEFT JOIN projects p ON p.id = t.project_id WHERE t.id = ?');
+            $stmt->execute([$taskId]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$row) {
+                http_response_code(404);
+                echo json_encode(['success' => false, 'message' => 'Task not found']);
                 exit;
             }
+            
+            $allowed = ($row['owner_id'] == $userId || $row['project_owner_id'] == $userId);
+            if (!$allowed) {
+                http_response_code(403);
+                echo json_encode(['success' => false, 'message' => 'Not allowed - only task creator or project owner can delete']);
+                exit;
+            }
+            
+            $stmt = $pdo->prepare('DELETE FROM tasks WHERE id = ?');
+            $stmt->execute([$taskId]);
             echo json_encode(['success' => true, 'csrf_token' => $nextToken]);
         } catch (Exception $e) {
             http_response_code(500);
