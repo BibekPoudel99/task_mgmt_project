@@ -34,7 +34,7 @@ class TaskUtils {
         
         try {
             $stmt = $pdo->prepare("
-                SELECT t.*, p.name as project_name 
+                SELECT t.*, p.name as project_name, p.owner_id as project_owner_id
                 FROM tasks t 
                 LEFT JOIN projects p ON t.project_id = p.id 
                 WHERE (t.owner_id = ? OR t.assignee_id = ?) 

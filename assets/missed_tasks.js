@@ -67,38 +67,38 @@ tasks.forEach(task => {
             
             <div class="d-flex align-items-start justify-content-between">
                 <div class="task-info" style="flex-grow: 1;">
-                    <div class="task-header" style="margin-bottom: 12px;">
-                        <h6 style="color: #1f2937; font-weight: 600; margin: 0; margin-bottom: 8px; font-size: 16px;">
+                    <div class="task-header" style="margin-bottom: 14px;">
+                        <h6 style="color: #1f2937; font-weight: 600; margin: 0; margin-bottom: 10px; font-size: 1.2rem; line-height: 1.4;">
                             ${escapeHtml(task.title)}
                         </h6>
-                        <div class="task-meta" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                        <div class="task-meta" style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
                             ${task.project_name 
-                                ? `<span style="background: linear-gradient(135deg, #3b82f6, #60a5fa); color: white; padding: 4px 10px; border-radius: 16px; font-size: 12px; font-weight: 500; display: flex; align-items: center;">
-                                     <i class="bi bi-folder me-1"></i>${escapeHtml(task.project_name)}
+                                ? `<span style="background: linear-gradient(135deg, #3b82f6, #60a5fa); color: white; padding: 6px 12px; border-radius: 16px; font-size: 14px; font-weight: 500; display: flex; align-items: center;">
+                                     <i class="bi bi-folder me-1" style="font-size: 13px;"></i>${escapeHtml(task.project_name)}
                                    </span>` 
-                                : `<span style="color: #6b7280; font-size: 12px; font-style: italic; display: flex; align-items: center;">
-                                     <i class="bi bi-dash-circle me-1"></i>No Project
+                                : `<span style="color: #6b7280; font-size: 14px; font-style: italic; display: flex; align-items: center;">
+                                     <i class="bi bi-dash-circle me-1" style="font-size: 13px;"></i>No Project
                                    </span>`
                             }
-                            <span style="background: linear-gradient(135deg, #ef4444, #f87171); color: white; padding: 4px 10px; border-radius: 16px; font-size: 12px; font-weight: 600; display: flex; align-items: center;">
-                                <i class="bi bi-exclamation-triangle me-1"></i>Overdue
+                            <span style="background: linear-gradient(135deg, #ef4444, #f87171); color: white; padding: 6px 12px; border-radius: 16px; font-size: 14px; font-weight: 600; display: flex; align-items: center;">
+                                <i class="bi bi-exclamation-triangle me-1" style="font-size: 13px;"></i>Overdue
                             </span>
                         </div>
                     </div>
                     
-                    <div class="task-details" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                    <div class="task-details" style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px;">
                         <div class="due-date-info">
-                            <label style="color: #6b7280; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; display: block;">Due Date</label>
-                            <div style="display: flex; align-items: center; color: #dc2626; font-weight: 600; font-size: 14px;">
-                                <i class="bi bi-calendar-x me-2"></i>
+                            <label style="color: #6b7280; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: block;">Due Date</label>
+                            <div style="display: flex; align-items: center; color: #dc2626; font-weight: 600; font-size: 1rem;">
+                                <i class="bi bi-calendar-x me-2" style="font-size: 1rem;"></i>
                                 ${dueDate.toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'})}
                             </div>
                         </div>
                         <div class="overdue-info">
-                            <label style="color: #6b7280; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; display: block;">Days Overdue</label>
+                            <label style="color: #6b7280; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: block;">Days Overdue</label>
                             <div style="display: flex; align-items: center;">
-                                <span style="background: linear-gradient(135deg, #dc2626, #ef4444); color: white; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; display: flex; align-items: center;">
-                                    <i class="bi bi-clock-history me-1"></i>${daysOverdue} day${daysOverdue !== 1 ? 's' : ''}
+                                <span style="background: linear-gradient(135deg, #dc2626, #ef4444); color: white; padding: 8px 14px; border-radius: 20px; font-size: 15px; font-weight: 700; display: flex; align-items: center;">
+                                    <i class="bi bi-clock-history me-1" style="font-size: 14px;"></i>${daysOverdue} day${daysOverdue !== 1 ? 's' : ''}
                                 </span>
                             </div>
                         </div>
@@ -106,13 +106,19 @@ tasks.forEach(task => {
                 </div>
                 
                 <div class="task-actions" style="margin-left: 20px;">
-                    <button class="btn" onclick="deleteMissedTask(${task.id})" 
-                            style="background: linear-gradient(135deg, #ef4444, #f87171); color: white; border: none; border-radius: 8px; padding: 10px 16px; font-size: 13px; font-weight: 600; transition: all 0.3s ease; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);"
-                            onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 16px rgba(239, 68, 68, 0.3)'"
-                            onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(239, 68, 68, 0.2)'"
-                            title="Delete this missed task">
-                        <i class="bi bi-trash-fill me-2"></i>Delete
-                    </button>
+                    ${checkDeletePermission(task) ? `
+                        <button class="btn" onclick="deleteMissedTask(${task.id})" 
+                                style="background: linear-gradient(135deg, #ef4444, #f87171); color: white; border: none; border-radius: 8px; padding: 12px 18px; font-size: 15px; font-weight: 600; transition: all 0.3s ease; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);"
+                                onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 16px rgba(239, 68, 68, 0.3)'"
+                                onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(239, 68, 68, 0.2)'"
+                                title="Delete this missed task">
+                            <i class="bi bi-trash-fill me-2" style="font-size: 14px;"></i>Delete
+                        </button>
+                    ` : `
+                        <span style="background: #f3f4f6; color: #6b7280; padding: 12px 18px; border-radius: 8px; font-size: 15px; font-weight: 500; display: flex; align-items: center;" title="No delete permission">
+                            <i class="bi bi-shield-lock me-2" style="font-size: 14px;"></i>View Only
+                        </span>
+                    `}
                 </div>
             </div>
         </div>
@@ -141,35 +147,65 @@ tableHTML += `
     content.innerHTML = tableHTML;
 }
 
+// Check if user has permission to delete the task
+function checkDeletePermission(task) {
+    const currentUserId = String(window.currentUser?.id);
+    const isTaskOwner = String(task.owner_id) === currentUserId;
+    const isProjectOwner = task.project_owner_id && String(task.project_owner_id) === currentUserId;
+    
+    return isTaskOwner || isProjectOwner;
+}
+
 // Add function to delete missed tasks
 function deleteMissedTask(taskId) {
     if (confirm('Are you sure you want to delete this missed task?')) {
-        // Call your delete task API
+        // Use FormData to match the expected API format
+        const formData = new FormData();
+        formData.append('action', 'delete');
+        formData.append('task_id', taskId);
+        formData.append('csrf_token', document.getElementById('csrfTokenInput').value);
+        
         fetch('../user_api/tasks.php', {
-            method: 'DELETE',
+            method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
                 'X-Requested-With': 'XMLHttpRequest'
             },
-            body: JSON.stringify({
-                id: taskId,
-                csrf_token: document.getElementById('csrfTokenInput').value
-            })
+            body: formData
         })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                // Update CSRF token if provided
+                if (data.csrf_token) {
+                    document.getElementById('csrfTokenInput').value = data.csrf_token;
+                }
                 // Reload missed tasks
                 loadMissedTasks();
                 // Show success message
-                showToast('Task deleted successfully', 'success');
+                if (window.app && typeof window.app.showToast === 'function') {
+                    window.app.showToast('Task deleted successfully', 'success');
+                } else {
+                    console.log('Task deleted successfully');
+                }
+                // Refresh the main app data if available
+                if (window.app && typeof window.app.refreshAll === 'function') {
+                    window.app.refreshAll();
+                }
             } else {
-                showToast('Error deleting task: ' + data.message, 'error');
+                if (window.app && typeof window.app.showToast === 'function') {
+                    window.app.showToast('Error deleting task: ' + data.message, 'error');
+                } else {
+                    alert('Error deleting task: ' + data.message);
+                }
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            showToast('Error deleting task', 'error');
+            if (window.app && typeof window.app.showToast === 'function') {
+                window.app.showToast('Error deleting task', 'error');
+            } else {
+                alert('Error deleting task');
+            }
         });
     }
 }

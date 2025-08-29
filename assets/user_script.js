@@ -10,20 +10,15 @@ class TaskFlowApp {
     async init() {
         this.bindEvents();
         this.setCsrf(document.getElementById('csrfTokenInput').value);
-        
-        // Immediately show loading state and render initial UI
         this.renderWithLoadingStates();
-        
-        // Set initial navigation stats to 0 to replace "Loading..."
         this.setInitialNavigationStats();
         
         try {
-            // Start missed tasks update in background without blocking
+            // Start missed tasks update in background
             fetch('../user_api/missed_tasks.php').catch(e => console.warn('Missed tasks update failed:', e));
             
-            // Fetch all data and update UI
             await this.refreshAll();
-            this.render(); // Final render with actual data
+            this.render();
         } catch (error) {
             console.error('Error during initialization:', error);
             await this.refreshAll();
@@ -32,42 +27,40 @@ class TaskFlowApp {
     }
 
     setInitialNavigationStats() {
-        // Set initial values to 0 to replace "Loading..." text
-        const navTotalTasks = document.getElementById('nav-total-tasks');
-        const navActiveProjects = document.getElementById('nav-active-projects');
-        const navDueToday = document.getElementById('nav-due-today');
-        
-        if (navTotalTasks) navTotalTasks.textContent = '0';
-        if (navActiveProjects) navActiveProjects.textContent = '0';
-        if (navDueToday) navDueToday.textContent = '0';
+        ['nav-total-tasks', 'nav-active-projects', 'nav-due-today'].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) element.textContent = '0';
+        });
     }
 
     bindEvents() {
         const logoutLink = document.getElementById('logoutLink');
         if (logoutLink) {
             logoutLink.addEventListener('click', (e) => {
-                const ok = confirm('Are you sure you want to logout?');
-                if (!ok) e.preventDefault();
+                if (!confirm('Are you sure you want to logout?')) e.preventDefault();
             });
         }
-        const addTaskForm = document.getElementById('addTaskForm');
-        if (addTaskForm) {
-            addTaskForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                await this.addTask();
-            });
-        }
-        const addProjectForm = document.getElementById('addProjectForm');
-        if (addProjectForm) {
-            addProjectForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                await this.addProject();
-            });
-        }
+
+        // Form submissions
+        const forms = [
+            { id: 'addTaskForm', handler: () => this.addTask() },
+            { id: 'addProjectForm', handler: () => this.addProject() }
+        ];
+
+        forms.forEach(({ id, handler }) => {
+            const form = document.getElementById(id);
+            if (form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    await handler();
+                });
+            }
+        });
+
+        // Tab switching
         document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
             tab.addEventListener('shown.bs.tab', (e) => {
                 const targetId = e.target.getAttribute('data-bs-target');
-                // Render specific tab content instead of all tabs
                 this.renderTabContent(targetId);
             });
         });
@@ -76,19 +69,17 @@ class TaskFlowApp {
     async refreshAll() {
         // Fetch tasks first since My Day depends on it most
         await this.fetchTasks();
-        this.renderMyDay(); // Update My Day immediately after tasks load
-        this.updateNavigationStats(); // Update nav stats after tasks load
+        this.renderMyDay();
+        this.updateNavigationStats();
         
-        // Then fetch other data in parallel
+        // Fetch other data in parallel
         await Promise.all([
             this.fetchUsers(),
             this.fetchProjects(),
         ]);
         
-        // Final navigation stats update after all data is loaded
+        // Final updates
         this.updateNavigationStats();
-        
-        // Also render all tabs to ensure everything is up to date
         this.render();
     }
 
@@ -125,7 +116,6 @@ class TaskFlowApp {
             this.projects = [];
         }
         this.updateProjectOptions();
-        // Update navigation stats immediately after fetching projects
         this.updateNavigationStats();
     }
 
@@ -137,7 +127,6 @@ class TaskFlowApp {
         } catch (_) {
             this.tasks = [];
         }
-        // Update navigation stats immediately after fetching tasks
         this.updateNavigationStats();
     }
 
@@ -145,21 +134,26 @@ class TaskFlowApp {
         const title = document.getElementById('taskTitle').value.trim();
         const dueDate = document.getElementById('taskDueDate').value;
         const projectId = document.getElementById('taskProject').value;
+        
         if (!title) return;
+        
         const body = new FormData();
         body.append('action', 'create');
         body.append('title', title);
         if (dueDate) body.append('due_date', dueDate);
         if (projectId) body.append('project_id', projectId);
         body.append('csrf_token', this.getCsrf());
+        
         try {
             const res = await fetch('../user_api/tasks.php', { method: 'POST', body });
             const data = await res.json();
+            
             if (data.csrf_token) this.setCsrf(data.csrf_token);
+            
             if (data.success) {
                 await this.fetchTasks();
                 this.render();
-                this.updateNavigationStats(); // Update navigation stats after adding task
+                this.updateNavigationStats();
                 this.showToast('Task added successfully!');
                 document.getElementById('addTaskForm').reset();
             } else {
@@ -170,46 +164,25 @@ class TaskFlowApp {
         }
     }
 
-    async toggleTask(taskId) {
-        const task = this.tasks.find(t => String(t.id) === String(taskId));
-        if (task && task.is_missed) {
-            this.showToast('Cannot complete a missed task. The due date has passed.', 'error');
-            return;
-        }
-        try {
-            const body = new FormData();
-            body.append('action', 'toggle');
-            body.append('task_id', taskId);
-            body.append('csrf_token', this.getCsrf());
-            const res = await fetch('../user_api/tasks.php', { method: 'POST', body });
-            const data = await res.json();
-            if (data.csrf_token) this.setCsrf(data.csrf_token);
-            if (data.success) {
-                await this.fetchTasks();
-                this.render();
-            } else {
-                this.showToast(data.message || 'Failed to update task', 'error');
-            }
-        } catch (_) {
-            this.showToast('Network error while updating task', 'error');
-        }
-    }
-
     async addProject() {
         const name = document.getElementById('projectName').value.trim();
         if (!name) return;
+        
         const body = new FormData();
         body.append('action', 'create');
         body.append('name', name);
         body.append('csrf_token', this.getCsrf());
+        
         try {
             const res = await fetch('../user_api/projects.php', { method: 'POST', body });
             const data = await res.json();
+            
             if (data.csrf_token) this.setCsrf(data.csrf_token);
+            
             if (data.success) {
                 await this.fetchProjects();
                 this.render();
-                this.updateNavigationStats(); // Update navigation stats after adding project
+                this.updateNavigationStats();
                 this.showToast('Project created successfully!');
                 document.getElementById('projectName').value = '';
             } else {
@@ -220,22 +193,28 @@ class TaskFlowApp {
         }
     }
 
-    selectProject(projectId) {
-        this.selectedProjectId = projectId;
-        this.render();
+    async makeApiCall(endpoint, body) {
+        try {
+            const res = await fetch(endpoint, { method: 'POST', body });
+            const data = await res.json();
+            if (data.csrf_token) this.setCsrf(data.csrf_token);
+            return data;
+        } catch (error) {
+            throw new Error('Network error');
+        }
     }
 
     async addMember(projectId, memberUsername) {
         if (!memberUsername) return;
+        
         const body = new FormData();
         body.append('action', 'add_member');
         body.append('project_id', projectId);
         body.append('username', memberUsername);
         body.append('csrf_token', this.getCsrf());
+        
         try {
-            const res = await fetch('../user_api/projects.php', { method: 'POST', body });
-            const data = await res.json();
-            if (data.csrf_token) this.setCsrf(data.csrf_token);
+            const data = await this.makeApiCall('../user_api/projects.php', body);
             if (data.success) {
                 await this.fetchProjects();
                 this.render();
@@ -258,9 +237,7 @@ class TaskFlowApp {
         body.append('csrf_token', this.getCsrf());
         
         try {
-            const res = await fetch('../user_api/projects.php', { method: 'POST', body });
-            const data = await res.json();
-            if (data.csrf_token) this.setCsrf(data.csrf_token);
+            const data = await this.makeApiCall('../user_api/projects.php', body);
             if (data.success) {
                 await this.fetchProjects();
                 this.render();
@@ -279,62 +256,43 @@ class TaskFlowApp {
         this.renderProjects();
         this.renderTeam();
         this.renderCalendar();
-        
-        // Update navigation statistics after rendering everything
         this.updateNavigationStats();
         
-        // Also update stats with a slight delay to ensure DOM updates are complete
-        setTimeout(() => {
-            this.updateNavigationStats();
-        }, 100);
+        // Additional delayed update to ensure DOM updates are complete
+        setTimeout(() => this.updateNavigationStats(), 100);
     }
 
     updateNavigationStats() {
-        // Update task counts in navigation
         const totalTasks = this.tasks?.length || 0;
         const activeProjects = this.projects?.length || 0;
-        
-        // Calculate due today tasks
         const today = new Date().toISOString().split('T')[0];
         const dueToday = this.tasks?.filter(task => 
             !task.completed && task.due_date === today
         ).length || 0;
         
-        // Update navigation elements
-        const navTotalTasks = document.getElementById('nav-total-tasks');
-        const navActiveProjects = document.getElementById('nav-active-projects');
+        const elements = [
+            { id: 'nav-total-tasks', value: totalTasks },
+            { id: 'nav-active-projects', value: activeProjects },
+            { id: 'nav-due-today', value: dueToday }
+        ];
+        
+        elements.forEach(({ id, value }) => {
+            const element = document.getElementById(id);
+            if (element) {
+                if (element.textContent === 'Loading...') {
+                    element.textContent = value;
+                } else {
+                    this.animateNumber(element, value);
+                }
+            }
+        });
+        
+        // Update color for due today based on urgency
         const navDueToday = document.getElementById('nav-due-today');
-        
-        if (navTotalTasks) {
-            // Force immediate update if still showing "Loading..."
-            if (navTotalTasks.textContent === 'Loading...') {
-                navTotalTasks.textContent = totalTasks;
-            } else {
-                this.animateNumber(navTotalTasks, totalTasks);
-            }
-        }
-        
-        if (navActiveProjects) {
-            // Force immediate update if still showing "Loading..."
-            if (navActiveProjects.textContent === 'Loading...') {
-                navActiveProjects.textContent = activeProjects;
-            } else {
-                this.animateNumber(navActiveProjects, activeProjects);
-            }
-        }
-        
         if (navDueToday) {
-            // Force immediate update if still showing "Loading..."
-            if (navDueToday.textContent === 'Loading...') {
-                navDueToday.textContent = dueToday;
-            } else {
-                this.animateNumber(navDueToday, dueToday);
-            }
-            // Change color based on urgency
             navDueToday.style.color = dueToday > 0 ? '#d97706' : '#4a5c3a';
         }
         
-        // Debug logging to help identify issues
         console.log('Navigation Stats Updated:', {
             totalTasks,
             activeProjects,
@@ -344,9 +302,8 @@ class TaskFlowApp {
         });
     }
 
-    // Add number animation helper
+    // Helper method to animate numbers
     animateNumber(element, targetNumber) {
-        // Handle loading text - set directly to number
         if (element.textContent === 'Loading...') {
             element.textContent = targetNumber;
             return;
@@ -360,8 +317,6 @@ class TaskFlowApp {
         const animate = (currentTime) => {
             const elapsed = currentTime - startTime;
             const progress = Math.min(elapsed / duration, 1);
-            
-            // Easing function for smooth animation
             const easeOut = 1 - Math.pow(1 - progress, 3);
             const current = Math.round(currentNumber + (difference * easeOut));
             
@@ -375,36 +330,49 @@ class TaskFlowApp {
         requestAnimationFrame(animate);
     }
 
+    // Helper method to create loading spinner HTML
+    createLoadingHTML(message, size = 'normal') {
+        const spinnerSize = size === 'large' ? '3rem' : '1.5rem';
+        const padding = size === 'large' ? '60px 20px' : '40px';
+        
+        return `
+            <div style="text-align: center; padding: ${padding}; color: #7c8471;">
+                <div class="spinner-border" role="status" style="width: ${spinnerSize}; height: ${spinnerSize}; margin-bottom: 16px;">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p>${message}</p>
+            </div>
+        `;
+    }
+
     renderWithLoadingStates() {
-        this.renderMyDayLoading();
-        this.renderTasksLoading();
-        this.renderProjectsLoading();
-        this.renderTeamLoading();
-        this.renderCalendarLoading();
+        const loadingStates = [
+            { id: 'todayTasks', method: 'renderMyDayLoading' },
+            { id: 'allTasks', method: 'renderTasksLoading' },
+            { id: 'projectsList', method: 'renderProjectsLoading' },
+            { id: 'teamMembers', method: 'renderTeamLoading' },
+            { id: 'calendarTasks', method: 'renderCalendarLoading' }
+        ];
+        
+        loadingStates.forEach(({ method }) => this[method]());
     }
 
     renderTabContent(targetId) {
-        switch (targetId) {
-            case '#myday':
-                this.renderMyDay();
-                break;
-            case '#tasks':
-                this.renderTasks();
-                break;
-            case '#projects':
-                this.renderProjects();
-                break;
-            case '#team':
-                this.renderTeam();
-                break;
-            case '#calendar':
-                this.renderCalendar();
-                break;
-            default:
-                this.render(); // fallback
+        const tabMethods = {
+            '#myday': 'renderMyDay',
+            '#tasks': 'renderTasks',
+            '#projects': 'renderProjects',
+            '#team': 'renderTeam',
+            '#calendar': 'renderCalendar'
+        };
+        
+        const method = tabMethods[targetId];
+        if (method) {
+            this[method]();
+        } else {
+            this.render(); // fallback
         }
         
-        // Update navigation stats when switching tabs
         this.updateNavigationStats();
     }
 
@@ -426,60 +394,58 @@ class TaskFlowApp {
     renderTasksLoading() {
         const container = document.getElementById('allTasks');
         if (!container) return;
-        
-        container.innerHTML = `
-            <div style="text-align: center; padding: 40px; color: #7c8471;">
-                <div class="spinner-border" role="status" style="margin-bottom: 16px;">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <p>Loading tasks...</p>
-            </div>
-        `;
+        container.innerHTML = this.createLoadingHTML('Loading tasks...');
     }
 
     renderProjectsLoading() {
         const container = document.getElementById('projectsList');
         if (!container) return;
-        
-        container.innerHTML = `
-            <div style="text-align: center; padding: 40px; color: #7c8471;">
-                <div class="spinner-border" role="status" style="margin-bottom: 16px;">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <p>Loading projects...</p>
-            </div>
-        `;
+        container.innerHTML = this.createLoadingHTML('Loading projects...');
     }
 
     renderTeamLoading() {
         const container = document.getElementById('teamMembers');
         if (!container) return;
-        
-        container.innerHTML = `
-            <div style="text-align: center; padding: 40px; color: #7c8471;">
-                <div class="spinner-border" role="status" style="margin-bottom: 16px;">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <p>Loading team members...</p>
-            </div>
-        `;
+        container.innerHTML = this.createLoadingHTML('Loading team members...');
     }
 
     renderCalendarLoading() {
         const container = document.getElementById('calendarTasks');
         if (!container) return;
-        
-        container.innerHTML = `
-            <div style="text-align: center; padding: 40px; color: #7c8471;">
-                <div class="spinner-border" role="status" style="margin-bottom: 16px;">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <p>Loading calendar...</p>
-            </div>
-        `;
+        container.innerHTML = this.createLoadingHTML('Loading calendar...');
     }
 
-    // ...existing renderMyDay, renderTasks+, renderProjects, renderProjectDetails, renderTeam, renderCalendar, addMemberToSelected, updateDueDate, addQuickTask, updateTaskTitle, deleteTask, updateProjectOptions, showToast, escapeHtml methods...
+    // Helper method to check user permissions
+    checkTaskPermissions(task) {
+        const currentUserId = String(window.currentUser?.id);
+        const project = this.projects.find(p => String(p.id) === String(task.project_id));
+        
+        const isTaskOwner = String(task.owner_id) === currentUserId;
+        const isAssignee = String(task.assignee_id) === currentUserId;
+        const isProjectOwner = project && String(project.owner_id) === currentUserId;
+        
+        return {
+            isTaskOwner,
+            isAssignee,
+            isProjectOwner,
+            canEdit: isTaskOwner || isProjectOwner,
+            canDelete: isTaskOwner || isProjectOwner
+        };
+    }
+
+    // Helper method to format task dates
+    getTaskDateInfo(task) {
+        const today = new Date().toISOString().split('T')[0];
+        const daysUntilDue = task.due_date ? 
+            Math.ceil((new Date(task.due_date) - new Date(today)) / (1000 * 60 * 60 * 24)) : null;
+        
+        return {
+            today,
+            daysUntilDue,
+            isToday: task.due_date === today,
+            isOverdue: task.due_date && task.due_date < today
+        };
+    }
     renderMyDay() {
         const today = new Date().toISOString().split('T')[0];
         const todayTasks = this.tasks.filter(t => !t.completed && t.due_date === today);
@@ -1054,31 +1020,21 @@ class TaskFlowApp {
             </div>
         `;
     }    filterTasks(filter) {
-    // Update button styles
+        // Update button styles
         document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.style.opacity = '0.6';
-            btn.style.transform = 'scale(0.95)';
+            const isActive = btn.getAttribute('data-filter') === filter;
+            btn.style.opacity = isActive ? '1' : '0.6';
+            btn.style.transform = isActive ? 'scale(1)' : 'scale(0.95)';
         });
-        
-        const activeBtn = document.querySelector(`[data-filter="${filter}"]`);
-        if (activeBtn) {
-            activeBtn.style.opacity = '1';
-            activeBtn.style.transform = 'scale(1)';
-        }
 
         // Show/hide task sections
         document.querySelectorAll('.task-section').forEach(section => {
-            if (filter === 'all') {
-                section.style.display = 'block';
-            } else {
-                const category = section.getAttribute('data-category');
-                section.style.display = category === filter ? 'block' : 'none';
-            }
+            const category = section.getAttribute('data-category');
+            section.style.display = (filter === 'all' || category === filter) ? 'block' : 'none';
         });
     }
 
     initializeTaskFilters() {
-    // Set up filter button hover effects
         document.querySelectorAll('.filter-btn').forEach(btn => {
             btn.addEventListener('mouseenter', () => {
                 if (btn.style.opacity !== '1') {
@@ -1780,36 +1736,24 @@ class TaskFlowApp {
                                         <!-- Status indicator -->
                                         <div style="position: absolute; left: 0; top: 0; width: 3px; height: 100%; background: ${taskIsCompleted ? '#10b981' : isToday ? '#f59e0b' : '#3b82f6'};"></div>
                                         
-                                        <div style="display: flex; align-items: center; justify-content: space-between; margin-left: 8px;">
-                                            <div style="flex-grow: 1; min-width: 0;">
-                                                <div style="display: flex; align-items: center; margin-bottom: 8px;">
-                                                    <h6 style="margin: 0; font-size: 1rem; font-weight: 600; color: ${taskIsCompleted ? '#6b7280' : '#1f2937'}; ${taskIsCompleted ? 'text-decoration: line-through;' : ''} word-break: break-word;">
-                                                        ${this.escapeHtml(task.title)}
-                                                    </h6>
-                                                </div>
-                                                
-                                                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                                                    ${project ? `
-                                                        <span style="background: linear-gradient(135deg, #7c8471, #9a9e92); color: white; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; display: flex; align-items: center;">
-                                                            <i class="bi bi-folder me-1" style="font-size: 11px;"></i>${project.name}
-                                                        </span>
-                                                    ` : ''}
-                                                    
-                                                    <span style="background: ${taskIsCompleted ? '#dcfce7' : isToday ? '#fef3c7' : '#dbeafe'}; color: ${taskIsCompleted ? '#16a34a' : isToday ? '#ca8a04' : '#1e40af'}; padding: 3px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; display: flex; align-items: center;">
-                                                        <i class="bi ${taskIsCompleted ? 'bi-check-circle' : isToday ? 'bi-exclamation-circle' : 'bi-clock'} me-1" style="font-size: 11px;"></i>
-                                                        ${taskIsCompleted ? 'Completed' : isToday ? 'Due Today' : 'Upcoming'}
-                                                    </span>
-                                                </div>
+                                        <div style="margin-left: 8px;">
+                                            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                                                <h6 style="margin: 0; font-size: 1.3rem; font-weight: 600; color: ${taskIsCompleted ? '#6b7280' : '#1f2937'}; ${taskIsCompleted ? 'text-decoration: line-through;' : ''} word-break: break-word; line-height: 1.4;">
+                                                    ${this.escapeHtml(task.title)}
+                                                </h6>
                                             </div>
                                             
-                                            <div style="margin-left: 12px;">
-                                                <button onclick="app.toggleTask('${task.id}')"
-                                                        style="background: ${taskIsCompleted ? 'linear-gradient(135deg, #6b7280, #9ca3af)' : 'linear-gradient(135deg, #7c8471, #9a9e92)'}; color: white; border: none; border-radius: 6px; padding: 8px 14px; font-size: 12px; font-weight: 500; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
-                                                        onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.15)'"
-                                                        onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)'">
-                                                    <i class="bi ${taskIsCompleted ? 'bi-arrow-clockwise' : 'bi-check-lg'} me-1"></i>
-                                                    ${taskIsCompleted ? 'Reopen' : 'Complete'}
-                                                </button>
+                                            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                                                ${project ? `
+                                                    <span style="background: linear-gradient(135deg, #7c8471, #9a9e92); color: white; padding: 5px 12px; border-radius: 12px; font-size: 14px; font-weight: 500; display: flex; align-items: center;">
+                                                        <i class="bi bi-folder me-1" style="font-size: 13px;"></i>${project.name}
+                                                    </span>
+                                                ` : ''}
+                                                
+                                                <span style="background: ${taskIsCompleted ? '#dcfce7' : isToday ? '#fef3c7' : '#dbeafe'}; color: ${taskIsCompleted ? '#16a34a' : isToday ? '#ca8a04' : '#1e40af'}; padding: 5px 12px; border-radius: 12px; font-size: 14px; font-weight: 600; display: flex; align-items: center;">
+                                                    <i class="bi ${taskIsCompleted ? 'bi-check-circle' : isToday ? 'bi-exclamation-circle' : 'bi-clock'} me-1" style="font-size: 13px;"></i>
+                                                    ${taskIsCompleted ? 'Completed' : isToday ? 'Due Today' : 'Upcoming'}
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -1836,15 +1780,15 @@ class TaskFlowApp {
     async promptRenameProject(projectId, currentName) {
         const name = prompt('New project name:', currentName || '');
         if (!name) return;
+        
         const body = new FormData();
         body.append('action', 'update');
         body.append('project_id', projectId);
         body.append('name', name);
         body.append('csrf_token', this.getCsrf());
+        
         try {
-            const res = await fetch('../user_api/projects.php', { method: 'POST', body });
-            const data = await res.json();
-            if (data.csrf_token) this.setCsrf(data.csrf_token);
+            const data = await this.makeApiCall('../user_api/projects.php', body);
             if (data.success) {
                 await this.fetchProjects();
                 this.render();
@@ -1858,14 +1802,14 @@ class TaskFlowApp {
 
     async deleteProject(projectId) {
         if (!confirm('Delete this project? This will not delete tasks but will detach them from the project.')) return;
+        
         const body = new FormData();
         body.append('action', 'delete');
         body.append('project_id', projectId);
         body.append('csrf_token', this.getCsrf());
+        
         try {
-            const res = await fetch('../user_api/projects.php', { method: 'POST', body });
-            const data = await res.json();
-            if (data.csrf_token) this.setCsrf(data.csrf_token);
+            const data = await this.makeApiCall('../user_api/projects.php', body);
             if (data.success) {
                 if (String(this.selectedProjectId) === String(projectId)) this.selectedProjectId = null;
                 await Promise.all([this.fetchProjects(), this.fetchTasks()]);
@@ -1880,15 +1824,15 @@ class TaskFlowApp {
 
     async assignTask(taskId, username) {
         if (!this.selectedProjectId) return;
+        
         const body = new FormData();
         body.append('action', 'assign');
         body.append('task_id', taskId);
         body.append('username', username);
         body.append('csrf_token', this.getCsrf());
+        
         try {
-            const res = await fetch('../user_api/tasks.php', { method: 'POST', body });
-            const data = await res.json();
-            if (data.csrf_token) this.setCsrf(data.csrf_token);
+            const data = await this.makeApiCall('../user_api/tasks.php', body);
             if (data.success) {
                 await this.fetchTasks();
                 this.render();
@@ -1906,10 +1850,9 @@ class TaskFlowApp {
         body.append('task_id', taskId);
         body.append('due_date', dueDate || '');
         body.append('csrf_token', this.getCsrf());
+        
         try {
-            const res = await fetch('../user_api/tasks.php', { method: 'POST', body });
-            const data = await res.json();
-            if (data.csrf_token) this.setCsrf(data.csrf_token);
+            const data = await this.makeApiCall('../user_api/tasks.php', body);
             if (data.success) {
                 await this.fetchTasks();
                 this.render();
@@ -1924,27 +1867,26 @@ class TaskFlowApp {
     async addQuickTask() {
         const input = document.getElementById('quickTaskInput');
         const title = input.value.trim();
-        if (title && this.selectedProjectId) {
-            const body = new FormData();
-            body.append('action', 'create');
-            body.append('title', title);
-            body.append('project_id', this.selectedProjectId);
-            body.append('csrf_token', this.getCsrf());
-            try {
-                const res = await fetch('../user_api/tasks.php', { method: 'POST', body });
-                const data = await res.json();
-                if (data.csrf_token) this.setCsrf(data.csrf_token);
-                if (data.success) {
-                    await this.fetchTasks();
-                    this.render();
-                    this.showToast('Task added to project!');
-                    input.value = '';
-                } else {
-                    this.showToast(data.message || 'Failed to add task', 'error');
-                }
-            } catch (_) {
-                this.showToast('Network error while adding task', 'error');
+        if (!title || !this.selectedProjectId) return;
+        
+        const body = new FormData();
+        body.append('action', 'create');
+        body.append('title', title);
+        body.append('project_id', this.selectedProjectId);
+        body.append('csrf_token', this.getCsrf());
+        
+        try {
+            const data = await this.makeApiCall('../user_api/tasks.php', body);
+            if (data.success) {
+                await this.fetchTasks();
+                this.render();
+                this.showToast('Task added to project!');
+                input.value = '';
+            } else {
+                this.showToast(data.message || 'Failed to add task', 'error');
             }
+        } catch (_) {
+            this.showToast('Network error while adding task', 'error');
         }
     }
 
@@ -1954,11 +1896,12 @@ class TaskFlowApp {
         body.append('task_id', taskId);
         body.append('title', title);
         body.append('csrf_token', this.getCsrf());
+        
         try {
-            const res = await fetch('../user_api/tasks.php', { method: 'POST', body });
-            const data = await res.json();
-            if (data.csrf_token) this.setCsrf(data.csrf_token);
-            if (!data.success) this.showToast(data.message || 'Failed to update task title', 'error');
+            const data = await this.makeApiCall('../user_api/tasks.php', body);
+            if (!data.success) {
+                this.showToast(data.message || 'Failed to update task title', 'error');
+            }
         } catch (_) {
             this.showToast('Network error while updating title', 'error');
         }
@@ -1966,14 +1909,14 @@ class TaskFlowApp {
 
     async deleteTask(taskId) {
         if (!confirm('Delete this task?')) return;
+        
         const body = new FormData();
         body.append('action', 'delete');
         body.append('task_id', taskId);
         body.append('csrf_token', this.getCsrf());
+        
         try {
-            const res = await fetch('../user_api/tasks.php', { method: 'POST', body });
-            const data = await res.json();
-            if (data.csrf_token) this.setCsrf(data.csrf_token);
+            const data = await this.makeApiCall('../user_api/tasks.php', body);
             if (data.success) {
                 await this.fetchTasks();
                 this.render();
@@ -1985,16 +1928,58 @@ class TaskFlowApp {
         }
     }
 
+    async toggleTask(taskId) {
+        const task = this.tasks.find(t => String(t.id) === String(taskId));
+        if (task && task.is_missed) {
+            this.showToast('Cannot complete a missed task. The due date has passed.', 'error');
+            return;
+        }
+        
+        const body = new FormData();
+        body.append('action', 'toggle');
+        body.append('task_id', taskId);
+        body.append('csrf_token', this.getCsrf());
+        
+        try {
+            const data = await this.makeApiCall('../user_api/tasks.php', body);
+            if (data.success) {
+                await this.fetchTasks();
+                this.render();
+            } else {
+                this.showToast(data.message || 'Failed to update task', 'error');
+            }
+        } catch (_) {
+            this.showToast('Network error while updating task', 'error');
+        }
+    }
+
+    selectProject(projectId) {
+        this.selectedProjectId = projectId;
+        this.render();
+    }
+
+    // Helper methods for UI interactions
+    addMemberToSelected() {
+        const input = document.getElementById('newMemberInput');
+        const username = input?.value || '';
+        if (username && this.selectedProjectId) {
+            this.addMember(this.selectedProjectId, username);
+            input.value = '';
+        }
+    }
+
     updateProjectOptions() {
         const select = document.getElementById('taskProject');
         if (!select) return;
-        select.innerHTML = '<option value="">Optional</option>' + this.projects.map(project => `<option value="${project.id}">${project.name}</option>`).join('');
+        select.innerHTML = '<option value="">Optional</option>' + 
+            this.projects.map(project => `<option value="${project.id}">${project.name}</option>`).join('');
     }
 
     showToast(message, type = 'success') {
         const toastContainer = document.getElementById('toastContainer');
         const toastId = 'toast_' + Date.now();
         const icon = type === 'success' ? 'bi-check-circle-fill text-success' : 'bi-exclamation-triangle-fill text-danger';
+        
         const toastHTML = `
             <div class="toast" id="${toastId}" role="alert" aria-live="assertive" aria-atomic="true">
                 <div class="toast-header">
@@ -2004,6 +1989,7 @@ class TaskFlowApp {
                 </div>
                 <div class="toast-body">${message}</div>
             </div>`;
+        
         toastContainer.insertAdjacentHTML('beforeend', toastHTML);
         const toastElement = document.getElementById(toastId);
         const toast = new bootstrap.Toast(toastElement);
@@ -2022,24 +2008,20 @@ class TaskFlowApp {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Set initial navigation stats immediately when DOM loads
-    const navTotalTasks = document.getElementById('nav-total-tasks');
-    const navActiveProjects = document.getElementById('nav-active-projects');
-    const navDueToday = document.getElementById('nav-due-today');
-    
-    if (navTotalTasks) navTotalTasks.textContent = '0';
-    if (navActiveProjects) navActiveProjects.textContent = '0';
-    if (navDueToday) navDueToday.textContent = '0';
+    // Set initial navigation stats
+    ['nav-total-tasks', 'nav-active-projects', 'nav-due-today'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) element.textContent = '0';
+    });
     
     // Initialize the app
     window.app = new TaskFlowApp();
     
-    // Add immediate tab switching optimization
+    // Optimize tab switching
     document.addEventListener('click', (e) => {
         const tabButton = e.target.closest('[data-bs-toggle="tab"]');
         if (tabButton && window.app) {
             const targetId = tabButton.getAttribute('data-bs-target');
-            // Pre-render content immediately on click, before Bootstrap animation
             setTimeout(() => window.app.renderTabContent(targetId), 0);
         }
     });
