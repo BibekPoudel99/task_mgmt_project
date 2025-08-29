@@ -14,6 +14,9 @@ class TaskFlowApp {
         // Immediately show loading state and render initial UI
         this.renderWithLoadingStates();
         
+        // Set initial navigation stats to 0 to replace "Loading..."
+        this.setInitialNavigationStats();
+        
         try {
             // Start missed tasks update in background without blocking
             fetch('../user_api/missed_tasks.php').catch(e => console.warn('Missed tasks update failed:', e));
@@ -26,6 +29,17 @@ class TaskFlowApp {
             await this.refreshAll();
             this.render();
         }
+    }
+
+    setInitialNavigationStats() {
+        // Set initial values to 0 to replace "Loading..." text
+        const navTotalTasks = document.getElementById('nav-total-tasks');
+        const navActiveProjects = document.getElementById('nav-active-projects');
+        const navDueToday = document.getElementById('nav-due-today');
+        
+        if (navTotalTasks) navTotalTasks.textContent = '0';
+        if (navActiveProjects) navActiveProjects.textContent = '0';
+        if (navDueToday) navDueToday.textContent = '0';
     }
 
     bindEvents() {
@@ -63,12 +77,19 @@ class TaskFlowApp {
         // Fetch tasks first since My Day depends on it most
         await this.fetchTasks();
         this.renderMyDay(); // Update My Day immediately after tasks load
+        this.updateNavigationStats(); // Update nav stats after tasks load
         
         // Then fetch other data in parallel
         await Promise.all([
             this.fetchUsers(),
             this.fetchProjects(),
         ]);
+        
+        // Final navigation stats update after all data is loaded
+        this.updateNavigationStats();
+        
+        // Also render all tabs to ensure everything is up to date
+        this.render();
     }
 
     getCsrf() {
@@ -104,6 +125,8 @@ class TaskFlowApp {
             this.projects = [];
         }
         this.updateProjectOptions();
+        // Update navigation stats immediately after fetching projects
+        this.updateNavigationStats();
     }
 
     async fetchTasks() {
@@ -114,6 +137,8 @@ class TaskFlowApp {
         } catch (_) {
             this.tasks = [];
         }
+        // Update navigation stats immediately after fetching tasks
+        this.updateNavigationStats();
     }
 
     async addTask() {
@@ -134,6 +159,7 @@ class TaskFlowApp {
             if (data.success) {
                 await this.fetchTasks();
                 this.render();
+                this.updateNavigationStats(); // Update navigation stats after adding task
                 this.showToast('Task added successfully!');
                 document.getElementById('addTaskForm').reset();
             } else {
@@ -183,6 +209,7 @@ class TaskFlowApp {
             if (data.success) {
                 await this.fetchProjects();
                 this.render();
+                this.updateNavigationStats(); // Update navigation stats after adding project
                 this.showToast('Project created successfully!');
                 document.getElementById('projectName').value = '';
             } else {
@@ -252,6 +279,100 @@ class TaskFlowApp {
         this.renderProjects();
         this.renderTeam();
         this.renderCalendar();
+        
+        // Update navigation statistics after rendering everything
+        this.updateNavigationStats();
+        
+        // Also update stats with a slight delay to ensure DOM updates are complete
+        setTimeout(() => {
+            this.updateNavigationStats();
+        }, 100);
+    }
+
+    updateNavigationStats() {
+        // Update task counts in navigation
+        const totalTasks = this.tasks?.length || 0;
+        const activeProjects = this.projects?.length || 0;
+        
+        // Calculate due today tasks
+        const today = new Date().toISOString().split('T')[0];
+        const dueToday = this.tasks?.filter(task => 
+            !task.completed && task.due_date === today
+        ).length || 0;
+        
+        // Update navigation elements
+        const navTotalTasks = document.getElementById('nav-total-tasks');
+        const navActiveProjects = document.getElementById('nav-active-projects');
+        const navDueToday = document.getElementById('nav-due-today');
+        
+        if (navTotalTasks) {
+            // Force immediate update if still showing "Loading..."
+            if (navTotalTasks.textContent === 'Loading...') {
+                navTotalTasks.textContent = totalTasks;
+            } else {
+                this.animateNumber(navTotalTasks, totalTasks);
+            }
+        }
+        
+        if (navActiveProjects) {
+            // Force immediate update if still showing "Loading..."
+            if (navActiveProjects.textContent === 'Loading...') {
+                navActiveProjects.textContent = activeProjects;
+            } else {
+                this.animateNumber(navActiveProjects, activeProjects);
+            }
+        }
+        
+        if (navDueToday) {
+            // Force immediate update if still showing "Loading..."
+            if (navDueToday.textContent === 'Loading...') {
+                navDueToday.textContent = dueToday;
+            } else {
+                this.animateNumber(navDueToday, dueToday);
+            }
+            // Change color based on urgency
+            navDueToday.style.color = dueToday > 0 ? '#d97706' : '#4a5c3a';
+        }
+        
+        // Debug logging to help identify issues
+        console.log('Navigation Stats Updated:', {
+            totalTasks,
+            activeProjects,
+            dueToday,
+            tasksArray: this.tasks?.length,
+            projectsArray: this.projects?.length
+        });
+    }
+
+    // Add number animation helper
+    animateNumber(element, targetNumber) {
+        // Handle loading text - set directly to number
+        if (element.textContent === 'Loading...') {
+            element.textContent = targetNumber;
+            return;
+        }
+        
+        const currentNumber = parseInt(element.textContent) || 0;
+        const difference = targetNumber - currentNumber;
+        const duration = 800;
+        const startTime = performance.now();
+        
+        const animate = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Easing function for smooth animation
+            const easeOut = 1 - Math.pow(1 - progress, 3);
+            const current = Math.round(currentNumber + (difference * easeOut));
+            
+            element.textContent = current;
+            
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            }
+        };
+        
+        requestAnimationFrame(animate);
     }
 
     renderWithLoadingStates() {
@@ -282,6 +403,9 @@ class TaskFlowApp {
             default:
                 this.render(); // fallback
         }
+        
+        // Update navigation stats when switching tabs
+        this.updateNavigationStats();
     }
 
     renderMyDayLoading() {
@@ -1898,6 +2022,16 @@ class TaskFlowApp {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Set initial navigation stats immediately when DOM loads
+    const navTotalTasks = document.getElementById('nav-total-tasks');
+    const navActiveProjects = document.getElementById('nav-active-projects');
+    const navDueToday = document.getElementById('nav-due-today');
+    
+    if (navTotalTasks) navTotalTasks.textContent = '0';
+    if (navActiveProjects) navActiveProjects.textContent = '0';
+    if (navDueToday) navDueToday.textContent = '0';
+    
+    // Initialize the app
     window.app = new TaskFlowApp();
     
     // Add immediate tab switching optimization

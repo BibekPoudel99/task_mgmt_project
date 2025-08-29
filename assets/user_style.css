@@ -332,6 +332,75 @@ body {
 
 /* Animation Classes */
 
+/* Enhanced Navigation Styles */
+.navbar-toggler:focus {
+    box-shadow: 0 0 0 0.2rem rgba(124, 132, 113, 0.25) !important;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 991px) {
+    .navbar-nav.mx-auto {
+        margin: 1rem 0 !important;
+        padding: 1rem 0;
+        border-top: 1px solid rgba(124,132,113,0.1);
+        border-bottom: 1px solid rgba(124,132,113,0.1);
+    }
+    
+    .navbar-nav.mx-auto .nav-item {
+        margin: 0.5rem 0;
+    }
+    
+    .navbar-brand div:first-child {
+        font-size: 1.5rem !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .navbar-brand {
+        flex-direction: column;
+        align-items: flex-start !important;
+    }
+    
+    .navbar-brand > div:first-child {
+        margin-right: 0 !important;
+        margin-bottom: 8px;
+    }
+    
+    /* Stack quick stats vertically on mobile */
+    .nav-item .d-flex.align-items-center.gap-3 {
+        flex-direction: column !important;
+        gap: 1rem !important;
+    }
+    
+    .nav-item .text-center {
+        text-align: center !important;
+    }
+}
+
+/* Dropdown animation */
+.dropdown-menu {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.dropdown-menu.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* Loading animation for nav stats */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.nav-stat-loading {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
 
 /* TASKS TAB: Make task name big, due/status small and lighter */
 .tasks-tab .task-title {
