@@ -3,7 +3,7 @@
  require_once __DIR__ . '/../library/Session.php';
  require_once __DIR__ . '/../library/Token.php';
  if (empty($_SESSION['user_logged_in']) || ($_SESSION['role'] ?? '') !== 'user') {
-    header('Location: us    <main class="container py-2" style="max-width: 1500px; margin: 40px auto 0 auto; background: var(--bg-card); border-radius: 28px; box-shadow: 0 20px 60px var(--shadow-heavy); padding: 56px 48px 48px 48px; border: 1px solid var(--border-primary);"r_login.php');
+    header('Location: user_login.php');
     exit;
 }
 $username = $_SESSION['username'] ?? 'User'; 

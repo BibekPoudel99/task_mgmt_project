@@ -4,6 +4,9 @@ class TaskFlowApp {
         this.tasks = [];
         this.selectedProjectId = null;
         this.users = [];
+        this.apiCallQueue = Promise.resolve(); // Serial API call queue
+        this.dueDateTimeouts = new Map(); // Debounce due date updates
+        this.titleTimeouts = new Map(); // Debounce title updates
         this.init();
     }
 
@@ -91,7 +94,11 @@ class TaskFlowApp {
     setCsrf(token) {
         if (!token) return;
         const input = document.getElementById('csrfTokenInput');
-        if (input) input.value = token;
+        if (input) {
+            input.value = token;
+            // Also store it in the instance for consistency
+            this.csrfToken = token;
+        }
     }
 
     async fetchUsers() {
@@ -145,10 +152,7 @@ class TaskFlowApp {
         body.append('csrf_token', this.getCsrf());
         
         try {
-            const res = await fetch('../user_api/tasks.php', { method: 'POST', body });
-            const data = await res.json();
-            
-            if (data.csrf_token) this.setCsrf(data.csrf_token);
+            const data = await this.makeApiCall('../user_api/tasks.php', body);
             
             if (data.success) {
                 await this.fetchTasks();
@@ -174,10 +178,7 @@ class TaskFlowApp {
         body.append('csrf_token', this.getCsrf());
         
         try {
-            const res = await fetch('../user_api/projects.php', { method: 'POST', body });
-            const data = await res.json();
-            
-            if (data.csrf_token) this.setCsrf(data.csrf_token);
+            const data = await this.makeApiCall('../user_api/projects.php', body);
             
             if (data.success) {
                 await this.fetchProjects();
@@ -194,14 +195,46 @@ class TaskFlowApp {
     }
 
     async makeApiCall(endpoint, body) {
-        try {
-            const res = await fetch(endpoint, { method: 'POST', body });
-            const data = await res.json();
-            if (data.csrf_token) this.setCsrf(data.csrf_token);
-            return data;
-        } catch (error) {
-            throw new Error('Network error');
-        }
+        // Queue API calls to prevent CSRF token conflicts
+        return this.apiCallQueue = this.apiCallQueue.then(async () => {
+            try {
+                // Always use the most current CSRF token
+                const currentCsrf = this.getCsrf();
+                
+                // Update the CSRF token in the FormData if it exists
+                if (body instanceof FormData && currentCsrf) {
+                    body.set('csrf_token', currentCsrf);
+                }
+                
+                const res = await fetch(endpoint, { method: 'POST', body });
+                const data = await res.json();
+                
+                // Update CSRF token immediately when received
+                if (data.csrf_token) {
+                    this.setCsrf(data.csrf_token);
+                }
+                
+                // Handle specific CSRF errors
+                if (!data.success && data.message && data.message.includes('CSRF')) {
+                    console.warn('CSRF token issue detected, retrying with new token');
+                    // If we got a new token, we can try once more
+                    if (data.csrf_token && body instanceof FormData) {
+                        body.set('csrf_token', data.csrf_token);
+                        const retryRes = await fetch(endpoint, { method: 'POST', body });
+                        const retryData = await retryRes.json();
+                        if (retryData.csrf_token) {
+                            this.setCsrf(retryData.csrf_token);
+                        }
+                        return retryData;
+                    }
+                }
+                
+                return data;
+            } catch (error) {
+                console.error('API call error:', error);
+                throw new Error('Network error');
+            }
+        });
     }
 
     async addMember(projectId, memberUsername) {
@@ -570,6 +603,7 @@ class TaskFlowApp {
     const isAssignee = String(task.assignee_id) === currentUserId;
     const isProjectOwner = project && String(project.owner_id) === currentUserId;
     const canEdit = isTaskOwner || isProjectOwner;
+    const canComplete = isTaskOwner || isAssignee || isProjectOwner;
     
     // Determine card styling based on context
     const cardStyle = isOverdue 
@@ -581,7 +615,7 @@ class TaskFlowApp {
     const statusBarColor = isOverdue ? '#ef4444' : isMissed ? '#dc2626' : '#f59e0b';
     
     return `
-        <div class="task-card-myday" style="${cardStyle} border-radius: 16px; padding: 20px; transition: all 0.3s ease; position: relative; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06);" 
+        <div class="task-card-myday" data-task-id="${task.id}" style="${cardStyle} border-radius: 16px; padding: 20px; transition: all 0.3s ease; position: relative; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06);" 
              onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 32px rgba(0,0,0,0.12)'; this.style.borderColor='#7c8471'" 
              onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.06)'; this.style.borderColor='${isOverdue ? '#fecaca' : '#e2e8f0'}'">
             
@@ -595,13 +629,17 @@ class TaskFlowApp {
                         <div class="missed-indicator" style="width: 120px; height: 42px; background: linear-gradient(135deg, #ef4444, #f87171); color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; box-shadow: 0 3px 8px rgba(239, 68, 68, 0.3);">
                             <i class="bi bi-clock-history me-1"></i>MISSED
                         </div>
-                    ` : `
+                    ` : canComplete ? `
                         <button class="task-complete-btn" onclick="app.toggleTask('${task.id}')" 
                                 style="background: linear-gradient(135deg, #7c8471, #9a9e92); color: white; border: none; border-radius: 10px; padding: 12px 20px; font-size: 14px; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 3px 8px rgba(124, 132, 113, 0.3); white-space: nowrap;"
                                 onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(124, 132, 113, 0.4)'"
                                 onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 3px 8px rgba(124, 132, 113, 0.3)'">
                             <i class="bi bi-check-lg me-1"></i>Complete
                         </button>
+                    ` : `
+                        <div style="width: 120px; height: 42px; background: #f3f4f6; color: #6b7280; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600;">
+                            <i class="bi bi-eye me-1"></i>View Only
+                        </div>
                     `}
                 </div>
 
@@ -680,7 +718,7 @@ class TaskFlowApp {
                         <!-- Quick Actions -->
                         <div class="quick-actions" style="display: flex; align-items: center; gap: 8px;">
                             ${project ? `
-                                <button onclick="app.selectProject('${project.id}'); document.querySelector('[data-bs-target=\\"#projects\\"]').click()" 
+                                <button onclick="app.selectProject('${project.id}')" 
                                         style="background: transparent; border: 1px solid #7c8471; color: #7c8471; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; transition: all 0.3s ease;"
                                         onmouseover="this.style.background='#7c8471'; this.style.color='white'"
                                         onmouseout="this.style.background='transparent'; this.style.color='#7c8471'"
@@ -690,16 +728,16 @@ class TaskFlowApp {
                             ` : ''}
                             
                             ${canEdit ? `
-                                <button onclick="document.querySelector('[data-bs-target=\\"#tasks\\"]').click()" 
-                                        style="background: transparent; border: 1px solid #64748b; color: #64748b; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; transition: all 0.3s ease;"
-                                        onmouseover="this.style.background='#64748b'; this.style.color='white'"
-                                        onmouseout="this.style.background='transparent'; this.style.color='#64748b'"
-                                        title="Edit task">
-                                    <i class="bi bi-pencil"></i>
+                                <button onclick="app.editTaskInTasksTab('${task.id}')" 
+                                        style="background: transparent; border: 1px solid #3b82f6; color: #3b82f6; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; transition: all 0.3s ease;"
+                                        onmouseover="this.style.background='#3b82f6'; this.style.color='white'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='#3b82f6'"
+                                        title="Edit task details">
+                                    <i class="bi bi-pencil-fill me-1"></i>Edit
                                 </button>
                             ` : `
                                 <span style="background: #f3f4f6; color: #6b7280; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 500;" title="No edit permission">
-                                    <i class="bi bi-shield-lock"></i>
+                                    <i class="bi bi-shield-lock me-1"></i>View Only
                                 </span>
                             `}
                         </div>
@@ -876,6 +914,7 @@ class TaskFlowApp {
         const isProjectOwner = project && String(project.owner_id) === currentUserId;
         const canEdit = isTaskOwner || isProjectOwner;
         const canDelete = isTaskOwner || isProjectOwner;
+        const canComplete = isTaskOwner || isAssignee || isProjectOwner;
         
         // Simple styling based on context
         const getCardStyle = () => {
@@ -889,19 +928,23 @@ class TaskFlowApp {
         const daysUntilDue = task.due_date ? Math.ceil((new Date(task.due_date) - new Date(today)) / (1000 * 60 * 60 * 24)) : null;
 
         return `
-            <div style="${getCardStyle()} border-radius: 12px; padding: 20px; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.05);" 
+            <div data-task-id="${task.id}" style="${getCardStyle()} border-radius: 12px; padding: 20px; transition: all 0.3s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.05);" 
                  onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" 
                  onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.05)'">
                 
                 <div style="display: flex; align-items: flex-start; gap: 16px;">
                     <!-- Action Button -->
                     <div style="flex-shrink: 0;">
-                        ${!isMissed ? `
+                        ${!isMissed && canComplete ? `
                             <button onclick="app.toggleTask('${task.id}')" 
                                     style="background: ${isCompleted ? '#6b7280' : '#7c8471'}; color: white; border: none; border-radius: 8px; padding: 12px 18px; font-size: 15px; font-weight: 500;">
                                 <i class="bi ${isCompleted ? 'bi-arrow-clockwise' : 'bi-check-lg'} me-1"></i>
                                 ${isCompleted ? 'Reopen' : 'Complete'}
                             </button>
+                        ` : !isMissed && !canComplete ? `
+                            <div style="background: #f3f4f6; color: #6b7280; border-radius: 8px; padding: 12px 18px; font-size: 15px; font-weight: 500; display: flex; align-items: center;">
+                                <i class="bi bi-eye me-1"></i>View Only
+                            </div>
                         ` : `
                             <div style="background: #ef4444; color: white; border-radius: 8px; padding: 12px 18px; font-size: 15px; font-weight: 600;">
                                 <i class="bi bi-clock-history me-1"></i>OVERDUE
@@ -976,16 +1019,31 @@ class TaskFlowApp {
 
                         <!-- Edit Section - Only for those who can edit -->
                         ${!isMissed && canEdit ? `
-                            <div style="display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: center;">
-                                <!-- Edit Title -->
-                                <input type="text" value="${this.escapeHtml(task.title)}" 
-                                       onchange="app.updateTaskTitle('${task.id}', this.value)"
-                                       style="border: 1px solid #d1d5db; border-radius: 6px; padding: 10px 14px; font-size: 1rem;">
-                                
-                                <!-- Edit Due Date -->
-                                <input type="date" value="${task.due_date || ''}" 
-                                       onchange="app.updateDueDate('${task.id}', this.value)"
-                                       style="border: 1px solid #d1d5db; border-radius: 6px; padding: 10px 14px; font-size: 15px;">
+                            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-top: 12px;">
+                                <div style="display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: end;">
+                                    <div>
+                                        <label style="color: #64748b; font-size: 13px; font-weight: 500; margin-bottom: 6px; display: block;">
+                                            <i class="bi bi-pencil me-1"></i>Edit Title
+                                        </label>
+                                        <input type="text" value="${this.escapeHtml(task.title)}" 
+                                               onchange="app.updateTaskTitle('${task.id}', this.value)"
+                                               style="border: 2px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; font-size: 1rem; width: 100%; background: #ffffff; transition: all 0.3s ease;"
+                                               onfocus="this.style.borderColor='#7c8471'; this.style.boxShadow='0 0 0 3px rgba(124,132,113,0.1)'"
+                                               onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'">
+                                    </div>
+                                    <div>
+                                        <label style="color: #64748b; font-size: 13px; font-weight: 500; margin-bottom: 6px; display: block;">
+                                            <i class="bi bi-calendar3 me-1"></i>Due Date
+                                        </label>
+                                        <!-- Edit Due Date -->
+                                        <input type="date" value="${task.due_date || ''}" 
+                                               min="${new Date().toISOString().split('T')[0]}"
+                                               onchange="app.updateDueDate('${task.id}', this.value)"
+                                               style="border: 2px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; font-size: 15px; background: #ffffff; transition: all 0.3s ease; min-width: 160px;"
+                                               onfocus="this.style.borderColor='#7c8471'; this.style.boxShadow='0 0 0 3px rgba(124,132,113,0.1)'"
+                                               onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'">
+                                    </div>
+                                </div>
                             </div>
                         ` : !isMissed && !canEdit ? `
                             <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 14px; text-align: center;">
@@ -999,20 +1057,26 @@ class TaskFlowApp {
                     <!-- Actions -->
                     <div style="flex-shrink: 0;">
                         ${project ? `
-                            <button onclick="app.selectProject('${project.id}'); document.querySelector('[data-bs-target=\\"#projects\\"]').click()" 
-                                    style="background: transparent; border: 1px solid #7c8471; color: #7c8471; padding: 8px 14px; border-radius: 6px; font-size: 15px; margin-right: 8px;">
+                            <button onclick="app.selectProject('${project.id}')" 
+                                    style="background: transparent; border: 1px solid #7c8471; color: #7c8471; padding: 8px 14px; border-radius: 6px; font-size: 15px; margin-right: 8px; transition: all 0.3s ease;"
+                                    onmouseover="this.style.background='#7c8471'; this.style.color='white'"
+                                    onmouseout="this.style.background='transparent'; this.style.color='#7c8471'"
+                                    title="View project">
                                 <i class="bi bi-arrow-right"></i>
                             </button>
                         ` : ''}
                         
                         ${canDelete ? `
                             <button onclick="app.deleteTask('${task.id}')" 
-                                    style="background: transparent; border: 1px solid #dc2626; color: #dc2626; padding: 8px 14px; border-radius: 6px; font-size: 15px;">
-                                <i class="bi bi-trash"></i>
+                                    style="background: transparent; border: 1px solid #dc2626; color: #dc2626; padding: 8px 14px; border-radius: 6px; font-size: 15px; transition: all 0.3s ease;"
+                                    onmouseover="this.style.background='#dc2626'; this.style.color='white'"
+                                    onmouseout="this.style.background='transparent'; this.style.color='#dc2626'"
+                                    title="Delete task">
+                                <i class="bi bi-trash-fill me-1"></i>Delete
                             </button>
                         ` : `
-                            <span style="background: #f3f4f6; color: #6b7280; padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 500;">
-                                <i class="bi bi-shield-lock"></i>
+                            <span style="background: #f3f4f6; color: #6b7280; padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 500;" title="No delete permission">
+                                <i class="bi bi-shield-lock me-1"></i>Protected
                             </span>
                         `}
                     </div>
@@ -1059,7 +1123,7 @@ class TaskFlowApp {
             const total = projectTasks.length || 1;
             const percent = Math.round((completedCount / total) * 100);
             return `
-                <div class="project-item ${this.selectedProjectId == project.id ? 'active' : ''}" style="border-radius: 16px; padding: 24px; margin-bottom: 16px; background: linear-gradient(135deg, #ffffff, #fafafa); border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 16px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.06)'">
+                <div class="project-item ${this.selectedProjectId == project.id ? 'active' : ''}" data-project-id="${project.id}" style="border-radius: 16px; padding: 24px; margin-bottom: 16px; background: linear-gradient(135deg, #ffffff, #fafafa); border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 16px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.06)'">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex align-items-center flex-grow-1" onclick="app.selectProject('${project.id}')">
             <div class="project-icon me-4" style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #7c8471, #9a9e92); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 26px;">
@@ -1230,39 +1294,73 @@ class TaskFlowApp {
                    </div>` 
                 : projectTasks.map(task => {
                     const isTaskOwner = String(task.owner_id) === String(window.currentUser?.id);
+                    const isAssignee = String(task.assignee_id) === String(window.currentUser?.id);
+                    const canComplete = isTaskOwner || isAssignee || isProjectOwner;
+                    const today = new Date().toISOString().split('T')[0];
+                    const isOverdue = task.due_date && task.due_date < today && !task.completed;
+                    const isMissed = task.is_missed || isOverdue;
+                    
                     return `
-                    <div class="task-card" style="background: linear-gradient(135deg, #ffffff, #fafbfc); border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; transition: all 0.3s ease; position: relative; overflow: hidden;" 
-                         onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.15)'; this.style.borderColor='#7c8471'" 
-                         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)'; this.style.borderColor='#e2e8f0'">
+                    <div class="task-card" style="background: linear-gradient(135deg, ${isMissed ? '#fef2f2' : '#ffffff'}, ${isMissed ? '#fee2e2' : '#fafbfc'}); border: 1px solid ${isMissed ? '#fecaca' : '#e2e8f0'}; border-radius: 12px; padding: 20px; transition: all 0.3s ease; position: relative; overflow: hidden;" 
+                         onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.15)'; this.style.borderColor='${isMissed ? '#f87171' : '#7c8471'}'" 
+                         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)'; this.style.borderColor='${isMissed ? '#fecaca' : '#e2e8f0'}'">
                         
-                        <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: ${task.completed ? '#10b981' : '#f59e0b'};"></div>
+                        <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: ${task.completed ? '#10b981' : isMissed ? '#ef4444' : '#f59e0b'};"></div>
                         
                         <div class="task-content" style="display: flex; align-items: flex-start; gap: 16px;">
-                            <button class="task-action-btn" onclick="app.toggleTask('${task.id}')" 
-                                    style="background: ${task.completed ? 'linear-gradient(135deg, #6b7280, #9ca3af)' : 'linear-gradient(135deg, #7c8471, #9a9e92)'}; 
-                                           color: white; border: none; border-radius: 8px; padding: 10px 18px; font-size: 14px; font-weight: 500; 
-                                           transition: all 0.3s ease; flex-shrink: 0;">
-                                <i class="bi ${task.completed ? 'bi-arrow-clockwise' : 'bi-check-lg'} me-1"></i>
-                                ${task.completed ? 'Reopen' : 'Complete'}
-                            </button>
+                            ${isMissed ? `
+                                <div class="missed-indicator" style="background: linear-gradient(135deg, #ef4444, #f87171); color: white; border-radius: 8px; padding: 10px 18px; font-size: 14px; font-weight: 600; flex-shrink: 0; display: flex; align-items: center; box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);">
+                                    <i class="bi bi-exclamation-triangle-fill me-1"></i>MISSED
+                                </div>
+                            ` : canComplete ? `
+                                <button class="task-action-btn" onclick="app.toggleTask('${task.id}')" 
+                                        style="background: ${task.completed ? 'linear-gradient(135deg, #6b7280, #9ca3af)' : 'linear-gradient(135deg, #7c8471, #9a9e92)'}; 
+                                               color: white; border: none; border-radius: 8px; padding: 10px 18px; font-size: 14px; font-weight: 500; 
+                                               transition: all 0.3s ease; flex-shrink: 0;">
+                                    <i class="bi ${task.completed ? 'bi-arrow-clockwise' : 'bi-check-lg'} me-1"></i>
+                                    ${task.completed ? 'Reopen' : 'Complete'}
+                                </button>
+                            ` : `
+                                <div style="background: #f3f4f6; color: #6b7280; border-radius: 8px; padding: 10px 18px; font-size: 14px; font-weight: 500; flex-shrink: 0; display: flex; align-items: center;">
+                                    <i class="bi bi-eye me-1"></i>View Only
+                                </div>
+                            `}
                             
                             <div class="task-details" style="flex-grow: 1; min-width: 0;">
                                 <div class="task-title-row" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
-                                    <h6 class="task-title" style="margin: 0; font-size: 1.1rem; font-weight: 600; color: ${task.completed ? '#6b7280' : '#1e293b'}; 
-                                                                      ${task.completed ? 'text-decoration: line-through;' : ''} word-break: break-word;">
-                                        ${this.escapeHtml(task.title)}
-                                        ${!isTaskOwner ? `<span style="background: #f3f4f6; color: #6b7280; padding: 3px 8px; border-radius: 8px; font-size: 12px; font-weight: 500; margin-left: 8px;"><i class="bi bi-lock me-1"></i>Read Only</span>` : ''}
-                                    </h6>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <h6 class="task-title" style="margin: 0; font-size: 1.1rem; font-weight: 600; color: ${task.completed ? '#6b7280' : isMissed ? '#dc2626' : '#1e293b'}; 
+                                                                          ${task.completed ? 'text-decoration: line-through;' : ''} word-break: break-word;">
+                                            ${this.escapeHtml(task.title)}
+                                        </h6>
+                                        ${isMissed && !task.completed ? `
+                                            <span style="background: #fee2e2; color: #dc2626; padding: 3px 8px; border-radius: 8px; font-size: 12px; font-weight: 600;">
+                                                <i class="bi bi-exclamation-triangle-fill me-1"></i>OVERDUE
+                                            </span>
+                                        ` : ''}
+                                        ${!canComplete ? `
+                                            <span style="background: #fef3c7; color: #d97706; padding: 3px 8px; border-radius: 8px; font-size: 12px; font-weight: 500;">
+                                                <i class="bi bi-eye me-1"></i>View Only
+                                            </span>
+                                        ` : !isTaskOwner ? `
+                                            <span style="background: #dbeafe; color: #1e40af; padding: 3px 8px; border-radius: 8px; font-size: 12px; font-weight: 500;">
+                                                <i class="bi bi-person-check me-1"></i>Assignee
+                                            </span>
+                                        ` : ''}
+                                    </div>
                                 </div>
                                 
                                 <div class="task-meta" style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
                                     <div class="due-date-input" style="display: flex; align-items: center; gap: 8px;">
                                         <i class="bi bi-calendar3" style="color: #64748b; font-size: 16px;"></i>
-                                        ${isTaskOwner ? `
+                                        ${(isTaskOwner || isProjectOwner) ? `
                                             <input type="date" class="form-control form-control-sm" 
                                                    value="${task.due_date || ''}" 
+                                                   min="${new Date().toISOString().split('T')[0]}"
                                                    onchange="app.updateDueDate('${task.id}', this.value)"
-                                                   style="border: 1px solid #d1d5db; border-radius: 6px; padding: 6px 10px; font-size: 14px; width: 140px;">
+                                                   style="border: 2px solid #e2e8f0; border-radius: 8px; padding: 8px 12px; font-size: 14px; width: 160px; background: #ffffff; transition: all 0.3s ease;"
+                                                   onfocus="this.style.borderColor='#7c8471'; this.style.boxShadow='0 0 0 3px rgba(124,132,113,0.1)'"
+                                                   onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'">
                                         ` : `
                                             <span style="background: #f3f4f6; color: #6b7280; padding: 6px 10px; border-radius: 6px; font-size: 14px; font-weight: 500;">
                                                 ${task.due_date || 'No due date'}
@@ -1271,10 +1369,11 @@ class TaskFlowApp {
                                     </div>
                                     
                                     ${task.due_date ? `
-                                        <span style="background: ${task.completed ? '#f3f4f6' : '#fef3c7'}; 
-                                                     color: ${task.completed ? '#6b7280' : '#92400e'}; 
-                                                     padding: 5px 12px; border-radius: 16px; font-size: 13px; font-weight: 500; display: flex; align-items: center;">
-                                            <i class="bi bi-clock me-1"></i>Due ${task.due_date}
+                                        <span style="background: ${task.completed ? '#f3f4f6' : isMissed ? '#fee2e2' : '#fef3c7'}; 
+                                                     color: ${task.completed ? '#6b7280' : isMissed ? '#dc2626' : '#92400e'}; 
+                                                     padding: 5px 12px; border-radius: 16px; font-size: 13px; font-weight: ${isMissed ? '600' : '500'}; display: flex; align-items: center;">
+                                            <i class="bi ${isMissed ? 'bi-exclamation-triangle' : 'bi-clock'} me-1"></i>
+                                            ${isMissed ? `Overdue: ${task.due_date}` : `Due ${task.due_date}`}
                                         </span>
                                     ` : ''}
                                 </div>
@@ -1468,10 +1567,11 @@ class TaskFlowApp {
                                                 </div>
                                             </div>
                                         </div>
-                                        <button onclick="app.selectProject('${project.id}'); document.querySelector('[data-bs-target=\\"#projects\\"]').click()" 
+                                        <button onclick="app.selectProject('${project.id}')" 
                                                 style="background: linear-gradient(135deg, #7c8471, #9a9e92); color: white; border: none; border-radius: 8px; padding: 10px 18px; font-size: 14px; font-weight: 600; transition: all 0.3s ease;"
                                                 onmouseover="this.style.transform='scale(1.05)'"
-                                                onmouseout="this.style.transform='scale(1)'">
+                                                onmouseout="this.style.transform='scale(1)'"
+                                                title="View project">
                                             <i class="bi bi-arrow-right-circle me-1"></i>View
                                         </button>
                                     </div>
@@ -1845,23 +1945,36 @@ class TaskFlowApp {
     }
 
     async updateDueDate(taskId, dueDate) {
-        const body = new FormData();
-        body.append('action', 'update_due');
-        body.append('task_id', taskId);
-        body.append('due_date', dueDate || '');
-        body.append('csrf_token', this.getCsrf());
-        
-        try {
-            const data = await this.makeApiCall('../user_api/tasks.php', body);
-            if (data.success) {
-                await this.fetchTasks();
-                this.render();
-            } else {
-                this.showToast(data.message || 'Failed to update due date', 'error');
-            }
-        } catch (_) {
-            this.showToast('Network error while updating due date', 'error');
+        // Clear any existing timeout for this task
+        if (this.dueDateTimeouts.has(taskId)) {
+            clearTimeout(this.dueDateTimeouts.get(taskId));
         }
+        
+        // Set a new timeout to debounce the update
+        const timeoutId = setTimeout(async () => {
+            this.dueDateTimeouts.delete(taskId);
+            
+            const body = new FormData();
+            body.append('action', 'update_due');
+            body.append('task_id', taskId);
+            body.append('due_date', dueDate || '');
+            body.append('csrf_token', this.getCsrf());
+            
+            try {
+                const data = await this.makeApiCall('../user_api/tasks.php', body);
+                if (data.success) {
+                    await this.fetchTasks();
+                    this.render();
+                    this.showToast('Due date updated successfully');
+                } else {
+                    this.showToast(data.message || 'Failed to update due date', 'error');
+                }
+            } catch (_) {
+                this.showToast('Network error while updating due date', 'error');
+            }
+        }, 500); // 500ms debounce
+        
+        this.dueDateTimeouts.set(taskId, timeoutId);
     }
 
     async addQuickTask() {
@@ -1891,20 +2004,36 @@ class TaskFlowApp {
     }
 
     async updateTaskTitle(taskId, title) {
-        const body = new FormData();
-        body.append('action', 'update_title');
-        body.append('task_id', taskId);
-        body.append('title', title);
-        body.append('csrf_token', this.getCsrf());
-        
-        try {
-            const data = await this.makeApiCall('../user_api/tasks.php', body);
-            if (!data.success) {
-                this.showToast(data.message || 'Failed to update task title', 'error');
-            }
-        } catch (_) {
-            this.showToast('Network error while updating title', 'error');
+        // Clear any existing timeout for this task title update
+        if (this.titleTimeouts.has(taskId)) {
+            clearTimeout(this.titleTimeouts.get(taskId));
         }
+        
+        // Set a new timeout to debounce the update
+        const timeoutId = setTimeout(async () => {
+            this.titleTimeouts.delete(taskId);
+            
+            const body = new FormData();
+            body.append('action', 'update_title');
+            body.append('task_id', taskId);
+            body.append('title', title);
+            body.append('csrf_token', this.getCsrf());
+            
+            try {
+                const data = await this.makeApiCall('../user_api/tasks.php', body);
+                if (data.success) {
+                    await this.fetchTasks();
+                    this.render();
+                    this.showToast('Task title updated');
+                } else {
+                    this.showToast(data.message || 'Failed to update task title', 'error');
+                }
+            } catch (_) {
+                this.showToast('Network error while updating title', 'error');
+            }
+        }, 800); // 800ms debounce for title (longer since typing can be rapid)
+        
+        this.titleTimeouts.set(taskId, timeoutId);
     }
 
     async deleteTask(taskId) {
@@ -1954,8 +2083,72 @@ class TaskFlowApp {
     }
 
     selectProject(projectId) {
+        console.log('Selecting project:', projectId);
         this.selectedProjectId = projectId;
-        this.render();
+        
+        // First switch to projects tab
+        const projectsTab = document.querySelector('[data-bs-target="#projects"]');
+        if (projectsTab) {
+            console.log('Switching to projects tab');
+            projectsTab.click();
+        } else {
+            console.warn('Projects tab not found');
+        }
+        
+        // Wait for tab switch to complete, then render and scroll
+        setTimeout(() => {
+            this.render();
+            
+            // Additional wait for render to complete
+            setTimeout(() => {
+                const projectElement = document.querySelector(`[data-project-id="${projectId}"]`);
+                if (projectElement) {
+                    console.log('Found project element, scrolling to it');
+                    projectElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    // Add a subtle highlight effect
+                    projectElement.style.boxShadow = '0 0 20px rgba(124, 132, 113, 0.3)';
+                    projectElement.style.transform = 'scale(1.02)';
+                    setTimeout(() => {
+                        projectElement.style.boxShadow = '';
+                        projectElement.style.transform = 'scale(1)';
+                    }, 2000);
+                } else {
+                    console.warn('Project element not found:', projectId);
+                    console.log('Available project elements:', document.querySelectorAll('[data-project-id]'));
+                }
+            }, 200);
+        }, 100);
+    }
+
+    // Navigate to task in Tasks tab and focus on its edit section
+    editTaskInTasksTab(taskId) {
+        // Switch to Tasks tab
+        const tasksTab = document.querySelector('[data-bs-target="#tasks"]');
+        if (tasksTab) {
+            tasksTab.click();
+        }
+        
+        // Wait for tab switch, then scroll to task
+        setTimeout(() => {
+            const taskElement = document.querySelector(`[data-task-id="${taskId}"]`);
+            if (taskElement) {
+                taskElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Focus on the title input if it exists
+                const titleInput = taskElement.querySelector('input[type="text"]');
+                if (titleInput) {
+                    setTimeout(() => {
+                        titleInput.focus();
+                        titleInput.select();
+                        // Add highlight effect
+                        taskElement.style.boxShadow = '0 0 20px rgba(59, 130, 246, 0.3)';
+                        setTimeout(() => {
+                            taskElement.style.boxShadow = '';
+                        }, 3000);
+                    }, 500);
+                }
+            }
+        }, 300);
     }
 
     // Helper methods for UI interactions
