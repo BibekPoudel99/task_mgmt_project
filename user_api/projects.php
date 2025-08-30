@@ -179,6 +179,14 @@ if ($method === 'POST') {
                 echo json_encode(['success' => false, 'message' => 'User not found']);
                 exit;
             }
+            
+            // Transfer ownership of all tasks created by this user in this project to the project owner
+            $pdo->prepare('UPDATE tasks SET owner_id = ? WHERE project_id = ? AND owner_id = ?')->execute([$ownerId, $projectId, $memberId]);
+            
+            // Unassign all tasks assigned to this user in this project
+            $pdo->prepare('UPDATE tasks SET assignee_id = NULL WHERE project_id = ? AND assignee_id = ?')->execute([$projectId, $memberId]);
+            
+            // Remove user from project members
             $pdo->prepare('DELETE FROM project_members WHERE project_id = ? AND user_id = ?')->execute([$projectId, $memberId]);
             echo json_encode(['success' => true, 'csrf_token' => $nextToken]);
         } catch (Exception $e) {

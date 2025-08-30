@@ -38,10 +38,15 @@ if ($method === 'GET') {
             LEFT JOIN users ou ON ou.id = t.owner_id
             LEFT JOIN projects p ON p.id = t.project_id
             LEFT JOIN project_members pm ON pm.project_id = p.id
-            WHERE t.owner_id = :uid 
-               OR t.assignee_id = :uid
-               OR (p.owner_id = :uid)
-               OR (pm.user_id = :uid)
+            WHERE (
+                (t.owner_id = :uid AND (t.project_id IS NULL OR p.owner_id = :uid OR pm.user_id = :uid))
+                OR
+                (t.assignee_id = :uid AND (t.project_id IS NULL OR p.owner_id = :uid OR pm.user_id = :uid))
+                OR
+                (t.project_id IS NOT NULL AND p.owner_id = :uid)
+                OR
+                (t.project_id IS NOT NULL AND pm.user_id = :uid)
+            )
             ORDER BY t.id DESC
         ";
         $stmt = $pdo->prepare($sql);
@@ -54,12 +59,13 @@ if ($method === 'GET') {
                 'due_date' => $t['due_date'],
                 'completed' => (bool)$t['completed'],
                 'owner_id' => (int)$t['owner_id'],
-                'owner_username' => $t['owner_username'],
                 'assignee_id' => $t['assignee_id'] ? (int)$t['assignee_id'] : null,
-                'assignee' => $t['assignee'] ?? null,
+                'assignee' => $t['assignee'],
+                'owner_username' => $t['owner_username'],
                 'is_missed' => (bool)$t['is_missed'],
             ];
         }, $stmt->fetchAll(PDO::FETCH_ASSOC));
+
         echo json_encode(['success' => true, 'tasks' => $tasks]);
     } catch (Exception $e) {
         http_response_code(500);
@@ -69,7 +75,7 @@ if ($method === 'GET') {
 }
 
 if ($method === 'POST') {
-    // CSRF validate (single-use token)
+    // CSRF
     $csrf = $_POST['csrf_token'] ?? '';
     if (!Token::check($csrf)) {
         $newToken = Session::put('csrf_token', md5(uniqid()));
@@ -77,49 +83,61 @@ if ($method === 'POST') {
         echo json_encode(['success' => false, 'message' => 'Invalid CSRF token', 'csrf_token' => $newToken]);
         exit;
     }
-    // Next token for following request
     $nextToken = Session::put('csrf_token', md5(uniqid()));
 
     $action = $_POST['action'] ?? '';
 
     if ($action === 'create') {
         $title = trim($_POST['title'] ?? '');
+        $dueDate = trim($_POST['due_date'] ?? '');
         $projectId = (int)($_POST['project_id'] ?? 0);
-        $dueDate = $_POST['due_date'] ?? null;
-        if ($dueDate) {
-            $today = date('Y-m-d');
-            if ($dueDate < $today) {
-                http_response_code(422);
-                echo json_encode(['success' => false, 'message' => 'Due date cannot be before today']);
-                exit;
-            }
-        }
-
         if ($title === '') {
             http_response_code(422);
             echo json_encode(['success' => false, 'message' => 'Title is required']);
             exit;
         }
-
-        // If project specified, ensure user is owner or member
-        if ($projectId) {
-            $stmt = $pdo->prepare('SELECT COUNT(*) FROM projects p LEFT JOIN project_members pm ON pm.project_id = p.id AND pm.user_id = ? WHERE p.id = ? AND (p.owner_id = ? OR pm.user_id = ?)');
-            $stmt->execute([$userId, $projectId, $userId, $userId]);
-            $allowed = (int)$stmt->fetchColumn() > 0;
-            if (!$allowed) {
-                http_response_code(403);
-                echo json_encode(['success' => false, 'message' => 'Not a member of this project']);
-                exit;
-            }
-        }
-
         try {
-            $stmt = $pdo->prepare('INSERT INTO tasks (title, owner_id, project_id, due_date, completed, created_at) VALUES (?, ?, ?, ?, 0, NOW())');
-            $stmt->execute([$title, $userId, $projectId ?: null, $dueDate ?: null]);
-            echo json_encode(['success' => true, 'id' => (int)$pdo->lastInsertId(), 'csrf_token' => $nextToken]);
+            $stmt = $pdo->prepare('INSERT INTO tasks (title, due_date, project_id, owner_id, created_at) VALUES (?, ?, ?, ?, NOW())');
+            $stmt->execute([$title, $dueDate ?: null, $projectId ?: null, $userId]);
+            $taskId = (int)$pdo->lastInsertId();
+            echo json_encode(['success' => true, 'id' => $taskId, 'csrf_token' => $nextToken]);
         } catch (Exception $e) {
             http_response_code(500);
             echo json_encode(['success' => false, 'message' => 'Failed to create task', 'csrf_token' => $nextToken]);
+        }
+        exit;
+    }
+
+    if ($action === 'update_title') {
+        $taskId = (int)($_POST['task_id'] ?? 0);
+        $title = trim($_POST['title'] ?? '');
+        if (!$taskId || $title === '') {
+            http_response_code(422);
+            echo json_encode(['success' => false, 'message' => 'Invalid input']);
+            exit;
+        }
+        try {
+            // Only task owner or project owner can update title
+            $stmt = $pdo->prepare('SELECT t.owner_id, t.project_id, p.owner_id AS project_owner FROM tasks t LEFT JOIN projects p ON p.id = t.project_id WHERE t.id = ?');
+            $stmt->execute([$taskId]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$row) {
+                http_response_code(404);
+                echo json_encode(['success' => false, 'message' => 'Task not found']);
+                exit;
+            }
+            $allowed = ($row['owner_id'] == $userId) || ($row['project_owner'] == $userId);
+            if (!$allowed) {
+                http_response_code(403);
+                echo json_encode(['success' => false, 'message' => 'Not allowed']);
+                exit;
+            }
+            $upd = $pdo->prepare('UPDATE tasks SET title = ? WHERE id = ?');
+            $upd->execute([$title, $taskId]);
+            echo json_encode(['success' => true, 'csrf_token' => $nextToken]);
+        } catch (Exception $e) {
+            http_response_code(500);
+            echo json_encode(['success' => false, 'message' => 'Failed to update title', 'csrf_token' => $nextToken]);
         }
         exit;
     }
@@ -133,24 +151,17 @@ if ($method === 'POST') {
             exit;
         }
         try {
-            // Load task
-            $stmt = $pdo->prepare('SELECT id, owner_id, project_id FROM tasks WHERE id = ?');
+            // Only task owner or project owner can assign
+            $stmt = $pdo->prepare('SELECT t.owner_id, t.project_id, p.owner_id AS project_owner FROM tasks t LEFT JOIN projects p ON p.id = t.project_id WHERE t.id = ?');
             $stmt->execute([$taskId]);
-            $task = $stmt->fetch(PDO::FETCH_ASSOC);
-            if (!$task) {
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$row) {
                 http_response_code(404);
                 echo json_encode(['success' => false, 'message' => 'Task not found']);
                 exit;
             }
-            $projectId = (int)($task['project_id'] ?? 0);
-            // Only project owner may assign tasks within the project
-            $allowed = false;
-            if ($projectId) {
-                $ownStmt = $pdo->prepare('SELECT owner_id FROM projects WHERE id = ?');
-                $ownStmt->execute([$projectId]);
-                $projOwnerId = (int)($ownStmt->fetchColumn() ?: 0);
-                if ($projOwnerId === $userId) $allowed = true;
-            }
+            $projectId = $row['project_id'];
+            $allowed = ($row['owner_id'] == $userId) || ($row['project_owner'] == $userId);
             if (!$allowed) {
                 http_response_code(403);
                 echo json_encode(['success' => false, 'message' => 'Not allowed']);
@@ -214,13 +225,16 @@ if ($method === 'POST') {
                 echo json_encode(['success' => false, 'message' => 'Task not found']);
                 exit;
             }
-            $allowed = ($row['owner_id'] == $userId) || ($row['assignee_id'] == $userId) || ($row['project_owner'] == $userId);
+            $isAdmin = ($_SESSION['role'] ?? '') === 'admin';
+            $allowed = ($row['owner_id'] == $userId) || ($row['assignee_id'] == $userId) || ($row['project_owner'] == $userId) || $isAdmin;
             if (!$allowed) {
                 http_response_code(403);
                 echo json_encode(['success' => false, 'message' => 'Not allowed']);
                 exit;
             }
-            $upd = $pdo->prepare('UPDATE tasks SET due_date = ? WHERE id = ?');
+            
+            // Reset is_missed to 0 when due date is updated
+            $upd = $pdo->prepare('UPDATE tasks SET due_date = ?, is_missed = 0 WHERE id = ?');
             $upd->execute([$dueDate ?: null, $taskId]);
             echo json_encode(['success' => true, 'csrf_token' => $nextToken]);
         } catch (Exception $e) {
@@ -238,11 +252,17 @@ if ($method === 'POST') {
             exit;
         }
         try {
-            // Only owner or assignee can toggle
-            $stmt = $pdo->prepare('SELECT completed FROM tasks WHERE id = ? AND (owner_id = ? OR assignee_id = ?)');
-            $stmt->execute([$taskId, $userId, $userId]);
+            // Only owner, assignee, or project owner can toggle
+            $stmt = $pdo->prepare('SELECT t.completed, t.owner_id, t.assignee_id, t.project_id, p.owner_id AS project_owner FROM tasks t LEFT JOIN projects p ON p.id = t.project_id WHERE t.id = ?');
+            $stmt->execute([$taskId]);
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!$row) {
+                http_response_code(404);
+                echo json_encode(['success' => false, 'message' => 'Task not found']);
+                exit;
+            }
+            $allowed = ($row['owner_id'] == $userId) || ($row['assignee_id'] == $userId) || ($row['project_owner'] == $userId);
+            if (!$allowed) {
                 http_response_code(403);
                 echo json_encode(['success' => false, 'message' => 'Not allowed']);
                 exit;
@@ -253,82 +273,7 @@ if ($method === 'POST') {
             echo json_encode(['success' => true, 'csrf_token' => $nextToken]);
         } catch (Exception $e) {
             http_response_code(500);
-            echo json_encode(['success' => false, 'message' => 'Failed to update task', 'csrf_token' => $nextToken]);
-        }
-        exit;
-    }
-
-    if ($action === 'update_title') {
-        $taskId = (int)($_POST['task_id'] ?? 0);
-        $title = trim($_POST['title'] ?? '');
-        if (!$taskId || $title === '') {
-            http_response_code(422);
-            echo json_encode(['success' => false, 'message' => 'Invalid input']);
-            exit;
-        }
-        try {
-            // Only task owner, assignee, or project owner can rename
-            $stmt = $pdo->prepare('SELECT t.owner_id, t.assignee_id, t.project_id, p.owner_id AS project_owner_id FROM tasks t LEFT JOIN projects p ON p.id = t.project_id WHERE t.id = ?');
-            $stmt->execute([$taskId]);
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            if (!$row) {
-                http_response_code(404);
-                echo json_encode(['success' => false, 'message' => 'Task not found']);
-                exit;
-            }
-            
-            $allowed = ($row['owner_id'] == $userId || $row['assignee_id'] == $userId || $row['project_owner_id'] == $userId);
-            if (!$allowed) {
-                http_response_code(403);
-                echo json_encode(['success' => false, 'message' => 'Not allowed - only task creator, assignee, or project owner can edit']);
-                exit;
-            }
-            
-            $upd = $pdo->prepare('UPDATE tasks SET title = ? WHERE id = ?');
-            $upd->execute([$title, $taskId]);
-            echo json_encode(['success' => true, 'csrf_token' => $nextToken]);
-        } catch (Exception $e) {
-            http_response_code(500);
-            echo json_encode(['success' => false, 'message' => 'Failed to update task title', 'csrf_token' => $nextToken]);
-        }
-        exit;
-    }
-
-    if ($action === 'unassign') {
-        $taskId = (int)($_POST['task_id'] ?? 0);
-        if (!$taskId) {
-            http_response_code(422);
-            echo json_encode(['success' => false, 'message' => 'Invalid input']);
-            exit;
-        }
-        try {
-            // Only owner or project owner can unassign
-            $stmt = $pdo->prepare('SELECT owner_id, project_id FROM tasks WHERE id = ?');
-            $stmt->execute([$taskId]);
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            if (!$row) {
-                http_response_code(404);
-                echo json_encode(['success' => false, 'message' => 'Task not found']);
-                exit;
-            }
-            $allowed = ($row['owner_id'] == $userId);
-            if (!$allowed && $row['project_id']) {
-                $ownStmt = $pdo->prepare('SELECT owner_id FROM projects WHERE id = ?');
-                $ownStmt->execute([$row['project_id']]);
-                $projOwnerId = (int)($ownStmt->fetchColumn() ?: 0);
-                $allowed = $projOwnerId === $userId;
-            }
-            if (!$allowed) {
-                http_response_code(403);
-                echo json_encode(['success' => false, 'message' => 'Not allowed']);
-                exit;
-            }
-            $upd = $pdo->prepare('UPDATE tasks SET assignee_id = NULL WHERE id = ?');
-            $upd->execute([$taskId]);
-            echo json_encode(['success' => true, 'csrf_token' => $nextToken]);
-        } catch (Exception $e) {
-            http_response_code(500);
-            echo json_encode(['success' => false, 'message' => 'Failed to unassign task', 'csrf_token' => $nextToken]);
+            echo json_encode(['success' => false, 'message' => 'Failed to toggle task', 'csrf_token' => $nextToken]);
         }
         exit;
     }
@@ -337,12 +282,12 @@ if ($method === 'POST') {
         $taskId = (int)($_POST['task_id'] ?? 0);
         if (!$taskId) {
             http_response_code(422);
-            echo json_encode(['success' => false, 'message' => 'Invalid input']);
+            echo json_encode(['success' => false, 'message' => 'Invalid task']);
             exit;
         }
         try {
             // Only task owner or project owner can delete
-            $stmt = $pdo->prepare('SELECT t.owner_id, t.project_id, p.owner_id AS project_owner_id FROM tasks t LEFT JOIN projects p ON p.id = t.project_id WHERE t.id = ?');
+            $stmt = $pdo->prepare('SELECT t.owner_id, t.project_id, p.owner_id AS project_owner FROM tasks t LEFT JOIN projects p ON p.id = t.project_id WHERE t.id = ?');
             $stmt->execute([$taskId]);
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!$row) {
@@ -350,16 +295,13 @@ if ($method === 'POST') {
                 echo json_encode(['success' => false, 'message' => 'Task not found']);
                 exit;
             }
-            
-            $allowed = ($row['owner_id'] == $userId || $row['project_owner_id'] == $userId);
+            $allowed = ($row['owner_id'] == $userId) || ($row['project_owner'] == $userId);
             if (!$allowed) {
                 http_response_code(403);
-                echo json_encode(['success' => false, 'message' => 'Not allowed - only task creator or project owner can delete']);
+                echo json_encode(['success' => false, 'message' => 'Not allowed']);
                 exit;
             }
-            
-            $stmt = $pdo->prepare('DELETE FROM tasks WHERE id = ?');
-            $stmt->execute([$taskId]);
+            $pdo->prepare('DELETE FROM tasks WHERE id = ?')->execute([$taskId]);
             echo json_encode(['success' => true, 'csrf_token' => $nextToken]);
         } catch (Exception $e) {
             http_response_code(500);
@@ -375,4 +317,3 @@ if ($method === 'POST') {
 
 http_response_code(405);
 echo json_encode(['success' => false, 'message' => 'Method not allowed']);
-

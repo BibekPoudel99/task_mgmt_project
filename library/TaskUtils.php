@@ -21,8 +21,20 @@ class TaskUtils {
                 AND is_missed = 0
             ");
             $stmt->execute();
+            $missedCount = $stmt->rowCount();
             
-            return $stmt->rowCount(); // Return number of tasks marked as missed
+            // Reset missed status for tasks that now have future due dates or no due date
+            $stmt2 = $pdo->prepare("
+                UPDATE tasks 
+                SET is_missed = 0 
+                WHERE (due_date >= CURDATE() OR due_date IS NULL)
+                AND completed = 0 
+                AND is_missed = 1
+            ");
+            $stmt2->execute();
+            $resetCount = $stmt2->rowCount();
+            
+            return $missedCount; // Return number of tasks marked as missed
         } catch (Exception $e) {
             error_log("Error updating missed tasks: " . $e->getMessage());
             return false;
