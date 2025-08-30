@@ -7,73 +7,94 @@
     <meta property="twitter:card" content="summary_large_image" />
 
     <style data-tag="reset-style-sheet">
-      html {  line-height: 1.15;}body {  margin: 0;}n* {  box-sizing: border-box;  border-width: 0;  border-style: solid;  -webkit-font-smoothing: antialiased;}p,li,ul,pre,div,h1,h2,h3,h4,h5,h6,figure,blockquote,figcaption {  margin: 0;  padding: 0;}button {  background-color: transparent;}button,input,optgroup,select,textarea {  font-family: inherit;  font-size: 100%;  line-height: 1.15;  margin: 0;}button,select {  text-transform: none;}button,[type="button"],[type="reset"],[type="submit"] { appearance: none; -webkit-appearance: none;  color: inherit;}button::-moz-focus-inner,[type="button"]::-moz-focus-inner,[type="reset"]::-moz-focus-inner,[type="submit"]::-moz-focus-inner {  border-style: none;  padding: 0;}button:-moz-focus,[type="button"]:-moz-focus,[type="reset"]:-moz-focus,[type="submit"]:-moz-focus {  outline: 1px dotted ButtonText;}a {  color: inherit;  text-decoration: inherit;}input {  padding: 2px 4px;}img {  display: block;}details {  display: block;  margin: 0;  padding: 0;}summary::-webkit-details-marker {  display: none;}[data-thq="accordion"] [data-thq="accordion-content"] {  max-height: 0;  overflow: hidden;  transition: max-height 0.3s ease-in-out;  padding: 0;}[data-thq="accordion"] details[data-thq="accordion-trigger"][open] + [data-thq="accordion-content"] {  max-height: 1000vh;}details[data-thq="accordion-trigger"][open] summary [data-thq="accordion-icon"] {  transform: rotate(180deg);}html { scroll-behavior: smooth  }
+      html { line-height: 1.15; }
+      body { margin: 0; }
+      * { box-sizing: border-box; border-width: 0; border-style: solid; -webkit-font-smoothing: antialiased; }
+      p, li, ul, pre, div, h1, h2, h3, h4, h5, h6, figure, blockquote, figcaption { margin: 0; padding: 0; }
+      button { background-color: transparent; }
+      button, input, optgroup, select, textarea { font-family: inherit; font-size: 100%; line-height: 1.15; margin: 0; }
+      button, select { text-transform: none; }
+      button, [type="button"], [type="reset"], [type="submit"] { appearance: none; -webkit-appearance: none; color: inherit; }
+      button::-moz-focus-inner, [type="button"]::-moz-focus-inner, [type="reset"]::-moz-focus-inner, [type="submit"]::-moz-focus-inner { border-style: none; padding: 0; }
+      button:-moz-focus, [type="button"]:-moz-focus, [type="reset"]:-moz-focus, [type="submit"]:-moz-focus { outline: 1px dotted ButtonText; }
+      a { color: inherit; text-decoration: inherit; }
+      input { padding: 2px 4px; }
+      img { display: block; }
+      details { display: block; margin: 0; padding: 0; }
+      summary::-webkit-details-marker { display: none; }
+      [data-thq="accordion"] [data-thq="accordion-content"] { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-in-out; padding: 0; }
+      [data-thq="accordion"] details[data-thq="accordion-trigger"][open] + [data-thq="accordion-content"] { max-height: 1000vh; }
+      details[data-thq="accordion-trigger"][open] summary [data-thq="accordion-icon"] { transform: rotate(180deg); }
+      html { scroll-behavior: smooth; }
     </style>
     <style data-tag="default-style-sheet">
       html {
         font-family: Inter;
         font-size: 16px;
       }
-
       body {
         margin: 0;
         padding: 0;
-        
         font-weight: 400;
-        font-style:normal;
+        font-style: normal;
         text-decoration: none;
         text-transform: none;
         letter-spacing: normal;
         line-height: 1.15;
         color: var(--dl-color-theme-neutral-dark);
         background: var(--dl-color-theme-neutral-light);
-
         fill: var(--dl-color-theme-neutral-dark);
       }
+      .navbar-container {
+        position: fixed;
+        top: 0;
+        z-index: 1000;
+        background: var(--dl-color-theme-neutral-light);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .team-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 20px;
+        border-radius: 8px;
+        transition: transform 0.3s ease;
+      }
+      .team-card:hover {
+        transform: translateY(-5px);
+      }
+      .team-image {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 16px;
+      }
+      .about-content {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
+      /* Add scroll offset for sticky navbar */
+      #home, #team, #about, #contact {
+        scroll-margin-top: 100px;
+      }
+      #home {
+        padding-top: 100px; /* Extra space for home section */
+      }
     </style>
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/animate.css@4.1.1/animate.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap"
-      data-tag="font"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&amp;display=swap"
-      data-tag="font"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap"
-      data-tag="font"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap"
-      data-tag="font"
-    />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&amp;display=swap"
-      data-tag="font"
-    />
-    <link
-      rel="stylesheet"
-      href="https://unpkg.com/@teleporthq/teleport-custom-scripts/dist/style.css"
-    />
+    <link rel="stylesheet" href="https://unpkg.com/animate.css@4.1.1/animate.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" data-tag="font" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" data-tag="font" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" data-tag="font" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" data-tag="font" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" data-tag="font" />
+    <link rel="stylesheet" href="https://unpkg.com/@teleporthq/teleport-custom-scripts/dist/style.css" />
     <style>
       @keyframes fade-in-left {
-        0% {
-          opacity: 0;
-          transform: translateX(-20px);
-        }
-        100% {
-          opacity: 1;
-          transform: translateX(0);
-        }
+        0% { opacity: 0; transform: translateX(-20px); }
+        100% { opacity: 1; transform: translateX(0); }
       }
     </style>
   </head>
@@ -81,77 +102,47 @@
     <link rel="stylesheet" href="../assets/style.css" />
     <div>
       <link href="../assets/index.css" rel="stylesheet" />
-
       <div class="home-container">
         <navbar-wrapper class="navbar-wrapper">
-          <!--Navbar component-->
           <header class="navbar-container">
             <header data-thq="thq-navbar" class="navbar-navbar-interactive">
-              <img
-                alt="Task Management System"
-                src="https://aheioqhobo.cloudimg.io/v7/_playground-bucket-v2.teleporthq.io_/84ec08e8-34e9-42c7-9445-d2806d156403/fac575ac-7a41-484f-b7ac-875042de11f8?org_if_sml=1&amp;force_format=original"
-                class="navbar-image1"
-              />
+              <img alt="Task Management System" src="https://aheioqhobo.cloudimg.io/v7/_playground-bucket-v2.teleporthq.io_/84ec08e8-34e9-42c7-9445-d2806d156403/fac575ac-7a41-484f-b7ac-875042de11f8?org_if_sml=1&force_format=original" class="navbar-image1" />
               <div data-thq="thq-navbar-nav" class="navbar-desktop-menu">
                 <nav class="navbar-links1">
-                  <span class="thq-link thq-body-small"><span>Home</span></span>
-                  <span class="thq-link thq-body-small"><span>Team</span></span>
-                  <span class="thq-link thq-body-small">
-                    <span>About</span>
-                  </span>
-                  <span class="thq-link thq-body-small">
-                    <span>Contact</span>
-                  </span>
+                  <a href="#home" class="navbar-link thq-body-small"><span>Home</span></a>
+                  <a href="#team" class="navbar-link thq-body-small"><span>Team</span></a>
+                  <a href="#about" class="navbar-link thq-body-small"><span>About</span></a>
+                  <a href="#contact" class="navbar-link thq-body-small"><span>Contact</span></a>
                 </nav>
                 <div class="navbar-buttons1">
-                  <button
-                    class="navbar-action11 thq-button-animated thq-button-filled" onclick="window.location.href='../login_choice.php'"
-                  >
+                  <button class="navbar-action11 thq-button-animated thq-button-filled" onclick="window.location.href='../login_choice.php'">
                     <span class="thq-body-small">Login</span>
                   </button>
-                  <button
-                    class="navbar-action21 thq-button-outline thq-button-animated" onclick="window.location.href='../user/user_registration.php'"
-                  >
+                  <button class="navbar-action21 thq-button-outline thq-button-animated" onclick="window.location.href='../user/user_registration.php'">
                     <span class="thq-body-small">Register</span>
                   </button>
                 </div>
               </div>
               <div data-thq="thq-burger-menu" class="navbar-burger-menu">
                 <svg viewBox="0 0 1024 1024" class="navbar-icon1">
-                  <path
-                    d="M128 554.667h768c23.552 0 42.667-19.115 42.667-42.667s-19.115-42.667-42.667-42.667h-768c-23.552 0-42.667 19.115-42.667 42.667s19.115 42.667 42.667 42.667zM128 298.667h768c23.552 0 42.667-19.115 42.667-42.667s-19.115-42.667-42.667-42.667h-768c-23.552 0-42.667 19.115-42.667 42.667s19.115 42.667 42.667 42.667zM128 810.667h768c23.552 0 42.667-19.115 42.667-42.667s-19.115-42.667-42.667-42.667h-768c-23.552 0-42.667 19.115-42.667 42.667s19.115 42.667 42.667 42.667z"
-                  ></path>
+                  <path d="M128 554.667h768c23.552 0 42.667-19.115 42.667-42.667s-19.115-42.667-42.667-42.667h-768c-23.552 0-42.667 19.115-42.667 42.667s19.115 42.667 42.667 42.667zM128 298.667h768c23.552 0 42.667-19.115 42.667-42.667s-19.115-42.667-42.667-42.667h-768c-23.552 0-42.667 19.115-42.667 42.667s19.115 42.667 42.667 42.667zM128 810.667h768c23.552 0 42.667-19.115 42.667-42.667s-19.115-42.667-42.667-42.667h-768c-23.552 0-42.667 19.115-42.667 42.667s19.115 42.667 42.667 42.667z"></path>
                 </svg>
               </div>
               <div data-thq="thq-mobile-menu" class="navbar-mobile-menu">
                 <div class="navbar-nav">
                   <div class="navbar-top">
-                    <img
-                      alt="Task Management System"
-                      src="https://aheioqhobo.cloudimg.io/v7/_playground-bucket-v2.teleporthq.io_/84ec08e8-34e9-42c7-9445-d2806d156403/fac575ac-7a41-484f-b7ac-875042de11f8?org_if_sml=1&amp;force_format=original"
-                      class="navbar-logo"
-                    />
+                    <img alt="Task Management System" src="https://aheioqhobo.cloudimg.io/v7/_playground-bucket-v2.teleporthq.io_/84ec08e8-34e9-42c7-9445-d2806d156403/fac575ac-7a41-484f-b7ac-875042de11f8?org_if_sml=1&force_format=original" class="navbar-logo" />
                     <div data-thq="thq-close-menu" class="navbar-close-menu">
                       <svg viewBox="0 0 1024 1024" class="navbar-icon3">
-                        <path
-                          d="M810 274l-238 238 238 238-60 60-238-238-238 238-60-60 238-238-238-238 60-60 238 238 238-238z"
-                        ></path>
+                        <path d="M810 274l-238 238 238 238-60 60-238-238-238 238-60-60 238-238-238-238 60-60 238 238 238-238z"></path>
                       </svg>
                     </div>
                   </div>
                   <nav class="navbar-links2">
-                    <span class="thq-link thq-body-small">
-                      <span>Home</span>
-                    </span>
-                    <span class="thq-link thq-body-small">
-                      <span>Team</span>
-                    </span>
-                    <span class="thq-link thq-body-small">
-                      <span>About</span>
-                    </span>
-                    <span class="thq-link thq-body-small">
-                      <span>Contact</span>
-                    </span>
+                    <a href="#home" class="thq-link thq-body-small"><span>Home</span></a>
+                    <a href="#team" class="thq-link thq-body-small"><span>Team</span></a>
+                    <a href="#about" class="thq-link thq-body-small"><span>About</span></a>
+                    <a href="#contact" class="thq-link thq-body-small"><span>Contact</span></a>
                   </nav>
                 </div>
                 <div class="navbar-buttons2">
@@ -162,26 +153,19 @@
             </header>
           </header>
         </navbar-wrapper>
-        <hero-wrapper class="hero-wrapper">
-          <!--Hero component-->
+        <hero-wrapper class="hero-wrapper" id="home">
           <div class="hero-header78">
             <div class="hero-column thq-section-padding thq-section-max-width">
               <div class="hero-content1">
                 <h1 class="hero-text1 thq-heading-1">
-                  <span>
-                    TaskFlow: Your Web Task Management System
-                  </span>
+                  <span>TaskFlow: Your Web Task Management System</span>
                 </h1>
                 <p class="hero-text2 thq-body-large">
-                  <span>
-                    Stay organized and efficient with our task management system. Keep
-                    track of tasks, deadlines, and team collaboration all in one
-                    place.
-                  </span>
+                  <span>Stay organized and efficient with our task management system. Keep track of tasks, deadlines, and team collaboration all in one place.</span>
                 </p>
               </div>
               <div class="hero-actions">
-                   <button class="thq-button-filled hero-button1" onclick="window.location.href='../user/user_registration.php'">
+                <button class="thq-button-filled hero-button1" onclick="window.location.href='../user/user_registration.php'">
                   <span class="thq-body-small"><span>Get Started</span></span>
                 </button>
                 <button class="thq-button-outline hero-button2">
@@ -190,140 +174,40 @@
               </div>
             </div>
             <div class="hero-content2">
-              <div
-                class="hero-row-container1 thq-animated-group-container-horizontal thq-mask-image-horizontal"
-              >
+              <div class="hero-row-container1 thq-animated-group-container-horizontal thq-mask-image-horizontal">
                 <div class="thq-animated-group-horizontal">
-                  <img
-                    alt="Web Development Project"
-                    src="https://images.unsplash.com/photo-1529101091764-c3526daf38fe?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5OHw&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
-                    class="hero-placeholder-image10 thq-img-scale thq-img-ratio-1-1"
-                  />
-                  <img
-                    alt="Task Management System"
-                    src="https://images.unsplash.com/photo-1743090661056-e51700546169?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5Mnw&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
-                    class="hero-placeholder-image11 thq-img-scale thq-img-ratio-1-1"
-                  />
-                  <img
-                    alt="Team Collaboration"
-                    src="https://images.unsplash.com/photo-1719253480609-579ad1622c65?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5MXw&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
-                    class="hero-placeholder-image12 thq-img-scale thq-img-ratio-1-1"
-                  />
-                  <img
-                    alt="Efficient Task Tracking"
-                    src="https://images.unsplash.com/photo-1593720219276-0b1eacd0aef4?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5N3w&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
-                    class="hero-placeholder-image13 thq-img-scale thq-img-ratio-1-1"
-                  />
-                  <img
-                    alt="Deadline Management"
-                    src="https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5Nnw&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
-                    class="hero-placeholder-image14 thq-img-scale thq-img-ratio-1-1"
-                  />
-                  <img
-                    alt="Stay Organized"
-                    src="https://images.unsplash.com/photo-1636586108931-a8b9b8796ba6?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5NXw&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
-                    class="hero-placeholder-image15 thq-img-scale thq-img-ratio-1-1"
-                  />
+                  <img alt="Web Development Project" src="https://images.unsplash.com/photo-1529101091764-c3526daf38fe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5OHw&ixlib=rb-4.1.0&q=80&w=1080" class="hero-placeholder-image10 thq-img-scale thq-img-ratio-1-1" />
+                  <img alt="Task Management System" src="https://images.unsplash.com/photo-1743090661056-e51700546169?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5Mnw&ixlib=rb-4.1.0&q=80&w=1080" class="hero-placeholder-image11 thq-img-scale thq-img-ratio-1-1" />
+                  <img alt="Team Collaboration" src="https://images.unsplash.com/photo-1719253480609-579ad1622c65?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5MXw&ixlib=rb-4.1.0&q=80&w=1080" class="hero-placeholder-image12 thq-img-scale thq-img-ratio-1-1" />
+                  <img alt="Efficient Task Tracking" src="https://images.unsplash.com/photo-1593720219276-0b1eacd0aef4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5N3w&ixlib=rb-4.1.0&q=80&w=1080" class="hero-placeholder-image13 thq-img-scale thq-img-ratio-1-1" />
+                  <img alt="Deadline Management" src="https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5Nnw&ixlib=rb-4.1.0&q=80&w=1080" class="hero-placeholder-image14 thq-img-scale thq-img-ratio-1-1" />
+                  <img alt="Stay Organized" src="https://images.unsplash.com/photo-1636586108931-a8b9b8796ba6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5NXw&ixlib=rb-4.1.0&q=80&w=1080" class="hero-placeholder-image15 thq-img-scale thq-img-ratio-1-1" />
                 </div>
                 <div class="thq-animated-group-horizontal">
-                  <img
-                    alt="Web Development Project"
-                    src="https://images.unsplash.com/photo-1529101091764-c3526daf38fe?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5OHw&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
-                    class="hero-placeholder-image16 thq-img-scale thq-img-ratio-1-1"
-                  />
-                  <img
-                    alt="Task Management System"
-                    src="https://images.unsplash.com/photo-1743090661056-e51700546169?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5Mnw&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
-                    class="hero-placeholder-image17 thq-img-scale thq-img-ratio-1-1"
-                  />
-                  <img
-                    alt="Team Collaboration"
-                    src="https://images.unsplash.com/photo-1719253480609-579ad1622c65?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5MXw&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
-                    class="hero-placeholder-image18 thq-img-scale thq-img-ratio-1-1"
-                  />
-                  <img
-                    alt="Efficient Task Tracking"
-                    src="https://images.unsplash.com/photo-1593720219276-0b1eacd0aef4?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5N3w&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
-                    class="hero-placeholder-image19 thq-img-scale thq-img-ratio-1-1"
-                  />
-                  <img
-                    alt="Deadline Management"
-                    src="https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5Nnw&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
-                    class="hero-placeholder-image20 thq-img-scale thq-img-ratio-1-1"
-                  />
-                  <img
-                    alt="Hero Image"
-                    src="https://images.unsplash.com/photo-1534312527009-56c7016453e6?ixid=M3w5MTMyMXwwfDF8c2VhcmNofDIxfHxhYnN0cmFjdHxlbnwwfHx8fDE3MTA4NzA5MzB8MA&amp;ixlib=rb-4.0.3&amp;w=1500"
-                    class="hero-placeholder-image21 thq-img-scale thq-img-ratio-1-1"
-                  />
+                  <img alt="Web Development Project" src="https://images.unsplash.com/photo-1529101091764-c3526daf38fe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5OHw&ixlib=rb-4.1.0&q=80&w=1080" class="hero-placeholder-image16 thq-img-scale thq-img-ratio-1-1" />
+                  <img alt="Task Management System" src="https://images.unsplash.com/photo-1743090661056-e51700546169?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5Mnw&ixlib=rb-4.1.0&q=80&w=1080" class="hero-placeholder-image17 thq-img-scale thq-img-ratio-1-1" />
+                  <img alt="Team Collaboration" src="https://images.unsplash.com/photo-1719253480609-579ad1622c65?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5MXw&ixlib=rb-4.1.0&q=80&w=1080" class="hero-placeholder-image18 thq-img-scale thq-img-ratio-1-1" />
+                  <img alt="Efficient Task Tracking" src="https://images.unsplash.com/photo-1593720219276-0b1eacd0aef4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5N3w&ixlib=rb-4.1.0&q=80&w=1080" class="hero-placeholder-image19 thq-img-scale thq-img-ratio-1-1" />
+                  <img alt="Deadline Management" src="https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5Nnw&ixlib=rb-4.1.0&q=80&w=1080" class="hero-placeholder-image20 thq-img-scale thq-img-ratio-1-1" />
+                  <img alt="Hero Image" src="https://images.unsplash.com/photo-1534312527009-56c7016453e6?ixid=M3w5MTMyMXwwfDF8c2VhcmNofDIxfHxhYnN0cmFjdHxlbnwwfHx8fDE3MTA4NzA5MzB8MA&ixlib=rb-4.0.3&w=1500" class="hero-placeholder-image21 thq-img-scale thq-img-ratio-1-1" />
                 </div>
               </div>
-              <div
-                class="hero-row-container2 thq-animated-group-container-horizontal thq-mask-image-horizontal"
-              >
+              <div class="hero-row-container2 thq-animated-group-container-horizontal thq-mask-image-horizontal">
                 <div class="thq-animated-group-horizontal-reverse">
-                  <img
-                    alt="Web Development Team"
-                    src="https://images.unsplash.com/photo-1617040619263-41c5a9ca7521?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5NXw&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
-                    class="hero-placeholder-image22 thq-img-scale thq-img-ratio-1-1"
-                  />
-                  <img
-                    alt="Task Management Interface"
-                    src="https://images.unsplash.com/photo-1540597775766-09a0f60b4380?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5Nnw&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
-                    class="hero-placeholder-image23 thq-img-scale thq-img-ratio-1-1"
-                  />
-                  <img
-                    alt="Task Progress Tracking"
-                    src="https://images.unsplash.com/photo-1565719578701-905114565d1c?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5Nnw&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
-                    class="hero-placeholder-image24 thq-img-scale thq-img-ratio-1-1"
-                  />
-                  <img
-                    alt="Project Management Tools"
-                    src="https://images.unsplash.com/photo-1593720216276-0caa6452e004?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5N3w&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
-                    class="hero-placeholder-image25 thq-img-scale thq-img-ratio-1-1"
-                  />
-                  <img
-                    alt="Task Assignment Feature"
-                    src="https://images.unsplash.com/photo-1617609277590-ec2d145ca13b?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5M3w&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
-                    class="hero-placeholder-image26 thq-img-scale thq-img-ratio-1-1"
-                  />
-                  <img
-                    alt="Task Completion Status"
-                    src="https://images.unsplash.com/photo-1499673610122-01c7122c5dcb?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5NXw&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
-                    class="hero-placeholder-image27 thq-img-scale thq-img-ratio-1-1"
-                  />
+                  <img alt="Web Development Team" src="https://images.unsplash.com/photo-1617040619263-41c5a9ca7521?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5NXw&ixlib=rb-4.1.0&q=80&w=1080" class="hero-placeholder-image22 thq-img-scale thq-img-ratio-1-1" />
+                  <img alt="Task Management Interface" src="https://images.unsplash.com/photo-1540597775766-09a0f60b4380?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5Nnw&ixlib=rb-4.1.0&q=80&w=1080" class="hero-placeholder-image23 thq-img-scale thq-img-ratio-1-1" />
+                  <img alt="Task Progress Tracking" src="https://images.unsplash.com/photo-1565719578701-905114565d1c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5Nnw&ixlib=rb-4.1.0&q=80&w=1080" class="hero-placeholder-image24 thq-img-scale thq-img-ratio-1-1" />
+                  <img alt="Project Management Tools" src="https://images.unsplash.com/photo-1593720216276-0caa6452e004?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5N3w&ixlib=rb-4.1.0&q=80&w=1080" class="hero-placeholder-image25 thq-img-scale thq-img-ratio-1-1" />
+                  <img alt="Task Assignment Feature" src="https://images.unsplash.com/photo-1617609277590-ec2d145ca13b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5M3w&ixlib=rb-4.1.0&q=80&w=1080" class="hero-placeholder-image26 thq-img-scale thq-img-ratio-1-1" />
+                  <img alt="Task Completion Status" src="https://images.unsplash.com/photo-1499673610122-01c7122c5dcb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5NXw&ixlib=rb-4.1.0&q=80&w=1080" class="hero-placeholder-image27 thq-img-scale thq-img-ratio-1-1" />
                 </div>
                 <div class="thq-animated-group-horizontal-reverse">
-                  <img
-                    alt="Web Development Team"
-                    src="https://images.unsplash.com/photo-1617040619263-41c5a9ca7521?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5NXw&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
-                    class="hero-placeholder-image28 thq-img-scale thq-img-ratio-1-1"
-                  />
-                  <img
-                    alt="Task Management Interface"
-                    src="https://images.unsplash.com/photo-1540597775766-09a0f60b4380?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5Nnw&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
-                    class="hero-placeholder-image29 thq-img-scale thq-img-ratio-1-1"
-                  />
-                  <img
-                    alt="Task Progress Tracking"
-                    src="https://images.unsplash.com/photo-1565719578701-905114565d1c?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5Nnw&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
-                    class="hero-placeholder-image30 thq-img-scale thq-img-ratio-1-1"
-                  />
-                  <img
-                    alt="Project Management Tools"
-                    src="https://images.unsplash.com/photo-1593720216276-0caa6452e004?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5N3w&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
-                    class="hero-placeholder-image31 thq-img-scale thq-img-ratio-1-1"
-                  />
-                  <img
-                    alt="Task Assignment Feature"
-                    src="https://images.unsplash.com/photo-1617609277590-ec2d145ca13b?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5M3w&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
-                    class="hero-placeholder-image32 thq-img-scale thq-img-ratio-1-1"
-                  />
-                  <img
-                    alt="Hero Image"
-                    src="https://images.unsplash.com/photo-1568214379698-8aeb8c6c6ac8?ixid=M3w5MTMyMXwwfDF8c2VhcmNofDEyfHxncmFmaWN8ZW58MHx8fHwxNzE1Nzk0OTk5fDA&amp;ixlib=rb-4.0.3&amp;w=1500"
-                    class="hero-placeholder-image33 thq-img-scale thq-img-ratio-1-1"
-                  />
+                  <img alt="Web Development Team" src="https://images.unsplash.com/photo-1617040619263-41c5a9ca7521?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5NXw&ixlib=rb-4.1.0&q=80&w=1080" class="hero-placeholder-image28 thq-img-scale thq-img-ratio-1-1" />
+                  <img alt="Task Management Interface" src="https://images.unsplash.com/photo-1540597775766-09a0f60b4380?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5Nnw&ixlib=rb-4.1.0&q=80&w=1080" class="hero-placeholder-image29 thq-img-scale thq-img-ratio-1-1" />
+                  <img alt="Task Progress Tracking" src="https://images.unsplash.com/photo-1565719578701-905114565d1c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5Nnw&ixlib=rb-4.1.0&q=80&w=1080" class="hero-placeholder-image30 thq-img-scale thq-img-ratio-1-1" />
+                  <img alt="Project Management Tools" src="https://images.unsplash.com/photo-1593720216276-0caa6452e004?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5N3w&ixlib=rb-4.1.0&q=80&w=1080" class="hero-placeholder-image31 thq-img-scale thq-img-ratio-1-1" />
+                  <img alt="Task Assignment Feature" src="https://images.unsplash.com/photo-1617609277590-ec2d145ca13b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5M3w&ixlib=rb-4.1.0&q=80&w=1080" class="hero-placeholder-image32 thq-img-scale thq-img-ratio-1-1" />
+                  <img alt="Hero Image" src="https://images.unsplash.com/photo-1568214379698-8aeb8c6c6ac8?ixid=M3w5MTMyMXwwfDF8c2VhcmNofDEyfHxncmFmaWN8ZW58MHx8fHwxNzE1Nzk0OTk5fDA&ixlib=rb-4.0.3&w=1500" class="hero-placeholder-image33 thq-img-scale thq-img-ratio-1-1" />
                 </div>
               </div>
             </div>
@@ -331,52 +215,30 @@
               <div class="hero-container2">
                 <style>
                   @keyframes scroll-x {
-                    from {
-                      transform: translateX(0);
-                    }
-                    to {
-                      transform: translateX(calc(-100% - 16px));
-                    }
+                    from { transform: translateX(0); }
+                    to { transform: translateX(calc(-100% - 16px)); }
                   }
-
                   @keyframes scroll-y {
-                    from {
-                      transform: translateY(0);
-                    }
-                    to {
-                      transform: translateY(calc(-100% - 16px));
-                    }
+                    from { transform: translateY(0); }
+                    to { transform: translateY(calc(-100% - 16px)); }
                   }
                 </style>
               </div>
             </div>
           </div>
         </hero-wrapper>
-        
-        <!-- </features1-wrapper> -->
         <cta-wrapper class="cta-wrapper">
-          <!--CTA component-->
           <div class="thq-section-padding">
             <div class="thq-section-max-width">
               <div class="cta-accent2-bg">
                 <div class="cta-accent1-bg">
                   <div class="cta-container2">
                     <div class="cta-content">
-                      <span class="thq-heading-2">
-                        <span>Boost Your Productivity</span>
-                      </span>
-                      <p class="thq-body-large">
-                        <span>
-                          Manage your tasks efficiently with our task management
-                          system.
-                        </span>
-                      </p>
+                      <span class="thq-heading-2"><span>Boost Your Productivity</span></span>
+                      <p class="thq-body-large"><span>Manage your tasks efficiently with our task management system.</span></p>
                     </div>
                     <div class="cta-actions">
-                      <button
-                        type="button"
-                        class="thq-button-filled cta-button"
-                      >
+                      <button type="button" class="thq-button-filled cta-button">
                         <span>Get Started</span>
                       </button>
                     </div>
@@ -387,7 +249,6 @@
           </div>
         </cta-wrapper>
         <features2-wrapper class="features2-wrapper">
-          <!--Features2 component-->
           <div class="thq-section-padding">
             <div class="features2-container2 thq-section-max-width">
               <div class="features2-tabs-menu">
@@ -397,14 +258,7 @@
                   </div>
                   <div class="features2-content1">
                     <h2 class="thq-heading-2"><span>Feature #1</span></h2>
-                    <span class="thq-body-small">
-                      <span>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Suspendisse varius enim in eros elementum tristique.
-                        Duis cursus, mi quis viverra ornare, eros dolor interdum
-                        nulla, ut commodo diam libero vitae erat.
-                      </span>
-                    </span>
+                    <span class="thq-body-small"><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare, eros dolor interdum nulla, ut commodo diam libero vitae erat.</span></span>
                   </div>
                 </div>
                 <div class="features2-tab-horizontal2">
@@ -413,12 +267,7 @@
                   </div>
                   <div class="features2-content2">
                     <h2 class="thq-heading-2"><span>Task Assignment</span></h2>
-                    <span class="thq-body-small">
-                      <span>
-                        Assign tasks to team members with deadlines and
-                        priorities.
-                      </span>
-                    </span>
+                    <span class="thq-body-small"><span>Assign tasks to team members with deadlines and priorities.</span></span>
                   </div>
                 </div>
                 <div class="features2-tab-horizontal3">
@@ -427,92 +276,48 @@
                   </div>
                   <div class="features2-content3">
                     <h2 class="thq-heading-2"><span>Feature #3</span></h2>
-                    <span class="thq-body-small">
-                      <span>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Suspendisse varius enim in eros elementum tristique.
-                        Duis cursus, mi quis viverra ornare, eros dolor interdum
-                        nulla, ut commodo diam libero vitae erat.
-                      </span>
-                    </span>
+                    <span class="thq-body-small"><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare, eros dolor interdum nulla, ut commodo diam libero vitae erat.</span></span>
                   </div>
                 </div>
               </div>
               <div class="features2-image-container">
-                <img
-                  alt="image"
-                  src="https://images.unsplash.com/photo-1675495666589-94cdafbcfcc8?crop=entropy&amp;cs=tinysrgb&amp;fit=max&amp;fm=jpg&amp;ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5M3w&amp;ixlib=rb-4.1.0&amp;q=80&amp;w=1080"
-                  class="features2-image3 thq-img-ratio-16-9"
-                />
+                <img alt="image" src="https://images.unsplash.com/photo-1675495666589-94cdafbcfcc8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5M3w&ixlib=rb-4.1.0&q=80&w=1080" class="features2-image3 thq-img-ratio-16-9" />
               </div>
             </div>
           </div>
         </features2-wrapper>
-        
         <steps-wrapper class="steps-wrapper">
-          <!--Steps component-->
           <div class="steps-container1 thq-section-padding">
             <div class="steps-max-width thq-section-max-width">
               <div class="steps-container2 thq-grid-2">
                 <div class="steps-section-header">
-                  <h2 class="thq-heading-2">
-                    Discover the Power of Our Products
-                  </h2>
-                  <p class="thq-body-large">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Suspendisse varius enim in eros elementum tristique. Duis
-                    cursus, mi quis viverra ornare, eros dolor interdum nulla,
-                    ut commodo diam libero vitae erat.
-                  </p>
+                  <h2 class="thq-heading-2">Discover the Power of Our Products</h2>
+                  <p class="thq-body-large">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare, eros dolor interdum nulla, ut commodo diam libero vitae erat.</p>
                   <div class="steps-actions">
-                    <button
-                      class="thq-button-animated thq-button-filled steps-button"
-                    >
+                    <button class="thq-button-animated thq-button-filled steps-button">
                       <span class="thq-body-small">Main action</span>
                     </button>
                   </div>
                 </div>
                 <div class="steps-container3">
                   <div class="steps-container4 thq-card">
-                    <h2 class="thq-heading-2">
-                      <span>Create an Account</span>
-                    </h2>
-                    <span class="steps-text14 thq-body-small">
-                      <span>
-                        Sign up for an account on our platform to start managing
-                        your tasks.
-                      </span>
-                    </span>
+                    <h2 class="thq-heading-2"><span>Create an Account</span></h2>
+                    <span class="steps-text14 thq-body-small"><span>Sign up for an account on our platform to start managing your tasks.</span></span>
                     <label class="steps-text15 thq-heading-3">01</label>
                   </div>
                   <div class="steps-container5 thq-card">
                     <h2 class="thq-heading-2"><span>Create a Project</span></h2>
-                    <span class="steps-text17 thq-body-small">
-                      <span>
-                        Start by creating a new project for your web development
-                        task.
-                      </span>
-                    </span>
+                    <span class="steps-text17 thq-body-small"><span>Start by creating a new project for your web development task.</span></span>
                     <label class="steps-text18 thq-heading-3">02</label>
                   </div>
                   <div class="steps-container6 thq-card">
                     <h2 class="thq-heading-2"><span>Add Tasks</span></h2>
-                    <span class="steps-text20 thq-body-small">
-                      <span>
-                        Break down your project into smaller tasks and add them
-                        to your project.
-                      </span>
-                    </span>
+                    <span class="steps-text20 thq-body-small"><span>Break down your project into smaller tasks and add them to your project.</span></span>
                     <label class="steps-text21 thq-heading-3">03</label>
                   </div>
                   <div class="steps-container7 thq-card">
                     <h2 class="thq-heading-2"><span>Track Progress</span></h2>
-                    <span class="steps-text23 thq-body-small">
-                      <span>
-                        Monitor the progress of each task and project to stay on
-                        top of your web development work.
-                      </span>
-                    </span>
+                    <span class="steps-text23 thq-body-small"><span>Monitor the progress of each task and project to stay on top of your web development work.</span></span>
                     <label class="steps-text24 thq-heading-3">04</label>
                   </div>
                 </div>
@@ -520,88 +325,96 @@
             </div>
           </div>
         </steps-wrapper>
-        
-        <contact-wrapper class="contact-wrapper">
-          <!--Contact component-->
+        <team-wrapper class="team-wrapper" id="team">
+          <div class="thq-section-padding">
+            <div class="thq-section-max-width">
+              <div class="thq-grid-2">
+                <div class="steps-section-header">
+                  <h2 class="thq-heading-2">Meet Our Team</h2>
+                  <p class="thq-body-large">Our passionate team of innovators who crafted TaskFlow to empower your productivity.</p>
+                </div>
+                <div class="steps-container3" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+                  <div class="team-card thq-card">
+                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf2596f4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="Bibek Poudel" class="team-image" />
+                    <h3 class="thq-heading-3">Bibek Poudel</h3>
+                    <span class="thq-body-small">Lead Developer</span>
+                    <p class="thq-body-large">Architected the robust backend and database systems, ensuring seamless performance.</p>
+                  </div>
+                  <div class="team-card thq-card">
+                    <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="John Doe" class="team-image" />
+                    <h3 class="thq-heading-3">John Doe</h3>
+                    <span class="thq-body-small">Frontend Specialist</span>
+                    <p class="thq-body-large">Designed an intuitive and responsive user interface for a delightful experience.</p>
+                  </div>
+                  <div class="team-card thq-card">
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="Jane Smith" class="team-image" />
+                    <h3 class="thq-heading-3">Jane Smith</h3>
+                    <span class="thq-body-small">Project Manager</span>
+                    <p class="thq-body-large">Coordinated the team to deliver TaskFlow on time with exceptional quality.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </team-wrapper>
+        <about-wrapper class="about-wrapper" id="about">
+          <div class="thq-section-padding">
+            <div class="thq-section-max-width">
+              <div class="about-content">
+                <h2 class="thq-heading-2">About TaskFlow</h2>
+                <p class="thq-body-large">TaskFlow is your ultimate web-based solution for managing tasks and projects with ease. Built with cutting-edge web technologies, TaskFlow empowers individuals and teams to organize tasks, track deadlines, monitor progress, and collaborate seamlessly. Whether you're working on web development projects or managing daily workflows, TaskFlow is designed to streamline your processes and boost productivity. Our mission is to simplify task management, making it intuitive, efficient, and accessible for everyone.</p>
+                <div class="thq-button-filled" style="margin-top: 20px;">
+                  <a href="#home" class="thq-body-small">Explore Features</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </about-wrapper>
+        <contact-wrapper class="contact-wrapper" id="contact">
           <div class="contact-contact20 thq-section-padding">
             <div class="contact-max-width thq-section-max-width">
               <div class="contact-section-title">
-                <span class="thq-body-small">
-                  <span>
-                    We are here to assist you with any questions you may have.
-                  </span>
-                </span>
+                <span class="thq-body-small"><span>We are here to assist you with any questions you may have.</span></span>
                 <div class="contact-content1">
                   <h2 class="thq-heading-2"><span>Contact Us</span></h2>
-                  <p class="contact-text3 thq-body-large">
-                    <span>
-                      Feel free to reach out to us for any inquiries or
-                      feedback.
-                    </span>
-                  </p>
+                  <p class="contact-text3 thq-body-large"><span>Feel free to reach out to us for any inquiries or feedback.</span></p>
                 </div>
               </div>
               <div class="contact-row">
                 <div class="contact-content2">
                   <svg viewBox="0 0 1024 1024" class="thq-icon-medium">
-                    <path
-                      d="M854 342v-86l-342 214-342-214v86l342 212zM854 170q34 0 59 26t25 60v512q0 34-25 60t-59 26h-684q-34 0-59-26t-25-60v-512q0-34 25-60t59-26h684z"
-                    ></path>
+                    <path d="M854 342v-86l-342 214-342-214v86l342 212zM854 170q34 0 59 26t25 60v512q0 34-25 60t-59 26h-684q-34 0-59-26t-25-60v-512q0-34 25-60t59-26h684z"></path>
                   </svg>
                   <div class="contact-contact-info1">
                     <div class="contact-content3">
                       <h3 class="contact-text4 thq-heading-3">Email</h3>
-                      <p class="contact-text5 thq-body-large">
-                        <span>
-                          Our team is dedicated to providing the best support
-                          for your project.
-                        </span>
-                      </p>
+                      <p class="contact-text5 thq-body-large"><span>Our team is dedicated to providing the best support for your project.</span></p>
                     </div>
-                    <span class="contact-email thq-body-small">
-                      <span>poudelbibek86@gmail.com</span>
-                    </span>
+                    <span class="contact-email thq-body-small"><span>poudelbibek86@gmail.com</span></span>
                   </div>
                 </div>
                 <div class="contact-content4">
                   <svg viewBox="0 0 1024 1024" class="thq-icon-medium">
-                    <path
-                      d="M282 460q96 186 282 282l94-94q20-20 44-10 72 24 152 24 18 0 30 12t12 30v150q0 18-12 30t-30 12q-300 0-513-213t-213-513q0-18 12-30t30-12h150q18 0 30 12t12 30q0 80 24 152 8 26-10 44z"
-                    ></path>
+                    <path d="M282 460q96 186 282 282l94-94q20-20 44-10 72 24 152 24 18 0 30 12t12 30v150q0 18-12 30t-30 12q-300 0-513-213t-213-513q0-18 12-30t30-12h150q18 0 30 12t12 30q0 80 24 152 8 26-10 44z"></path>
                   </svg>
                   <div class="contact-contact-info2">
                     <div class="contact-content5">
                       <h3 class="contact-text6 thq-heading-3">Phone</h3>
-                      <p class="contact-text7 thq-body-large">
-                        <span>
-                          Connect with us through email or phone for a quick
-                          response.
-                        </span>
-                      </p>
+                      <p class="contact-text7 thq-body-large"><span>Connect with us through email or phone for a quick response.</span></p>
                     </div>
-                    <span class="contact-phone thq-body-small">
-                      <span>+977 9864240057</span>
-                    </span>
+                    <span class="contact-phone thq-body-small"><span>+977 9864240057</span></span>
                   </div>
                 </div>
                 <div class="contact-content6">
                   <svg viewBox="0 0 1024 1024" class="thq-icon-medium">
-                    <path
-                      d="M512 0c-176.732 0-320 143.268-320 320 0 320 320 704 320 704s320-384 320-704c0-176.732-143.27-320-320-320zM512 512c-106.040 0-192-85.96-192-192s85.96-192 192-192 192 85.96 192 192-85.96 192-192 192z"
-                    ></path>
+                    <path d="M512 0c-176.732 0-320 143.268-320 320 0 320 320 704 320 704s320-384 320-704c0-176.732-143.27-320-320-320zM512 512c-106.040 0-192-85.96-192-192s85.96-192 192-192 192 85.96 192 192-85.96 192-192 192z"></path>
                   </svg>
                   <div class="contact-contact-info3">
                     <div class="contact-content7">
                       <h3 class="contact-text8 thq-heading-3">Office</h3>
-                      <p class="contact-text9 thq-body-large">
-                        <span>We look forward to hearing from you!</span>
-                      </p>
+                      <p class="contact-text9 thq-body-large"><span>We look forward to hearing from you!</span></p>
                     </div>
-                    <span class="contact-address thq-body-small">
-                      <span>
-                        Himalayan Whitehouse International college, Putalisadak, Kathmandu
-                      </span>
-                    </span>
+                    <span class="contact-address thq-body-small"><span>Himalayan Whitehouse International college, Putalisadak, Kathmandu</span></span>
                   </div>
                 </div>
               </div>
@@ -609,27 +422,103 @@
           </div>
         </contact-wrapper>
         <footer-wrapper class="footer-wrapper">
-              <div class="footer-credits">
-                <div class="thq-divider-horizontal"></div>
-                <div class="footer-row">
-                  <span class="thq-body-small">
-                    <span>
-                      Designed and Developed by University Web Development Team
-                    </span>
-                  </span>
-                  <div>
-                  © 2022 Task Management System. All Rights Reserved.
-                  </div>
-                </div>
-              </div>
+          <div class="footer-credits">
+            <div class="thq-divider-horizontal"></div>
+            <div class="footer-row">
+              <span class="thq-body-small"><span>Designed and Developed by University Web Development Team</span></span>
+              <div>© 2022 Task Management System. All Rights Reserved.</div>
             </div>
-          </footer>
+          </div>
         </footer-wrapper>
       </div>
     </div>
-    <script
-      data-section-id="navbar"
-      src="https://unpkg.com/@teleporthq/teleport-custom-scripts"
-    ></script>
+    
+    <!-- Custom navigation script for smooth scrolling -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Function to get navbar height
+        function getNavbarHeight() {
+          const navbar = document.querySelector('.navbar-container');
+          return navbar ? navbar.getBoundingClientRect().height : 80;
+        }
+        
+        // Handle desktop navigation links
+        const navLinks = document.querySelectorAll('.navbar-link');
+        navLinks.forEach(link => {
+          link.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            
+            if (targetElement) {
+              const navbarHeight = getNavbarHeight();
+              
+              // Handle elements with display: contents (like wrappers)
+              let targetTop;
+              if (targetElement.offsetTop === 0 && targetElement.className.includes('wrapper')) {
+                const firstChild = targetElement.querySelector('*');
+                targetTop = firstChild ? firstChild.offsetTop : 0;
+              } else {
+                targetTop = targetElement.offsetTop;
+              }
+              
+              // Calculate scroll position
+              let finalPosition;
+              if (targetId === '#home') {
+                finalPosition = 0; // Go to top for home
+              } else {
+                finalPosition = Math.max(0, targetTop - navbarHeight - 20);
+              }
+              
+              window.scrollTo({
+                top: finalPosition,
+                behavior: 'smooth'
+              });
+            }
+          });
+        });
+        
+        // Handle mobile navigation links
+        const mobileNavLinks = document.querySelectorAll('.navbar-links2 .navbar-link');
+        mobileNavLinks.forEach(link => {
+          link.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const targetId = this.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            
+            if (targetElement) {
+              const navbarHeight = getNavbarHeight();
+              const rect = targetElement.getBoundingClientRect();
+              const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+              const targetTop = rect.top + scrollTop;
+              
+              let finalPosition;
+              if (targetId === '#home') {
+                finalPosition = 0;
+              } else {
+                finalPosition = Math.max(0, targetTop - navbarHeight - 20);
+              }
+              
+              window.scrollTo({
+                top: finalPosition,
+                behavior: 'smooth'
+              });
+              
+              // Close mobile menu
+              const mobileMenu = document.querySelector('.navbar-mobile-menu');
+              if (mobileMenu) {
+                mobileMenu.style.display = 'none';
+              }
+            }
+          });
+        });
+      });
+    </script>
+    
+    <script data-section-id="navbar" src="https://unpkg.com/@teleporthq/teleport-custom-scripts"></script>
   </body>
 </html>

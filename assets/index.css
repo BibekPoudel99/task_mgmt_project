@@ -5,9 +5,11 @@
 .navbar-container {
   width: 100%;
   display: flex;
-  position: relative;
+  position: fixed;
   justify-content: center;
   background-color: var(--dl-color-theme-neutral-light);
+  top: 0;
+  z-index: 1000;
 }
  
 .navbar-navbar-interactive {
@@ -1760,6 +1762,7 @@
 
 .contact-wrapper {
   display: contents;
+  scroll-margin-top: 120px;
 }
  
 .contact-contact20 {
@@ -2320,4 +2323,19 @@
   overflow-x: hidden;
   box-sizing: border-box;
   margin-bottom: 20px;
+  padding-top: 80px;
+}
+
+html{
+  scroll-behavior: smooth;
+}
+
+.hero-wrapper,
+.features1-wrapper,
+.features2-wrapper,
+.pricing-wrapper,
+.steps-wrapper,
+.testimonial-wrapper,
+.contact-wrapper {
+  scroll-margin-top: 120px; /* ✅ Accounts for fixed navbar height + buffer */
 }
