@@ -492,9 +492,9 @@ class TaskFlowApp {
                     <p style="color: #22c55e; margin: 0; font-size: 16px;">No tasks due today. Great job staying organized!</p>
                     <div style="margin-top: 24px;">
                         <button onclick="document.querySelector('[data-bs-target=\\"#tasks\\"]').click()" 
-                                style="background: linear-gradient(135deg, #16a34a, #22c55e); color: white; border: none; border-radius: 12px; padding: 12px 24px; font-weight: 600; font-size: 14px; transition: all 0.3s ease;"
-                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 16px rgba(22, 163, 74, 0.3)'"
-                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                style="background: linear-gradient(135deg, #3182ce, #4299e1); color: white; border: none; border-radius: 12px; padding: 12px 24px; font-weight: 600; font-size: 14px; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(49, 130, 206, 0.3);"
+                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 16px rgba(49, 130, 206, 0.4)'"
+                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(49, 130, 206, 0.3)'">
                             <i class="bi bi-plus-circle-fill me-2"></i>Add New Tasks
                         </button>
                     </div>
@@ -564,7 +564,9 @@ class TaskFlowApp {
                                 <span style="color: #dc2626; font-size: 14px; font-weight: 500;">
                                     +${overdueTasks.length - 3} more overdue tasks. 
                                     <button onclick="document.querySelector('[data-bs-target=\\"#tasks\\"]').click()" 
-                                            style="background: none; border: none; color: #dc2626; text-decoration: underline; font-weight: 600; padding: 0; font-size: 14px;">
+                                            style="background: none; border: none; color: #3182ce; text-decoration: underline; font-weight: 600; padding: 0; font-size: 14px; transition: color 0.3s ease;"
+                                            onmouseover="this.style.color='#4299e1'"
+                                            onmouseout="this.style.color='#3182ce'">
                                         View all tasks
                                     </button>
                                 </span>
@@ -631,9 +633,9 @@ class TaskFlowApp {
                         </div>
                     ` : canComplete ? `
                         <button class="task-complete-btn" onclick="app.toggleTask('${task.id}')" 
-                                style="background: linear-gradient(135deg, #7c8471, #9a9e92); color: white; border: none; border-radius: 10px; padding: 12px 20px; font-size: 14px; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 3px 8px rgba(124, 132, 113, 0.3); white-space: nowrap;"
-                                onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(124, 132, 113, 0.4)'"
-                                onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 3px 8px rgba(124, 132, 113, 0.3)'">
+                                style="background: linear-gradient(135deg, #3182ce, #4299e1); color: white; border: none; border-radius: 10px; padding: 12px 20px; font-size: 14px; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 3px 8px rgba(49, 130, 206, 0.3); white-space: nowrap;"
+                                onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(49, 130, 206, 0.4)'"
+                                onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 3px 8px rgba(49, 130, 206, 0.3)'">
                             <i class="bi bi-check-lg me-1"></i>Complete
                         </button>
                     ` : `
@@ -681,7 +683,7 @@ class TaskFlowApp {
                         
                         <!-- Project Badge -->
                         ${project ? `
-                            <span class="project-badge" style="background: linear-gradient(135deg, #7c8471, #9a9e92); color: white; padding: 7px 14px; border-radius: 16px; font-size: 13px; font-weight: 600; display: flex; align-items: center; box-shadow: 0 2px 4px rgba(124, 132, 113, 0.2);">
+                            <span class="project-badge" style="background: linear-gradient(135deg, #3182ce, #4299e1); color: white; padding: 7px 14px; border-radius: 16px; font-size: 13px; font-weight: 600; display: flex; align-items: center; box-shadow: 0 2px 4px rgba(49, 130, 206, 0.2);">
                                 <i class="bi bi-folder-fill me-2"></i>${this.escapeHtml(project.name)}
                             </span>
                         ` : `
@@ -719,9 +721,9 @@ class TaskFlowApp {
                         <div class="quick-actions" style="display: flex; align-items: center; gap: 8px;">
                             ${project ? `
                                 <button onclick="app.selectProject('${project.id}')" 
-                                        style="background: transparent; border: 1px solid #7c8471; color: #7c8471; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; transition: all 0.3s ease;"
-                                        onmouseover="this.style.background='#7c8471'; this.style.color='white'"
-                                        onmouseout="this.style.background='transparent'; this.style.color='#7c8471'"
+                                        style="background: transparent; border: 1px solid #3182ce; color: #3182ce; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; transition: all 0.3s ease;"
+                                        onmouseover="this.style.background='#3182ce'; this.style.color='white'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='#3182ce'"
                                         title="View project">
                                     <i class="bi bi-arrow-right-circle"></i>
                                 </button>
@@ -729,9 +731,9 @@ class TaskFlowApp {
                             
                             ${canEdit ? `
                                 <button onclick="app.editTaskInTasksTab('${task.id}')" 
-                                        style="background: transparent; border: 1px solid #3b82f6; color: #3b82f6; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; transition: all 0.3s ease;"
-                                        onmouseover="this.style.background='#3b82f6'; this.style.color='white'"
-                                        onmouseout="this.style.background='transparent'; this.style.color='#3b82f6'"
+                                        style="background: transparent; border: 1px solid #3182ce; color: #3182ce; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; transition: all 0.3s ease;"
+                                        onmouseover="this.style.background='#3182ce'; this.style.color='white'"
+                                        onmouseout="this.style.background='transparent'; this.style.color='#3182ce'"
                                         title="Edit task details">
                                     <i class="bi bi-pencil-fill me-1"></i>Edit
                                 </button>
@@ -818,15 +820,21 @@ class TaskFlowApp {
             <!-- Simple Filters -->
             <div style="margin-bottom: 24px;">
                 <button onclick="app.filterTasks('all')" class="filter-btn" data-filter="all" 
-                        style="background: #7c8471; color: white; border: none; border-radius: 8px; padding: 8px 16px; font-size: 14px; font-weight: 500; margin-right: 8px;">
+                        style="background: linear-gradient(135deg, #3182ce, #4299e1); color: white; border: none; border-radius: 8px; padding: 8px 16px; font-size: 14px; font-weight: 500; margin-right: 8px; transition: all 0.3s ease; box-shadow: 0 2px 6px rgba(49, 130, 206, 0.3);"
+                        onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 3px 8px rgba(49, 130, 206, 0.4)'"
+                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 6px rgba(49, 130, 206, 0.3)'">
                     All (${this.tasks.length})
                 </button>
                 <button onclick="app.filterTasks('pending')" class="filter-btn" data-filter="pending"
-                        style="background: #f59e0b; color: white; border: none; border-radius: 8px; padding: 8px 16px; font-size: 14px; font-weight: 500; margin-right: 8px;">
+                        style="background: linear-gradient(135deg, #3182ce, #4299e1); color: white; border: none; border-radius: 8px; padding: 8px 16px; font-size: 14px; font-weight: 500; margin-right: 8px; transition: all 0.3s ease; box-shadow: 0 2px 6px rgba(49, 130, 206, 0.3);"
+                        onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 3px 8px rgba(49, 130, 206, 0.4)'"
+                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 6px rgba(49, 130, 206, 0.3)'">
                     Pending (${pendingTasks.length})
                 </button>
                 <button onclick="app.filterTasks('completed')" class="filter-btn" data-filter="completed"
-                        style="background: #10b981; color: white; border: none; border-radius: 8px; padding: 8px 16px; font-size: 14px; font-weight: 500; margin-right: 8px;">
+                        style="background: linear-gradient(135deg, #3182ce, #4299e1); color: white; border: none; border-radius: 8px; padding: 8px 16px; font-size: 14px; font-weight: 500; margin-right: 8px; transition: all 0.3s ease; box-shadow: 0 2px 6px rgba(49, 130, 206, 0.3);"
+                        onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 3px 8px rgba(49, 130, 206, 0.4)'"
+                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 6px rgba(49, 130, 206, 0.3)'">
                     Completed (${completedTasks.length})
                 </button>
                 ${missedTasks.length > 0 ? `

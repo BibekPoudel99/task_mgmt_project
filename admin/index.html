@@ -83,6 +83,207 @@
       #home {
         padding-top: 100px; /* Extra space for home section */
       }
+      
+      /* Features Section Styling */
+      .features2-tabs-menu {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+      }
+      
+      .features2-tab-horizontal1,
+      .features2-tab-horizontal2,
+      .features2-tab-horizontal3,
+      .features2-tab-horizontal4,
+      .features2-tab-horizontal5 {
+        display: flex;
+        align-items: flex-start;
+        gap: 2rem;
+        padding: 2.5rem;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.08);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 25px rgba(0, 0, 0, 0.12);
+        width: 100%;
+      }
+      
+      .features2-tab-horizontal1:hover,
+      .features2-tab-horizontal2:hover,
+      .features2-tab-horizontal3:hover,
+      .features2-tab-horizontal4:hover,
+      .features2-tab-horizontal5:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        background: rgba(255, 255, 255, 0.08);
+      }
+      
+      .features2-divider-container1,
+      .features2-divider-container2,
+      .features2-divider-container3,
+      .features2-divider-container4,
+      .features2-divider-container5 {
+        width: 6px;
+        height: 100px;
+        background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+        border-radius: 3px;
+        flex-shrink: 0;
+        align-self: flex-start;
+        margin-top: 0.5rem;
+      }
+      
+      .features2-image-wrapper {
+        flex-shrink: 0;
+        width: 140px;
+        height: 140px;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
+        position: relative;
+      }
+      
+      .features2-feature-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+      }
+      
+      .features2-image-wrapper:hover .features2-feature-image {
+        transform: scale(1.1);
+      }
+      
+      .features2-content1,
+      .features2-content2,
+      .features2-content3,
+      .features2-content4,
+      .features2-content5 {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        min-width: 0;
+      }
+      
+      .features2-content1 h2,
+      .features2-content2 h2,
+      .features2-content3 h2,
+      .features2-content4 h2,
+      .features2-content5 h2 {
+        margin: 0;
+        color: #333;
+        font-weight: 700;
+        line-height: 1.2;
+        font-size: 1.5rem;
+      }
+      
+      .features2-content1 span,
+      .features2-content2 span,
+      .features2-content3 span,
+      .features2-content4 span,
+      .features2-content5 span {
+        color: #666;
+        line-height: 1.6;
+        font-size: 1rem;
+        text-align: left;
+      }
+      
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .features2-tabs-menu {
+          padding: 0 1rem;
+          gap: 1.5rem;
+        }
+        
+        .features2-tab-horizontal1,
+        .features2-tab-horizontal2,
+        .features2-tab-horizontal3,
+        .features2-tab-horizontal4,
+        .features2-tab-horizontal5 {
+          flex-direction: column;
+          text-align: center;
+          padding: 2rem;
+          gap: 1.5rem;
+          align-items: center;
+        }
+        
+        .features2-divider-container1,
+        .features2-divider-container2,
+        .features2-divider-container3,
+        .features2-divider-container4,
+        .features2-divider-container5 {
+          width: 80px;
+          height: 4px;
+          margin-top: 0;
+        }
+        
+        .features2-image-wrapper {
+          width: 120px;
+          height: 120px;
+        }
+        
+        .features2-content1 span,
+        .features2-content2 span,
+        .features2-content3 span,
+        .features2-content4 span,
+        .features2-content5 span {
+          text-align: center;
+        }
+        
+        .features2-content1 h2,
+        .features2-content2 h2,
+        .features2-content3 h2,
+        .features2-content4 h2,
+        .features2-content5 h2 {
+          font-size: 1.3rem;
+        }
+      }
+      
+      @media (max-width: 480px) {
+        .features2-tabs-menu {
+          padding: 0 0.5rem;
+          gap: 1.2rem;
+        }
+        
+        .features2-tab-horizontal1,
+        .features2-tab-horizontal2,
+        .features2-tab-horizontal3,
+        .features2-tab-horizontal4,
+        .features2-tab-horizontal5 {
+          padding: 1.5rem;
+          gap: 1.2rem;
+        }
+        
+        .features2-image-wrapper {
+          width: 100px;
+          height: 100px;
+        }
+      }
+      
+      @media (max-width: 480px) {
+        .features2-tabs-menu {
+          gap: 1.5rem;
+        }
+        
+        .features2-tab-horizontal1,
+        .features2-tab-horizontal2,
+        .features2-tab-horizontal3,
+        .features2-tab-horizontal4,
+        .features2-tab-horizontal5 {
+          padding: 1rem;
+          gap: 1rem;
+        }
+        
+        .features2-image-wrapper {
+          width: 80px;
+          height: 80px;
+        }
+      }
     </style>
     <link rel="stylesheet" href="https://unpkg.com/animate.css@4.1.1/animate.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" data-tag="font" />
@@ -115,7 +316,7 @@
                   <a href="#contact" class="navbar-link thq-body-small"><span>Contact</span></a>
                 </nav>
                 <div class="navbar-buttons1">
-                  <button class="navbar-action11 thq-button-animated thq-button-filled" onclick="window.location.href='../login_choice.php'">
+                  <button class="navbar-action11 thq-button-animated thq-button-filled" onclick="window.location.href='../user/user_login.php'">
                     <span class="thq-body-small">Login</span>
                   </button>
                   <button class="navbar-action21 thq-button-outline thq-button-animated" onclick="window.location.href='../user/user_registration.php'">
@@ -237,11 +438,6 @@
                       <span class="thq-heading-2"><span>Boost Your Productivity</span></span>
                       <p class="thq-body-large"><span>Manage your tasks efficiently with our task management system.</span></p>
                     </div>
-                    <div class="cta-actions">
-                      <button type="button" class="thq-button-filled cta-button">
-                        <span>Get Started</span>
-                      </button>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -256,33 +452,66 @@
                   <div class="features2-divider-container1">
                     <div class="features2-container3"></div>
                   </div>
+                  <div class="features2-image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="Project Management" class="features2-feature-image" />
+                  </div>
                   <div class="features2-content1">
-                    <h2 class="thq-heading-2"><span>Feature #1</span></h2>
-                    <span class="thq-body-small"><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare, eros dolor interdum nulla, ut commodo diam libero vitae erat.</span></span>
+                    <h2 class="thq-heading-2"><span>Project Management & Team Collaboration</span></h2>
+                    <span class="thq-body-small"><span>Create and organize projects with comprehensive team collaboration. Invite team members, assign roles with project owner privileges, manage member permissions, and enable seamless project-based task organization with real-time updates.</span></span>
                   </div>
                 </div>
                 <div class="features2-tab-horizontal2">
                   <div class="features2-divider-container2">
                     <div class="features2-container4"></div>
                   </div>
+                  <div class="features2-image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1611224923853-80b023f02d71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="Task Assignment" class="features2-feature-image" />
+                  </div>
                   <div class="features2-content2">
-                    <h2 class="thq-heading-2"><span>Task Assignment</span></h2>
-                    <span class="thq-body-small"><span>Assign tasks to team members with deadlines and priorities.</span></span>
+                    <h2 class="thq-heading-2"><span>Smart Task Assignment & Tracking</span></h2>
+                    <span class="thq-body-small"><span>Assign tasks to specific team members with due dates, priorities, and status tracking. Features permission-based task completion, automatic overdue detection, missed task handling, and visual status indicators with CSRF-protected real-time updates.</span></span>
                   </div>
                 </div>
                 <div class="features2-tab-horizontal3">
                   <div class="features2-divider-container3">
                     <div class="features2-container5"></div>
                   </div>
+                  <div class="features2-image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="Dashboard Analytics" class="features2-feature-image" />
+                  </div>
                   <div class="features2-content3">
-                    <h2 class="thq-heading-2"><span>Feature #3</span></h2>
-                    <span class="thq-body-small"><span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare, eros dolor interdum nulla, ut commodo diam libero vitae erat.</span></span>
+                    <h2 class="thq-heading-2"><span>Multi-View Dashboard & Filtering</span></h2>
+                    <span class="thq-body-small"><span>Comprehensive dashboard with My Day view for focused productivity, Tasks tab with advanced filtering (all, completed, pending), Projects view with detailed task management, and Calendar integration with date restrictions and smooth navigation.</span></span>
+                  </div>
+                </div>
+                <div class="features2-tab-horizontal4">
+                  <div class="features2-divider-container4">
+                    <div class="features2-container6"></div>
+                  </div>
+                  <div class="features2-image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="Security Management" class="features2-feature-image" />
+                  </div>
+                  <div class="features2-content4">
+                    <h2 class="thq-heading-2"><span>Advanced Security & User Management</span></h2>
+                    <span class="thq-body-small"><span>Robust user authentication system with secure login/registration, CSRF token protection for all API calls, role-based access control, profile management with avatar uploads, and comprehensive session management with automatic token refresh.</span></span>
+                  </div>
+                </div>
+                <div class="features2-tab-horizontal5">
+                  <div class="features2-divider-container5">
+                    <div class="features2-container7"></div>
+                  </div>
+                  <div class="features2-image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="Task Analytics" class="features2-feature-image" />
+                  </div>
+                  <div class="features2-content5">
+                    <h2 class="thq-heading-2"><span>Intelligent Task Analytics & Missed Tasks</span></h2>
+                    <span class="thq-body-small"><span>Advanced missed tasks tracking with dedicated analytics, automatic deadline monitoring, overdue task prevention, visual progress indicators, debounced real-time updates, and comprehensive task history with smart filtering and search capabilities.</span></span>
                   </div>
                 </div>
               </div>
-              <div class="features2-image-container">
+              <!-- <div class="features2-image-container">
                 <img alt="image" src="https://images.unsplash.com/photo-1675495666589-94cdafbcfcc8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MTMyMXwwfDF8cmFuZG9tfHx8fHx8fHx8MTc1MzY5ODM5M3w&ixlib=rb-4.1.0&q=80&w=1080" class="features2-image3 thq-img-ratio-16-9" />
-              </div>
+              </div> -->
             </div>
           </div>
         </features2-wrapper>
