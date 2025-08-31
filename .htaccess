@@ -1,0 +1,9 @@
+ErrorDocument 404 /task_mgmt/404.php
+
+# Optional: Enable rewrite engine for better URL handling
+RewriteEngine On
+
+# Redirect any non-existent files to 404.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ 404.php [L]

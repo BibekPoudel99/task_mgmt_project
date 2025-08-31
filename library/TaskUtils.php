@@ -8,7 +8,7 @@ class TaskUtils {
         $this->db = new Database();
     }
     
-    public function updateMissedTasks() {
+    public function updateMissedTasks(): int {
         $pdo = $this->db->getConnection();
         
         try {
@@ -37,11 +37,11 @@ class TaskUtils {
             return $missedCount; // Return number of tasks marked as missed
         } catch (Exception $e) {
             error_log("Error updating missed tasks: " . $e->getMessage());
-            return false;
+            return 0; // Return 0 instead of false for consistent int return type
         }
     }
     
-    public function getMissedTasksForUser($userId) {
+    public function getMissedTasksForUser($userId): array {
         $pdo = $this->db->getConnection();
         
         try {

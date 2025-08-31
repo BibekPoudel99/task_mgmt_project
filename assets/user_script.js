@@ -1165,7 +1165,9 @@ class TaskFlowApp {
 
     
 
-   renderProjectDetails() {
+// ...existing code...
+
+renderProjectDetails() {
     const container = document.getElementById('projectDetails');
     if (!this.selectedProjectId) {
         container.innerHTML = '<p class="text-muted">Select or create a project to manage members and tasks.</p>';
@@ -1173,7 +1175,6 @@ class TaskFlowApp {
     }
     const project = this.projects.find(p => String(p.id) === String(this.selectedProjectId));
     const projectTasks = this.tasks.filter(t => String(t.project_id) === String(this.selectedProjectId));
-    const memberOptions = this.users.map(u => `<option value="${u.username}">${u.username}</option>`).join('');
     const isProjectOwner = String(project?.owner_id) === String(window.currentUser?.id);
     
     // Find owner information
@@ -1218,18 +1219,22 @@ class TaskFlowApp {
                     </div>
                     
                     ${isCurrentUserOwner ? `
-                        <div class="member-input-group" style="margin-bottom: 16px;">
+                        <div class="member-input-group" style="margin-bottom: 16px; position: relative;">
                             <div class="input-group" style="border-radius: 8px; overflow: hidden;">
-                                <input class="form-control" id="newMemberInput" list="usersDatalist" 
-                                    placeholder="Add team member..." autocomplete="off"
+                                <input class="form-control" id="newMemberInput" 
+                                    placeholder="Type username (min 3 characters)..." autocomplete="off"
                                     style="border: 1px solid #d1d5db; border-right: none; padding: 12px 16px; font-size: 15px;">
-                                <datalist id="usersDatalist">${memberOptions}</datalist>
                                 <button class="btn" onclick="app.addMemberToSelected()" 
                                         style="background: linear-gradient(135deg, #3182ce, #4299e1); color: white; border: none; padding: 12px 18px; font-weight: 500; font-size: 15px; transition: all 0.3s ease; box-shadow: 0 2px 6px rgba(49, 130, 206, 0.3);"
                                         onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(49, 130, 206, 0.4)'"
                                         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 6px rgba(49, 130, 206, 0.3)'">
                                     <i class="bi bi-plus"></i> Add
                                 </button>
+                            </div>
+                            
+                            <!-- Custom Dropdown -->
+                            <div id="memberDropdown" style="position: absolute; top: 100%; left: 0; right: 52px; background: white; border: 1px solid #d1d5db; border-top: none; border-radius: 0 0 8px 8px; max-height: 200px; overflow-y: auto; z-index: 1000; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                                <!-- Dynamic content will be inserted here -->
                             </div>
                         </div>
                     ` : ''}
@@ -1286,6 +1291,7 @@ class TaskFlowApp {
         </div>
     </div>
 
+    <!-- ... rest of existing tasks section code ... -->
     <div class="tasks-section">
         <div class="tasks-header" style="display: flex; align-items: center; justify-content: between; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #e2e8f0;">
             <h5 style="color: #334155; font-weight: 600; margin: 0; display: flex; align-items: center; font-size: 1.4rem;">
@@ -1423,24 +1429,168 @@ class TaskFlowApp {
         </div>
     </div>
 `;
+
+        // Setup the enhanced member input functionality
+        this.setupMemberInputDropdown();
+    }
+
+    setupMemberInputDropdown() {
         const memberInput = document.getElementById('newMemberInput');
-        const datalist = document.getElementById('usersDatalist');
-        if (memberInput && datalist) {
-            memberInput.addEventListener('input', () => {
-                const query = memberInput.value.toLowerCase();
-                const optionsHtml = this.users
-                    .filter(u => query.length >= 3 && u.username.toLowerCase().includes(query))
-                    .slice(0, 20)
-                    .map(u => `<option value="${u.username}">${u.username}</option>`)
-                    .join('');
-                datalist.innerHTML = optionsHtml;
-            });
+        const dropdown = document.getElementById('memberDropdown');
+        
+        if (!memberInput || !dropdown) return;
+
+        let searchTimeout;
+
+        memberInput.addEventListener('input', (e) => {
+            const query = e.target.value.trim();
+            
+            // Clear previous timeout
+            if (searchTimeout) {
+                clearTimeout(searchTimeout);
+            }
+
+            // Only show dropdown if query is 3+ characters
+            if (query.length < 3) {
+                dropdown.style.display = 'none';
+                return;
+            }
+
+            // Debounce the search
+            searchTimeout = setTimeout(() => {
+                this.filterAndShowMembers(query, dropdown);
+            }, 300);
+        });
+
+        // Hide dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!memberInput.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        // Handle input focus
+        memberInput.addEventListener('focus', () => {
+            const query = memberInput.value.trim();
+            if (query.length >= 3) {
+                this.filterAndShowMembers(query, dropdown);
+            }
+        });
+
+        // Handle Enter key
+        memberInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const visibleOptions = dropdown.querySelectorAll('.member-option:not([style*="display: none"])');
+                if (visibleOptions.length === 1) {
+                    // Auto-select if only one option
+                    const username = visibleOptions[0].getAttribute('data-username');
+                    this.selectMemberFromDropdown(username, memberInput, dropdown);
+                } else {
+                    // Try to add the current value
+                    this.addMemberToSelected();
+                }
+            }
+        });
+    }
+
+    filterAndShowMembers(query, dropdown) {
+        const project = this.projects.find(p => String(p.id) === String(this.selectedProjectId));
+        const currentMembers = new Set([...(project?.members || [])]);
+        const ownerInfo = this.users.find(u => String(u.id) === String(project?.owner_id));
+        
+        // Add owner to current members to exclude them
+        if (ownerInfo) {
+            currentMembers.add(ownerInfo.username);
+        }
+
+        // Filter users based on query and exclude current members
+        const filteredUsers = this.users.filter(user => {
+            const matchesQuery = user.username.toLowerCase().includes(query.toLowerCase());
+            const notCurrentMember = !currentMembers.has(user.username);
+            return matchesQuery && notCurrentMember;
+        }).slice(0, 10); // Limit to 10 results
+
+        // Create dropdown content
+        let dropdownContent = '';
+
+        if (filteredUsers.length === 0) {
+            dropdownContent = `
+                <div class="no-members-found" style="padding: 16px; text-align: center; color: #64748b; background: #f8fafc; border-bottom: 1px solid #f1f5f9;">
+                    <i class="bi bi-search" style="font-size: 24px; margin-bottom: 8px; color: #94a3b8;"></i>
+                    <div style="font-weight: 500; margin-bottom: 4px;">No users found</div>
+                    <div style="font-size: 13px; color: #94a3b8;">Try different username or check spelling</div>
+                </div>
+            `;
+        } else {
+            dropdownContent = filteredUsers.map(user => `
+                <div class="member-option" data-username="${user.username}" 
+                     style="padding: 12px 16px; cursor: pointer; border-bottom: 1px solid #f1f5f9; transition: all 0.2s ease; display: flex; align-items: center;"
+                     onmouseover="this.style.background='#f8fafc'; this.style.color='#3182ce'"
+                     onmouseout="this.style.background='white'; this.style.color='#374151'"
+                     onclick="app.selectMemberFromDropdown('${user.username}', document.getElementById('newMemberInput'), document.getElementById('memberDropdown'))">
+                    
+                    <div style="width: 32px; height: 32px; background: linear-gradient(135deg, #3182ce, #4299e1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; color: white; font-weight: 600; font-size: 14px;">
+                        ${user.username.charAt(0).toUpperCase()}
+                    </div>
+                    
+                    <div style="flex-grow: 1;">
+                        <div style="font-weight: 500; color: #374151; font-size: 14px;">${this.escapeHtml(user.username)}</div>
+                        ${user.email ? `<div style="font-size: 12px; color: #64748b;">${this.escapeHtml(user.email)}</div>` : ''}
+                    </div>
+                    
+                    <i class="bi bi-plus-circle" style="color: #3182ce; font-size: 16px;"></i>
+                </div>
+            `).join('');
+        }
+
+        dropdown.innerHTML = dropdownContent;
+        dropdown.style.display = 'block';
+    }
+
+    selectMemberFromDropdown(username, input, dropdown) {
+        input.value = username;
+        dropdown.style.display = 'none';
+        
+        // Add the member immediately
+        if (this.selectedProjectId) {
+            this.addMember(this.selectedProjectId, username);
+            input.value = '';
         }
     }
 
+    // Updated addMemberToSelected method
+    addMemberToSelected() {
+        const input = document.getElementById('newMemberInput');
+        const dropdown = document.getElementById('memberDropdown');
+        const username = input?.value?.trim() || '';
+        
+        if (!username) {
+            this.showToast('Please enter a username', 'error');
+            return;
+        }
 
+        if (username.length < 3) {
+            this.showToast('Username must be at least 3 characters', 'error');
+            return;
+        }
+        
+        if (username && this.selectedProjectId) {
+            // Check if user exists
+            const userExists = this.users.some(u => u.username.toLowerCase() === username.toLowerCase());
+            
+            if (!userExists) {
+                this.showToast(`User "${username}" not found. Please check the username.`, 'error');
+                return;
+            }
 
-    // Replace the existing renderTeam() method with this enhanced version
+            this.addMember(this.selectedProjectId, username);
+            input.value = '';
+            if (dropdown) {
+                dropdown.style.display = 'none';
+            }
+        }
+    }
 
     renderTeam() {
         const container = document.getElementById('teamOverview');

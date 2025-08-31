@@ -1,6 +1,6 @@
 <?php
 // Default redirect location
-$location = isset($location) ? $location : '/task_mgmt/admin/index.html';
+$location = isset($location) ? $location : '/task_mgmt/index.html';
 ?>
 <!DOCTYPE html>
 <html lang="en">
