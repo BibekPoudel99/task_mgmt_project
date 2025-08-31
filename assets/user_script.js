@@ -759,7 +759,7 @@ class TaskFlowApp {
                             <div style="display: flex; align-items: center; justify-content: between; gap: 12px;">
                                 <span style="font-size: 12px; color: #64748b; font-weight: 500;">Project Progress:</span>
                                 <div style="flex-grow: 1; background: #f1f5f9; border-radius: 8px; height: 6px; overflow: hidden;">
-                                    <div style="width: ${progress}%; height: 100%; background: linear-gradient(135deg, #7c8471, #9a9e92); transition: width 0.5s ease;"></div>
+                                    <div style="width: ${progress}%; height: 100%; background: linear-gradient(135deg, #3182ce, #4299e1); transition: width 0.5s ease;"></div>
                                 </div>
                                 <span style="font-size: 12px; color: #64748b; font-weight: 600;">${progress}%</span>
                             </div>
@@ -1131,10 +1131,10 @@ class TaskFlowApp {
             const total = projectTasks.length || 1;
             const percent = Math.round((completedCount / total) * 100);
             return `
-                <div class="project-item ${this.selectedProjectId == project.id ? 'active' : ''}" data-project-id="${project.id}" style="border-radius: 16px; padding: 24px; margin-bottom: 16px; background: linear-gradient(135deg, #ffffff, #fafafa); border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 16px rgba(0,0,0,0.12)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.06)'">
+                <div class="project-item ${this.selectedProjectId == project.id ? 'active' : ''}" data-project-id="${project.id}" style="border-radius: 16px; padding: 24px; margin-bottom: 16px; background: linear-gradient(135deg, #ffffff, #fafbfc); border: 1px solid #e2e8f0; box-shadow: 0 2px 8px rgba(49, 130, 206, 0.1); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 16px rgba(49, 130, 206, 0.15)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(49, 130, 206, 0.1)'">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex align-items-center flex-grow-1" onclick="app.selectProject('${project.id}')">
-            <div class="project-icon me-4" style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #7c8471, #9a9e92); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 26px;">
+            <div class="project-icon me-4" style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #3182ce, #4299e1); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 26px; box-shadow: 0 2px 8px rgba(49, 130, 206, 0.3);">
                 ${this.escapeHtml(project.name.charAt(0).toUpperCase())}
             </div>
             <div class="flex-grow-1">
@@ -1143,15 +1143,15 @@ class TaskFlowApp {
             </div>
         </div>
         <div class="d-flex align-items-center" style="gap: 8px;">
-            <span class="badge rounded-pill ${this.selectedProjectId == project.id ? 'bg-primary' : 'bg-secondary'}" style="font-size: 13px; padding: 6px 10px;">${projectTasks.length - completedCount}</span>
+            <span class="badge rounded-pill" style="background: linear-gradient(135deg, #3182ce, #4299e1); color: white; font-size: 13px; padding: 6px 10px; box-shadow: 0 2px 6px rgba(49, 130, 206, 0.3);">${projectTasks.length - completedCount}</span>
             <div class="btn-group btn-group-sm" role="group">
-                <button class="btn btn-outline-secondary btn-sm" title="Rename" onclick="event.stopPropagation(); app.promptRenameProject('${project.id}', '${project.name.replace(/'/g, "&#39;")}')" style="border: none; padding: 4px 8px;"><i class="bi bi-pencil"></i></button>
-                <button class="btn btn-outline-danger btn-sm" title="Delete" onclick="event.stopPropagation(); app.deleteProject('${project.id}')" style="border: none; padding: 4px 8px;"><i class="bi bi-trash"></i></button>
+                <button class="btn btn-sm" title="Rename" onclick="event.stopPropagation(); app.promptRenameProject('${project.id}', '${project.name.replace(/'/g, "&#39;")}')" style="background: transparent; border: 1px solid #3182ce; color: #3182ce; padding: 4px 8px; border-radius: 6px; transition: all 0.3s ease;" onmouseover="this.style.background='#3182ce'; this.style.color='white'" onmouseout="this.style.background='transparent'; this.style.color='#3182ce'"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-sm" title="Delete" onclick="event.stopPropagation(); app.deleteProject('${project.id}')" style="background: transparent; border: 1px solid #ef4444; color: #ef4444; padding: 4px 8px; border-radius: 6px; margin-left: 4px; transition: all 0.3s ease;" onmouseover="this.style.background='#ef4444'; this.style.color='white'" onmouseout="this.style.background='transparent'; this.style.color='#ef4444'"><i class="bi bi-trash"></i></button>
             </div>
         </div>
     </div>
-    <div class="progress mb-3" style="height: 10px; border-radius: 6px; background-color: #f3f4f6;">
-        <div class="progress-bar" role="progressbar" style="width: ${percent}%; background: linear-gradient(135deg, #10b981, #34d399); border-radius: 6px; transition: width 0.5s ease;" aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100"></div>
+    <div class="progress mb-3" style="height: 10px; border-radius: 6px; background-color: #f1f5f9;">
+        <div class="progress-bar" role="progressbar" style="width: ${percent}%; background: linear-gradient(135deg, #3182ce, #4299e1); border-radius: 6px; transition: width 0.5s ease; box-shadow: 0 1px 3px rgba(49, 130, 206, 0.4);" aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100"></div>
     </div>
     <div class="d-flex justify-content-between align-items-center">
         <span class="small text-muted" style="font-size: 14px; font-weight: 500;">${percent}% completed</span>
@@ -1186,16 +1186,16 @@ class TaskFlowApp {
     <div style="background: linear-gradient(135deg, #ffffff, #f8fafc); border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
         <div class="d-flex align-items-center justify-content-between mb-3">
             <h5 style="color: #334155; font-weight: 600; margin: 0; display: flex; align-items: center; font-size: 1.3rem;">
-                <i class="bi bi-folder-fill me-2" style="color: #7c8471;"></i>
+                <i class="bi bi-folder-fill me-2" style="color: #3182ce;"></i>
                 ${this.escapeHtml(project.name)}
             </h5>
             
             <!-- Project Owner Badge -->
-            <div style="display: flex; align-items: center; background: ${isCurrentUserOwner ? '#f0fdf4' : '#f8fafc'}; border: 1px solid ${isCurrentUserOwner ? '#bbf7d0' : '#e2e8f0'}; border-radius: 20px; padding: 8px 14px;">
-                <div style="width: 28px; height: 28px; background: ${isCurrentUserOwner ? 'linear-gradient(135deg, #10b981, #34d399)' : 'linear-gradient(135deg, #7c8471, #9a9e92)'}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px; margin-right: 10px;">
+            <div style="display: flex; align-items: center; background: ${isCurrentUserOwner ? '#dbeafe' : '#f8fafc'}; border: 1px solid ${isCurrentUserOwner ? '#93c5fd' : '#e2e8f0'}; border-radius: 20px; padding: 8px 14px;">
+                <div style="width: 28px; height: 28px; background: ${isCurrentUserOwner ? 'linear-gradient(135deg, #3182ce, #4299e1)' : 'linear-gradient(135deg, #64748b, #94a3b8)'}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px; margin-right: 10px;">
                     ${ownerName.charAt(0).toUpperCase()}
                 </div>
-                <span style="color: ${isCurrentUserOwner ? '#166534' : '#64748b'}; font-size: 14px; font-weight: 500;">
+                <span style="color: ${isCurrentUserOwner ? '#1e40af' : '#64748b'}; font-size: 14px; font-weight: 500;">
                     ${isCurrentUserOwner ? 'You (Owner)' : `${ownerName} (Owner)`}
                 </span>
             </div>
@@ -1206,7 +1206,7 @@ class TaskFlowApp {
                 <div class="team-section">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <h6 style="color: #64748b; font-weight: 500; margin: 0; display: flex; align-items: center; font-size: 1.1rem;">
-                            <i class="bi bi-people me-2" style="color: #7c8471; font-size: 16px;"></i>
+                            <i class="bi bi-people me-2" style="color: #3182ce; font-size: 16px;"></i>
                             Team Members
                         </h6>
                         ${!isCurrentUserOwner ? `
@@ -1225,7 +1225,9 @@ class TaskFlowApp {
                                     style="border: 1px solid #d1d5db; border-right: none; padding: 12px 16px; font-size: 15px;">
                                 <datalist id="usersDatalist">${memberOptions}</datalist>
                                 <button class="btn" onclick="app.addMemberToSelected()" 
-                                        style="background: linear-gradient(135deg, #7c8471, #9a9e92); color: white; border: none; padding: 12px 18px; font-weight: 500; font-size: 15px;">
+                                        style="background: linear-gradient(135deg, #3182ce, #4299e1); color: white; border: none; padding: 12px 18px; font-weight: 500; font-size: 15px; transition: all 0.3s ease; box-shadow: 0 2px 6px rgba(49, 130, 206, 0.3);"
+                                        onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(49, 130, 206, 0.4)'"
+                                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 6px rgba(49, 130, 206, 0.3)'">
                                     <i class="bi bi-plus"></i> Add
                                 </button>
                             </div>
@@ -1242,7 +1244,7 @@ class TaskFlowApp {
                             : `<div style="display: flex; flex-wrap: wrap; gap: 10px;">
                                  ${(project.members || []).map(member => `
                                      <div style="display: flex; align-items: center; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 5px 14px 5px 5px;">
-                                         <div style="width: 28px; height: 28px; background: linear-gradient(135deg, #7c8471, #9a9e92); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 13px; margin-right: 10px;">
+                                         <div style="width: 28px; height: 28px; background: linear-gradient(135deg, #3182ce, #4299e1); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 13px; margin-right: 10px;">
                                              ${member.charAt(0).toUpperCase()}
                                          </div>
                                          <span style="font-size: 14px; color: #374151; margin-right: 6px;">${member}</span>
@@ -1264,7 +1266,7 @@ class TaskFlowApp {
                 <div class="quick-task-section">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <h6 style="color: #64748b; font-weight: 500; margin: 0; display: flex; align-items: center; font-size: 1.1rem;">
-                            <i class="bi bi-lightning me-2" style="color: #7c8471; font-size: 16px;"></i>
+                            <i class="bi bi-lightning me-2" style="color: #3182ce; font-size: 16px;"></i>
                             Quick Add Task
                         </h6>
                     </div>
@@ -1273,7 +1275,9 @@ class TaskFlowApp {
                             placeholder="Enter task title..."
                             style="border: 1px solid #d1d5db; border-right: none; padding: 12px 16px; font-size: 15px;">
                         <button class="btn" onclick="app.addQuickTask()" 
-                                style="background: linear-gradient(135deg, #059669, #10b981); color: white; border: none; padding: 12px 18px; font-weight: 500; font-size: 15px;">
+                                style="background: linear-gradient(135deg, #3182ce, #4299e1); color: white; border: none; padding: 12px 18px; font-weight: 500; font-size: 15px; transition: all 0.3s ease; box-shadow: 0 2px 6px rgba(49, 130, 206, 0.3);"
+                                onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(49, 130, 206, 0.4)'"
+                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 6px rgba(49, 130, 206, 0.3)'">
                             <i class="bi bi-plus"></i> Add
                         </button>
                     </div>
@@ -1285,9 +1289,9 @@ class TaskFlowApp {
     <div class="tasks-section">
         <div class="tasks-header" style="display: flex; align-items: center; justify-content: between; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #e2e8f0;">
             <h5 style="color: #334155; font-weight: 600; margin: 0; display: flex; align-items: center; font-size: 1.4rem;">
-                <i class="bi bi-check2-square me-2" style="color: #7c8471;"></i>
+                <i class="bi bi-check2-square me-2" style="color: #3182ce;"></i>
                 Project Tasks
-                <span style="background: #e2e8f0; color: #64748b; padding: 4px 12px; border-radius: 12px; font-size: 14px; font-weight: 500; margin-left: 12px;">
+                <span style="background: #dbeafe; color: #1e40af; padding: 4px 12px; border-radius: 12px; font-size: 14px; font-weight: 500; margin-left: 12px;">
                     ${projectTasks.length} total
                 </span>
             </h5>
@@ -1310,10 +1314,10 @@ class TaskFlowApp {
                     
                     return `
                     <div class="task-card" style="background: linear-gradient(135deg, ${isMissed ? '#fef2f2' : '#ffffff'}, ${isMissed ? '#fee2e2' : '#fafbfc'}); border: 1px solid ${isMissed ? '#fecaca' : '#e2e8f0'}; border-radius: 12px; padding: 20px; transition: all 0.3s ease; position: relative; overflow: hidden;" 
-                         onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.15)'; this.style.borderColor='${isMissed ? '#f87171' : '#7c8471'}'" 
+                         onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(49, 130, 206, 0.15)'; this.style.borderColor='${isMissed ? '#f87171' : '#3182ce'}'" 
                          onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 1px 3px rgba(0,0,0,0.1)'; this.style.borderColor='${isMissed ? '#fecaca' : '#e2e8f0'}'">
                         
-                        <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: ${task.completed ? '#10b981' : isMissed ? '#ef4444' : '#f59e0b'};"></div>
+                        <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: ${task.completed ? '#3182ce' : isMissed ? '#ef4444' : '#4299e1'};"></div>
                         
                         <div class="task-content" style="display: flex; align-items: flex-start; gap: 16px;">
                             ${isMissed ? `
@@ -1322,9 +1326,11 @@ class TaskFlowApp {
                                 </div>
                             ` : canComplete ? `
                                 <button class="task-action-btn" onclick="app.toggleTask('${task.id}')" 
-                                        style="background: ${task.completed ? 'linear-gradient(135deg, #6b7280, #9ca3af)' : 'linear-gradient(135deg, #7c8471, #9a9e92)'}; 
+                                        style="background: ${task.completed ? 'linear-gradient(135deg, #6b7280, #9ca3af)' : 'linear-gradient(135deg, #3182ce, #4299e1)'}; 
                                                color: white; border: none; border-radius: 8px; padding: 10px 18px; font-size: 14px; font-weight: 500; 
-                                               transition: all 0.3s ease; flex-shrink: 0;">
+                                               transition: all 0.3s ease; flex-shrink: 0; box-shadow: 0 2px 6px rgba(49, 130, 206, 0.3);"
+                                        onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(49, 130, 206, 0.4)'"
+                                        onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 6px rgba(49, 130, 206, 0.3)'">
                                     <i class="bi ${task.completed ? 'bi-arrow-clockwise' : 'bi-check-lg'} me-1"></i>
                                     ${task.completed ? 'Reopen' : 'Complete'}
                                 </button>
@@ -1367,7 +1373,7 @@ class TaskFlowApp {
                                                    min="${new Date().toISOString().split('T')[0]}"
                                                    onchange="app.updateDueDate('${task.id}', this.value)"
                                                    style="border: 2px solid #e2e8f0; border-radius: 8px; padding: 8px 12px; font-size: 14px; width: 160px; background: #ffffff; transition: all 0.3s ease;"
-                                                   onfocus="this.style.borderColor='#7c8471'; this.style.boxShadow='0 0 0 3px rgba(124,132,113,0.1)'"
+                                                   onfocus="this.style.borderColor='#3182ce'; this.style.boxShadow='0 0 0 3px rgba(49, 130, 206, 0.1)'"
                                                    onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'">
                                         ` : `
                                             <span style="background: #f3f4f6; color: #6b7280; padding: 6px 10px; border-radius: 6px; font-size: 14px; font-weight: 500;">
@@ -1403,7 +1409,7 @@ class TaskFlowApp {
                                     </div>
                                 ` : task.assignee ? `
                                     <div class="assignee-display" style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #f1f5f9;">
-                                        <span style="background: #e0f2fe; color: #0277bd; padding: 6px 14px; border-radius: 16px; font-size: 13px; font-weight: 500; display: flex; align-items: center; width: fit-content;">
+                                        <span style="background: #dbeafe; color: #1e40af; padding: 6px 14px; border-radius: 16px; font-size: 13px; font-weight: 500; display: flex; align-items: center; width: fit-content;">
                                             <i class="bi bi-person-check me-1"></i>Assigned to ${task.assignee}
                                         </span>
                                     </div>
@@ -1478,9 +1484,9 @@ class TaskFlowApp {
                     <p style="color: #94a3b8; margin: 0; font-size: 16px;">Create projects and add team members to see them here</p>
                     <div style="margin-top: 24px;">
                         <button onclick="document.querySelector('[data-bs-target=\\"#projects\\"]').click()" 
-                                style="background: linear-gradient(135deg, #7c8471, #9a9e92); color: white; border: none; border-radius: 12px; padding: 12px 24px; font-weight: 600; font-size: 14px; transition: all 0.3s ease;"
-                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 16px rgba(124,132,113,0.3)'"
-                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                                style="background: linear-gradient(135deg, #3182ce, #4299e1); color: white; border: none; border-radius: 12px; padding: 12px 24px; font-weight: 600; font-size: 14px; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(49, 130, 206, 0.3);"
+                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 16px rgba(49, 130, 206, 0.4)'"
+                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(49, 130, 206, 0.3)'">
                             <i class="bi bi-plus-circle-fill me-2"></i>Go to Projects
                         </button>
                     </div>
@@ -1501,28 +1507,28 @@ class TaskFlowApp {
 
         container.innerHTML = `
             <!-- Team Overview Header -->
-            <div class="team-header" style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); border: 1px solid #7dd3fc; border-radius: 16px; padding: 24px; margin-bottom: 32px; box-shadow: 0 4px 16px rgba(56, 189, 248, 0.1);">
+            <div class="team-header" style="background: linear-gradient(135deg, #dbeafe, #bfdbfe); border: 1px solid #93c5fd; border-radius: 16px; padding: 24px; margin-bottom: 32px; box-shadow: 0 4px 16px rgba(49, 130, 206, 0.1);">
                 <div class="row g-4">
                     <div class="col-lg-6">
                         <div class="d-flex align-items-center">
-                            <div style="width: 64px; height: 64px; background: linear-gradient(135deg, #0ea5e9, #38bdf8); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-right: 20px; box-shadow: 0 4px 16px rgba(14, 165, 233, 0.3);">
+                            <div style="width: 64px; height: 64px; background: linear-gradient(135deg, #3182ce, #4299e1); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-right: 20px; box-shadow: 0 4px 16px rgba(49, 130, 206, 0.3);">
                                 <i class="bi bi-people-fill" style="color: white; font-size: 28px;"></i>
                             </div>
                             <div>
-                                <h4 style="color: #0c4a6e; font-weight: 700; margin: 0; margin-bottom: 4px; font-size: 1.6rem;">Team Overview</h4>
-                                <p style="color: #0369a1; margin: 0; font-size: 1.1rem;">Collaborate across ${teamStats.totalProjects} project${teamStats.totalProjects !== 1 ? 's' : ''}</p>
+                                <h4 style="color: #1e3a8a; font-weight: 700; margin: 0; margin-bottom: 4px; font-size: 1.6rem;">Team Overview</h4>
+                                <p style="color: #1e40af; margin: 0; font-size: 1.1rem;">Collaborate across ${teamStats.totalProjects} project${teamStats.totalProjects !== 1 ? 's' : ''}</p>
                             </div>
                         </div>
                     </div>
                     <div class="col-lg-6">
                         <div class="team-stats" style="display: flex; gap: 20px; justify-content: lg-end;">
                             <div style="text-align: center;">
-                                <div style="font-size: 28px; font-weight: 700; color: #0c4a6e; margin-bottom: 4px;">${teamStats.totalMembers}</div>
-                                <div style="font-size: 15px; color: #0369a1; font-weight: 500;">Team Members</div>
+                                <div style="font-size: 28px; font-weight: 700; color: #1e3a8a; margin-bottom: 4px;">${teamStats.totalMembers}</div>
+                                <div style="font-size: 15px; color: #1e40af; font-weight: 500;">Team Members</div>
                             </div>
                             <div style="text-align: center;">
-                                <div style="font-size: 28px; font-weight: 700; color: #0c4a6e; margin-bottom: 4px;">${teamStats.activeProjects}</div>
-                                <div style="font-size: 15px; color: #0369a1; font-weight: 500;">Active Projects</div>
+                                <div style="font-size: 28px; font-weight: 700; color: #1e3a8a; margin-bottom: 4px;">${teamStats.activeProjects}</div>
+                                <div style="font-size: 15px; color: #1e40af; font-weight: 500;">Active Projects</div>
                             </div>
                         </div>
                     </div>
@@ -1532,7 +1538,7 @@ class TaskFlowApp {
             <!-- Projects Section -->
             <div class="projects-team-view">
                 <h5 style="color: #334155; font-weight: 600; margin-bottom: 24px; display: flex; align-items: center; font-size: 1.3rem;">
-                    <i class="bi bi-diagram-3 me-2" style="color: #7c8471;"></i>
+                    <i class="bi bi-diagram-3 me-2" style="color: #3182ce;"></i>
                     Team by Projects
                 </h5>
 
@@ -1552,21 +1558,21 @@ class TaskFlowApp {
                         const allProjectMembers = [...new Set([ownerName, ...(project.members || [])])];
                         
                         return `
-                            <div class="project-team-card" style="background: linear-gradient(135deg, #ffffff, #fafbfc); border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.06);" 
-                                onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 32px rgba(0,0,0,0.12)'; this.style.borderColor='#7c8471'" 
-                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.06)'; this.style.borderColor='#e2e8f0'">
+                            <div class="project-team-card" style="background: linear-gradient(135deg, #ffffff, #fafbfc); border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(49, 130, 206, 0.1);" 
+                                onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 32px rgba(49, 130, 206, 0.2)'; this.style.borderColor='#3182ce'" 
+                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(49, 130, 206, 0.1)'; this.style.borderColor='#e2e8f0'">
                                 
                                 <!-- Project Header -->
                                 <div class="project-header" style="background: linear-gradient(135deg, #f8fafc, #f1f5f9); padding: 20px 24px; border-bottom: 1px solid #e2e8f0;">
                                     <div class="d-flex align-items-center justify-content-between">
                                         <div class="d-flex align-items-center">
-                                            <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #7c8471, #9a9e92); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 16px; box-shadow: 0 4px 12px rgba(124,132,113,0.3);">
+                                            <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #3182ce, #4299e1); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-right: 16px; box-shadow: 0 4px 12px rgba(49, 130, 206, 0.3);">
                                                 <span style="color: white; font-weight: 700; font-size: 20px;">${project.name.charAt(0).toUpperCase()}</span>
                                             </div>
                                             <div>
                                                 <h6 style="color: #1e293b; font-weight: 700; margin: 0; font-size: 1.2rem; margin-bottom: 4px;">${this.escapeHtml(project.name)}</h6>
                                                 <div style="display: flex; align-items: center; gap: 12px;">
-                                                    <span style="background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 12px; font-size: 13px; font-weight: 600; display: flex; align-items: center;">
+                                                    <span style="background: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 12px; font-size: 13px; font-weight: 600; display: flex; align-items: center;">
                                                         <i class="bi bi-people me-1"></i>${allProjectMembers.length} member${allProjectMembers.length !== 1 ? 's' : ''}
                                                     </span>
                                                     <span style="background: #fef3c7; color: #d97706; padding: 4px 10px; border-radius: 12px; font-size: 13px; font-weight: 600; display: flex; align-items: center;">
@@ -1576,9 +1582,9 @@ class TaskFlowApp {
                                             </div>
                                         </div>
                                         <button onclick="app.selectProject('${project.id}')" 
-                                                style="background: linear-gradient(135deg, #7c8471, #9a9e92); color: white; border: none; border-radius: 8px; padding: 10px 18px; font-size: 14px; font-weight: 600; transition: all 0.3s ease;"
-                                                onmouseover="this.style.transform='scale(1.05)'"
-                                                onmouseout="this.style.transform='scale(1)'"
+                                                style="background: linear-gradient(135deg, #3182ce, #4299e1); color: white; border: none; border-radius: 8px; padding: 10px 18px; font-size: 14px; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 2px 6px rgba(49, 130, 206, 0.3);"
+                                                onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(49, 130, 206, 0.4)'"
+                                                onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 6px rgba(49, 130, 206, 0.3)'"
                                                 title="View project">
                                             <i class="bi bi-arrow-right-circle me-1"></i>View
                                         </button>
@@ -1592,21 +1598,21 @@ class TaskFlowApp {
                                             <i class="bi bi-crown-fill me-2" style="color: #f59e0b;"></i>Project Owner
                                         </h6>
                                         ${isCurrentUserOwner ? `
-                                            <span style="background: #f0fdf4; color: #166534; padding: 6px 12px; border-radius: 16px; font-size: 13px; font-weight: 700; display: flex; align-items: center;">
+                                            <span style="background: #dbeafe; color: #1e40af; padding: 6px 12px; border-radius: 16px; font-size: 13px; font-weight: 700; display: flex; align-items: center;">
                                                 <i class="bi bi-shield-check me-1"></i>YOU
                                             </span>
                                         ` : ''}
                                     </div>
                                     
-                                    <div class="owner-info" style="margin-top: 12px; background: ${isCurrentUserOwner ? 'linear-gradient(135deg, #f0fdf4, #dcfce7)' : 'linear-gradient(135deg, #fef3c7, #fde68a)'}; border: 1px solid ${isCurrentUserOwner ? '#bbf7d0' : '#f59e0b'}; border-radius: 12px; padding: 16px; display: flex; align-items: center;">
-                                        <div style="width: 44px; height: 44px; background: ${isCurrentUserOwner ? 'linear-gradient(135deg, #16a34a, #22c55e)' : 'linear-gradient(135deg, #f59e0b, #fbbf24)'}; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 16px; box-shadow: 0 4px 12px ${isCurrentUserOwner ? 'rgba(22, 163, 74, 0.3)' : 'rgba(245, 158, 11, 0.3)'};">
+                                    <div class="owner-info" style="margin-top: 12px; background: ${isCurrentUserOwner ? 'linear-gradient(135deg, #dbeafe, #bfdbfe)' : 'linear-gradient(135deg, #f1f5f9, #e2e8f0)'}; border: 1px solid ${isCurrentUserOwner ? '#93c5fd' : '#cbd5e1'}; border-radius: 12px; padding: 16px; display: flex; align-items: center;">
+                                        <div style="width: 44px; height: 44px; background: ${isCurrentUserOwner ? 'linear-gradient(135deg, #3182ce, #4299e1)' : 'linear-gradient(135deg, #64748b, #94a3b8)'}; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 16px; box-shadow: 0 4px 12px ${isCurrentUserOwner ? 'rgba(49, 130, 206, 0.3)' : 'rgba(100, 116, 139, 0.3)'};">
                                             <span style="color: white; font-weight: 700; font-size: 18px;">${ownerName.charAt(0).toUpperCase()}</span>
                                         </div>
                                         <div style="flex-grow: 1;">
-                                            <div style="font-weight: 700; color: ${isCurrentUserOwner ? '#166534' : '#92400e'}; font-size: 1.1rem; margin-bottom: 2px;">
+                                            <div style="font-weight: 700; color: ${isCurrentUserOwner ? '#1e40af' : '#64748b'}; font-size: 1.1rem; margin-bottom: 2px;">
                                                 ${ownerName} ${isCurrentUserOwner ? '(You)' : ''}
                                             </div>
-                                            <div style="color: ${isCurrentUserOwner ? '#22c55e' : '#d97706'}; font-size: 14px; font-weight: 500; display: flex; align-items: center;">
+                                            <div style="color: ${isCurrentUserOwner ? '#3182ce' : '#94a3b8'}; font-size: 14px; font-weight: 500; display: flex; align-items: center;">
                                                 <i class="bi bi-shield-fill-check me-1"></i>Full project access & management
                                             </div>
                                         </div>
@@ -1616,8 +1622,8 @@ class TaskFlowApp {
                                 <!-- Team Members Section -->
                                 <div class="team-members-section" style="padding: 20px 24px;">
                                     <h6 style="color: #64748b; font-weight: 600; margin: 0; margin-bottom: 16px; font-size: 1rem; display: flex; align-items: center;">
-                                        <i class="bi bi-people me-2" style="color: #7c8471;"></i>Team Members
-                                        ${(project.members || []).length > 0 ? `<span style="background: #e2e8f0; color: #64748b; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-left: 8px;">${(project.members || []).length}</span>` : ''}
+                                        <i class="bi bi-people me-2" style="color: #3182ce;"></i>Team Members
+                                        ${(project.members || []).length > 0 ? `<span style="background: #dbeafe; color: #1e40af; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-left: 8px;">${(project.members || []).length}</span>` : ''}
                                     </h6>
                                     
                                     ${(project.members || []).length === 0 ? `
@@ -1635,11 +1641,11 @@ class TaskFlowApp {
                                                 
                                                 return `
                                                     <div class="member-card" style="background: linear-gradient(135deg, #ffffff, #f8fafc); border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; transition: all 0.3s ease;" 
-                                                        onmouseover="this.style.borderColor='#7c8471'; this.style.transform='translateX(4px)'" 
+                                                        onmouseover="this.style.borderColor='#3182ce'; this.style.transform='translateX(4px)'" 
                                                         onmouseout="this.style.borderColor='#e2e8f0'; this.style.transform='translateX(0)'">
                                                         <div class="d-flex align-items-center justify-content-between">
                                                             <div class="d-flex align-items-center">
-                                                                <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #7c8471, #9a9e92); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 14px;">
+                                                                <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #3182ce, #4299e1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 14px;">
                                                                     <span style="color: white; font-weight: 700; font-size: 16px;">${member.charAt(0).toUpperCase()}</span>
                                                                 </div>
                                                                 <div>
@@ -1654,7 +1660,7 @@ class TaskFlowApp {
                                                             <div style="text-align: right;">
                                                                 ${memberTasks.length > 0 ? `
                                                                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-                                                                        <span style="background: #dcfce7; color: #16a34a; padding: 3px 8px; border-radius: 8px; font-size: 12px; font-weight: 600;">${memberCompletedTasks.length}</span>
+                                                                        <span style="background: #dbeafe; color: #1e40af; padding: 3px 8px; border-radius: 8px; font-size: 12px; font-weight: 600;">${memberCompletedTasks.length}</span>
                                                                         <span style="color: #94a3b8; font-size: 12px;">/</span>
                                                                         <span style="background: #f3f4f6; color: #6b7280; padding: 3px 8px; border-radius: 8px; font-size: 12px; font-weight: 600;">${memberTasks.length}</span>
                                                                     </div>
@@ -1678,13 +1684,13 @@ class TaskFlowApp {
                                     <div class="row g-3">
                                         <div class="col-4">
                                             <div style="text-align: center;">
-                                                <div style="font-size: 18px; font-weight: 700; color: #16a34a; margin-bottom: 2px;">${completedTasks.length}</div>
+                                                <div style="font-size: 18px; font-weight: 700; color: #3182ce; margin-bottom: 2px;">${completedTasks.length}</div>
                                                 <div style="font-size: 11px; color: #64748b; font-weight: 500;">Completed</div>
                                             </div>
                                         </div>
                                         <div class="col-4">
                                             <div style="text-align: center;">
-                                                <div style="font-size: 18px; font-weight: 700; color: #f59e0b; margin-bottom: 2px;">${pendingTasks.length}</div>
+                                                <div style="font-size: 18px; font-weight: 700; color: #4299e1; margin-bottom: 2px;">${pendingTasks.length}</div>
                                                 <div style="font-size: 11px; color: #64748b; font-weight: 500;">Pending</div>
                                             </div>
                                         </div>

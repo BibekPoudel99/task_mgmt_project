@@ -277,8 +277,7 @@ $username = $_SESSION['username'] ?? 'User';
     </nav>
 
     <!-- Main Content -->
-    <main class="container pb-2" style="max-width: 1400px; margin: 10px auto 0 auto; background: var(--bg-card); border-radius: 24px; box-shadow: 0 8px 32px var(--shadow-heavy); padding: 48px 40px 40px 40px;">
-        <!-- Header Section -->
+    <main class="container pb-2" style="max-width: 1400px; margin: 10px auto 0 auto; background: #f8f6f0; border-radius: 24px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08); padding: 48px 40px 40px 40px;">        <!-- Header Section -->
         <section class="mb-5 text-center" style="position: relative; padding: 32px 24px; background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 50%, #4338ca 100%); border-radius: 16px; box-shadow: 0 12px 24px var(--glow-primary), 0 4px 8px rgba(0,0,0,0.3); margin-bottom: 32px; overflow: hidden;">
             <!-- Animated background elements -->
             <div style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 25% 25%, rgba(255,255,255,0.08) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(255,255,255,0.05) 0%, transparent 50%); animation: float 12s ease-in-out infinite; pointer-events: none;"></div>

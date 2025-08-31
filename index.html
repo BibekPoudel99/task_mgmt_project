@@ -41,268 +41,27 @@
         text-transform: none;
         letter-spacing: normal;
         line-height: 1.15;
-        color: var(--dl-color-theme-neutral-dark);
-        background: var(--dl-color-theme-neutral-light);
-        fill: var(--dl-color-theme-neutral-dark);
+        color: var(--text-primary);
+        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+        fill: var(--text-primary);
       }
-      .navbar-container {
-        position: fixed;
-        top: 0;
-        z-index: 1000;
-        background: var(--dl-color-theme-neutral-light);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      }
-      .team-card {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 20px;
-        border-radius: 8px;
-        transition: transform 0.3s ease;
-      }
-      .team-card:hover {
-        transform: translateY(-5px);
-      }
-      .team-image {
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        object-fit: cover;
-        margin-bottom: 16px;
-      }
-      .about-content {
-        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        padding: 40px;
-        border-radius: 12px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      }
-      /* Add scroll offset for sticky navbar */
+      
+      /* Simple scroll offset for navbar */
       #home, #team, #about, #contact {
         scroll-margin-top: 100px;
       }
       #home {
-        padding-top: 100px; /* Extra space for home section */
-      }
-      
-      /* Features Section Styling */
-      .features2-tabs-menu {
-        display: flex;
-        flex-direction: column;
-        gap: 2rem;
-        width: 100%;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 2rem;
-      }
-      
-      .features2-tab-horizontal1,
-      .features2-tab-horizontal2,
-      .features2-tab-horizontal3,
-      .features2-tab-horizontal4,
-      .features2-tab-horizontal5 {
-        display: flex;
-        align-items: flex-start;
-        gap: 2rem;
-        padding: 2.5rem;
-        border-radius: 16px;
-        background: rgba(255, 255, 255, 0.08);
-        backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 25px rgba(0, 0, 0, 0.12);
-        width: 100%;
-      }
-      
-      .features2-tab-horizontal1:hover,
-      .features2-tab-horizontal2:hover,
-      .features2-tab-horizontal3:hover,
-      .features2-tab-horizontal4:hover,
-      .features2-tab-horizontal5:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-        background: rgba(255, 255, 255, 0.08);
-      }
-      
-      .features2-divider-container1,
-      .features2-divider-container2,
-      .features2-divider-container3,
-      .features2-divider-container4,
-      .features2-divider-container5 {
-        width: 6px;
-        height: 100px;
-        background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
-        border-radius: 3px;
-        flex-shrink: 0;
-        align-self: flex-start;
-        margin-top: 0.5rem;
-      }
-      
-      .features2-image-wrapper {
-        flex-shrink: 0;
-        width: 140px;
-        height: 140px;
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: 0 6px 25px rgba(0, 0, 0, 0.25);
-        position: relative;
-      }
-      
-      .features2-feature-image {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.3s ease;
-      }
-      
-      .features2-image-wrapper:hover .features2-feature-image {
-        transform: scale(1.1);
-      }
-      
-      .features2-content1,
-      .features2-content2,
-      .features2-content3,
-      .features2-content4,
-      .features2-content5 {
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        min-width: 0;
-      }
-      
-      .features2-content1 h2,
-      .features2-content2 h2,
-      .features2-content3 h2,
-      .features2-content4 h2,
-      .features2-content5 h2 {
-        margin: 0;
-        color: #333;
-        font-weight: 700;
-        line-height: 1.2;
-        font-size: 1.5rem;
-      }
-      
-      .features2-content1 span,
-      .features2-content2 span,
-      .features2-content3 span,
-      .features2-content4 span,
-      .features2-content5 span {
-        color: #666;
-        line-height: 1.6;
-        font-size: 1rem;
-        text-align: left;
-      }
-      
-      /* Responsive Design */
-      @media (max-width: 768px) {
-        .features2-tabs-menu {
-          padding: 0 1rem;
-          gap: 1.5rem;
-        }
-        
-        .features2-tab-horizontal1,
-        .features2-tab-horizontal2,
-        .features2-tab-horizontal3,
-        .features2-tab-horizontal4,
-        .features2-tab-horizontal5 {
-          flex-direction: column;
-          text-align: center;
-          padding: 2rem;
-          gap: 1.5rem;
-          align-items: center;
-        }
-        
-        .features2-divider-container1,
-        .features2-divider-container2,
-        .features2-divider-container3,
-        .features2-divider-container4,
-        .features2-divider-container5 {
-          width: 80px;
-          height: 4px;
-          margin-top: 0;
-        }
-        
-        .features2-image-wrapper {
-          width: 120px;
-          height: 120px;
-        }
-        
-        .features2-content1 span,
-        .features2-content2 span,
-        .features2-content3 span,
-        .features2-content4 span,
-        .features2-content5 span {
-          text-align: center;
-        }
-        
-        .features2-content1 h2,
-        .features2-content2 h2,
-        .features2-content3 h2,
-        .features2-content4 h2,
-        .features2-content5 h2 {
-          font-size: 1.3rem;
-        }
-      }
-      
-      @media (max-width: 480px) {
-        .features2-tabs-menu {
-          padding: 0 0.5rem;
-          gap: 1.2rem;
-        }
-        
-        .features2-tab-horizontal1,
-        .features2-tab-horizontal2,
-        .features2-tab-horizontal3,
-        .features2-tab-horizontal4,
-        .features2-tab-horizontal5 {
-          padding: 1.5rem;
-          gap: 1.2rem;
-        }
-        
-        .features2-image-wrapper {
-          width: 100px;
-          height: 100px;
-        }
-      }
-      
-      @media (max-width: 480px) {
-        .features2-tabs-menu {
-          gap: 1.5rem;
-        }
-        
-        .features2-tab-horizontal1,
-        .features2-tab-horizontal2,
-        .features2-tab-horizontal3,
-        .features2-tab-horizontal4,
-        .features2-tab-horizontal5 {
-          padding: 1rem;
-          gap: 1rem;
-        }
-        
-        .features2-image-wrapper {
-          width: 80px;
-          height: 80px;
-        }
+        padding-top: 100px;
       }
     </style>
     <link rel="stylesheet" href="https://unpkg.com/animate.css@4.1.1/animate.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" data-tag="font" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" data-tag="font" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" data-tag="font" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" data-tag="font" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" data-tag="font" />
     <link rel="stylesheet" href="https://unpkg.com/@teleporthq/teleport-custom-scripts/dist/style.css" />
-    <style>
-      @keyframes fade-in-left {
-        0% { opacity: 0; transform: translateX(-20px); }
-        100% { opacity: 1; transform: translateX(0); }
-      }
-    </style>
   </head>
   <body>
-    <link rel="stylesheet" href="../assets/style.css" />
+    <link rel="stylesheet" href="assets/style.css" />
     <div>
-      <link href="../assets/index.css" rel="stylesheet" />
+      <link href="assets/index.css" rel="stylesheet" />
       <div class="home-container">
         <navbar-wrapper class="navbar-wrapper">
           <header class="navbar-container">
@@ -311,15 +70,15 @@
               <div data-thq="thq-navbar-nav" class="navbar-desktop-menu">
                 <nav class="navbar-links1">
                   <a href="#home" class="navbar-link thq-body-small"><span>Home</span></a>
-                  <a href="#team" class="navbar-link thq-body-small"><span>Team</span></a>
-                  <a href="#about" class="navbar-link thq-body-small"><span>About</span></a>
+                  <a href="#features" class="navbar-link thq-body-small"><span>Features</span></a>
+                  <a href="#steps" class="navbar-link thq-body-small"><span>How It Works</span></a>
                   <a href="#contact" class="navbar-link thq-body-small"><span>Contact</span></a>
                 </nav>
                 <div class="navbar-buttons1">
-                  <button class="navbar-action11 thq-button-animated thq-button-filled" onclick="window.location.href='../user/user_login.php'">
+                  <button class="navbar-action11 thq-button-animated thq-button-filled" onclick="window.location.href='user/user_login.php'">
                     <span class="thq-body-small">Login</span>
                   </button>
-                  <button class="navbar-action21 thq-button-outline thq-button-animated" onclick="window.location.href='../user/user_registration.php'">
+                  <button class="navbar-action21 thq-button-outline thq-button-animated" onclick="window.location.href='user/user_registration.php'">
                     <span class="thq-body-small">Register</span>
                   </button>
                 </div>
@@ -341,8 +100,8 @@
                   </div>
                   <nav class="navbar-links2">
                     <a href="#home" class="thq-link thq-body-small"><span>Home</span></a>
-                    <a href="#team" class="thq-link thq-body-small"><span>Team</span></a>
-                    <a href="#about" class="thq-link thq-body-small"><span>About</span></a>
+                    <a href="#features" class="thq-link thq-body-small"><span>Features</span></a>
+                    <a href="#steps" class="thq-link thq-body-small"><span>How It Works</span></a>
                     <a href="#contact" class="thq-link thq-body-small"><span>Contact</span></a>
                   </nav>
                 </div>
@@ -366,7 +125,7 @@
                 </p>
               </div>
               <div class="hero-actions">
-                <button class="thq-button-filled hero-button1" onclick="window.location.href='../user/user_registration.php'">
+                <button class="thq-button-filled hero-button1" onclick="window.location.href='user/user_registration.php'">
                   <span class="thq-body-small"><span>Get Started</span></span>
                 </button>
                 <button class="thq-button-outline hero-button2">
@@ -444,7 +203,7 @@
             </div>
           </div>
         </cta-wrapper>
-        <features2-wrapper class="features2-wrapper">
+        <features2-wrapper class="features2-wrapper" id="features">
           <div class="thq-section-padding">
             <div class="features2-container2 thq-section-max-width">
               <div class="features2-tabs-menu">
@@ -515,16 +274,16 @@
             </div>
           </div>
         </features2-wrapper>
-        <steps-wrapper class="steps-wrapper">
+        <steps-wrapper class="steps-wrapper" id="steps">
           <div class="steps-container1 thq-section-padding">
             <div class="steps-max-width thq-section-max-width">
               <div class="steps-container2 thq-grid-2">
                 <div class="steps-section-header">
-                  <h2 class="thq-heading-2">Discover the Power of Our Products</h2>
-                  <p class="thq-body-large">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare, eros dolor interdum nulla, ut commodo diam libero vitae erat.</p>
+                  <h2 class="thq-heading-2">Get Started in 4 Easy Steps</h2>
+                  <p class="thq-body-large">Transform your productivity with TaskFlow's intuitive workflow. From account creation to project completion, our streamlined process makes task management effortless and efficient.</p>
                   <div class="steps-actions">
-                    <button class="thq-button-animated thq-button-filled steps-button">
-                      <span class="thq-body-small">Main action</span>
+                    <button class="thq-button-animated thq-button-filled steps-button" onclick="window.location.href='../user/user_registration.php'">
+                      <span class="thq-body-small">Start Your Journey</span>
                     </button>
                   </div>
                 </div>
@@ -557,12 +316,12 @@
         <team-wrapper class="team-wrapper" id="team">
           <div class="thq-section-padding">
             <div class="thq-section-max-width">
-              <div class="thq-grid-2">
-                <div class="steps-section-header">
+              <div class="team-section">
+                <div class="team-section-header">
                   <h2 class="thq-heading-2">Meet Our Team</h2>
                   <p class="thq-body-large">Our passionate team of innovators who crafted TaskFlow to empower your productivity.</p>
                 </div>
-                <div class="steps-container3" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+                <div class="team-cards-container">
                   <div class="team-card thq-card">
                     <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf2596f4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400" alt="Bibek Poudel" class="team-image" />
                     <h3 class="thq-heading-3">Bibek Poudel</h3>
@@ -593,7 +352,7 @@
                 <h2 class="thq-heading-2">About TaskFlow</h2>
                 <p class="thq-body-large">TaskFlow is your ultimate web-based solution for managing tasks and projects with ease. Built with cutting-edge web technologies, TaskFlow empowers individuals and teams to organize tasks, track deadlines, monitor progress, and collaborate seamlessly. Whether you're working on web development projects or managing daily workflows, TaskFlow is designed to streamline your processes and boost productivity. Our mission is to simplify task management, making it intuitive, efficient, and accessible for everyone.</p>
                 <div class="thq-button-filled" style="margin-top: 20px;">
-                  <a href="#home" class="thq-body-small">Explore Features</a>
+                  <a href="#features" class="thq-body-small">Explore Features</a>
                 </div>
               </div>
             </div>
@@ -745,6 +504,60 @@
             }
           });
         });
+      });
+    </script>
+    
+    <!-- Steps scroll animation script -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const stepsContainers = document.querySelectorAll('.steps-container4, .steps-container5, .steps-container6, .steps-container7');
+        
+        function animateStepsOnScroll() {
+          const scrollY = window.scrollY;
+          const windowHeight = window.innerHeight;
+          
+          stepsContainers.forEach((container, index) => {
+            const rect = container.getBoundingClientRect();
+            const containerTop = rect.top + scrollY;
+            const scrollProgress = Math.max(0, Math.min(1, (scrollY - containerTop + windowHeight) / windowHeight));
+            
+            if (scrollProgress > 0) {
+              // Calculate transform values based on scroll progress
+              const translateY = 50 - (scrollProgress * 60); // Move up as we scroll
+              const opacity = Math.min(1, scrollProgress * 2); // Fade in quickly
+              
+              // Apply rotation based on container
+              let rotation = 0;
+              if (container.classList.contains('steps-container4') || container.classList.contains('steps-container6')) {
+                rotation = -2; // Negative rotation for 1st and 3rd cards
+              } else {
+                rotation = 2; // Positive rotation for 2nd and 4th cards
+              }
+              
+              container.style.transform = `rotate(${rotation}deg) translateY(${translateY}px)`;
+              container.style.opacity = opacity;
+            }
+          });
+        }
+        
+        // Throttle scroll events for better performance
+        let ticking = false;
+        function requestTick() {
+          if (!ticking) {
+            requestAnimationFrame(animateStepsOnScroll);
+            ticking = true;
+          }
+        }
+        
+        function handleScroll() {
+          ticking = false;
+          requestTick();
+        }
+        
+        window.addEventListener('scroll', handleScroll);
+        
+        // Initialize on load
+        animateStepsOnScroll();
       });
     </script>
     
