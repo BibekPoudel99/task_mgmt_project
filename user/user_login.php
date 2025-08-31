@@ -62,45 +62,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>User Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="../assets/style.css">
-    <link rel="stylesheet" href="../assets/index.css">
-    <style>
-        body { background: #FAF7F2; }
-        .login-container {
-            max-width: 420px;
-            margin: 10vh auto;
-            padding: 2rem;
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.06);
-        }
-        .login-title { font-weight: 800; color: #2D3B2D; margin-bottom: 1.25rem; text-align: center; }
-        .btn-theme { background-color: #7AA874; color: #fff; font-weight: 600; border: none; }
-        .btn-theme:hover { background-color: #6A9767; }
-        
-        .alert-deactivated {
-            background: linear-gradient(135deg, #fee2e2, #fecaca);
-            border: 1px solid #f87171;
-            color: #dc2626;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        .alert-deactivated .alert-icon {
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-        .support-contact {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 15px;
-            text-align: center;
-        }
-    </style>
+    <link rel="stylesheet" href="../assets/user_style.css">
 </head>
-<body class="bg-cream">
+<body class="bg-cream login-body">
     <div class="login-container">
         <div class="login-title">User Login</div>
         
@@ -108,17 +72,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="alert-deactivated">
                 <div class="text-center">
                     <i class="bi bi-exclamation-triangle-fill alert-icon"></i>
-                    <h5 style="color: #dc2626; font-weight: 600; margin-bottom: 15px;">Account Deactivated</h5>
+                    <h5 class="alert-deactivated-title">Account Deactivated</h5>
                 </div>
-                <p style="margin: 0; line-height: 1.5; text-align: center;">
+                <p class="alert-deactivated-text">>
                     <?php echo htmlspecialchars($account_message); ?>
                 </p>
                 
                 <div class="support-contact">
-                    <p style="margin: 0; font-size: 14px; color: #64748b; font-weight: 500;">
+                    <p class="support-contact-text">
                         <i class="bi bi-envelope me-2"></i>
                         Need help? Contact support: 
-                        <a href="mailto:poudelbibek86@gmail.com" style="color: #3182ce; text-decoration: none;">
+                        <a href="mailto:poudelbibek86@gmail.com" class="support-contact-link">
                             support@taskflow.com
                         </a>
                     </p>
@@ -152,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         name="password" 
                         <?php echo ($error === 'account_deactivated') ? 'readonly' : 'required'; ?>
                     >
-                    <span class="input-group-text" id="togglePassword" style="cursor:pointer;">
+                    <span class="input-group-text toggle-password" id="togglePassword">>
                         <i class="bi bi-eye"></i>
                     </span>
                 </div>

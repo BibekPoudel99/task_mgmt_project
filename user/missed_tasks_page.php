@@ -5,70 +5,21 @@ if (empty($_SESSION['user_logged_in'])) {
     exit;
 }
 
-require_once '../library/Database.php';
 require_once '../library/TaskUtils.php';
 
-// Add debug output here
-echo "<div style='background: #f0f0f0; padding: 10px; margin: 10px; border: 1px solid #ccc;'>";
-echo "<h3>DEBUG INFO:</h3>";
-echo "User ID: " . $_SESSION['user_id'] . "<br>";
-echo "Today's date: " . date('Y-m-d') . "<br>";
+$taskUtils = new TaskUtils();
 
-// Get all tasks for this user to see what's in the database
-$db = new Database();
-$pdo = $db->getConnection();
-
-// Now get all tasks with correct column names
-echo "<h4>All your tasks:</h4>";
 try {
-    // Use assignee_id instead of assigned_to
-    $stmt = $pdo->prepare("SELECT * FROM tasks WHERE owner_id = ? OR assignee_id = ?");
-    $stmt->execute([$_SESSION['user_id'], $_SESSION['user_id']]);
-    $allTasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
-    if (empty($allTasks)) {
-        echo "No tasks found for user ID: " . $_SESSION['user_id'] . "<br>";
-    } else {
-        foreach ($allTasks as $task) {
-            echo "Task: {$task['title']}, Due: {$task['due_date']}, Completed: {$task['completed']}, Missed: {$task['is_missed']}<br>";
-        }
-    }
-    
-    // Now check for missed tasks
-    echo "<h4>Checking for missed tasks...</h4>";
-    
-    // First update missed tasks
-    $updateStmt = $pdo->prepare("
-        UPDATE tasks 
-        SET is_missed = 1 
-        WHERE due_date < CURDATE() 
-        AND completed = 0 
-        AND is_missed = 0
-    ");
-    $updateStmt->execute();
-    $updatedCount = $updateStmt->rowCount();
-    echo "Updated {$updatedCount} tasks as missed<br>";
+    // Update missed tasks first
+    $updatedCount = $taskUtils->updateMissedTasks();
     
     // Get missed tasks for this user
-    $missedStmt = $pdo->prepare("
-        SELECT t.*, p.name as project_name 
-        FROM tasks t 
-        LEFT JOIN projects p ON t.project_id = p.id 
-        WHERE (t.owner_id = ? OR t.assignee_id = ?) 
-        AND t.is_missed = 1 
-        ORDER BY t.due_date DESC
-    ");
-    $missedStmt->execute([$_SESSION['user_id'], $_SESSION['user_id']]);
-    $missedTasks = $missedStmt->fetchAll(PDO::FETCH_ASSOC);
-    
-    echo "Found " . count($missedTasks) . " missed tasks<br>";
+    $missedTasks = $taskUtils->getMissedTasksForUser($_SESSION['user_id']);
     
 } catch (Exception $e) {
-    echo "Error: " . $e->getMessage() . "<br>";
+    error_log("Error loading missed tasks: " . $e->getMessage());
     $missedTasks = [];
 }
-
-echo "</div>";
 
 $username = $_SESSION['username'] ?? 'User';
 ?>
@@ -80,6 +31,7 @@ $username = $_SESSION['username'] ?? 'User';
     <title>Missed Tasks - TaskFlow</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../assets/user_style.css">
     <style>
         body { background: #f8f9fa; }
         .main-container {

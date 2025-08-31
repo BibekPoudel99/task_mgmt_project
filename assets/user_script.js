@@ -415,12 +415,12 @@ class TaskFlowApp {
         if (!container) return;
         
         container.innerHTML = `
-            <div style="text-align: center; padding: 60px 20px; background: linear-gradient(135deg, #fef3c7, #fde68a); border: 1px solid #f59e0b; border-radius: 16px; margin-bottom: 32px;">
+            <div class="loading-container warning-theme">
                 <div class="spinner-border text-warning" role="status" style="width: 3rem; height: 3rem; margin-bottom: 20px;">
                     <span class="visually-hidden">Loading...</span>
                 </div>
-                <h5 style="color: #92400e; margin-bottom: 12px; font-weight: 600;">Loading My Day...</h5>
-                <p style="color: #d97706; margin: 0; font-size: 16px;">Fetching your tasks for today</p>
+                <h5 class="loading-title warning">Loading My Day...</h5>
+                <p class="loading-text warning">Fetching your tasks for today</p>
             </div>
         `;
     }
@@ -487,15 +487,13 @@ class TaskFlowApp {
         
         if (todayTasks.length === 0) {
             container.innerHTML = `
-                <div style="text-align: center; padding: 60px 20px; background: linear-gradient(135deg, #f0fdf4, #f7fee7); border: 2px dashed #bbf7d0; border-radius: 16px;">
-                    <i class="bi bi-sun" style="font-size: 64px; color: #16a34a; margin-bottom: 20px;"></i>
-                    <h5 style="color: #166534; margin-bottom: 12px; font-weight: 600;">All Clear for Today!</h5>
-                    <p style="color: #22c55e; margin: 0; font-size: 16px;">No tasks due today. Great job staying organized!</p>
+                <div class="loading-container success-theme">
+                    <i class="bi bi-sun empty-state-icon success"></i>
+                    <h5 class="loading-title success">All Clear for Today!</h5>
+                    <p class="loading-text success">No tasks due today. Great job staying organized!</p>
                     <div style="margin-top: 24px;">
                         <button onclick="document.querySelector('[data-bs-target=\\"#tasks\\"]').click()" 
-                                style="background: linear-gradient(135deg, #3182ce, #4299e1); color: white; border: none; border-radius: 12px; padding: 12px 24px; font-weight: 600; font-size: 14px; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(49, 130, 206, 0.3);"
-                                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 16px rgba(49, 130, 206, 0.4)'"
-                                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(49, 130, 206, 0.3)'">
+                                class="quick-add-button">
                             <i class="bi bi-plus-circle-fill me-2"></i>Add New Tasks
                         </button>
                     </div>
@@ -506,16 +504,16 @@ class TaskFlowApp {
 
         container.innerHTML = `
             <!-- MyDay Header -->
-            <div class="myday-header" style="background: linear-gradient(135deg, #fef3c7, #fde68a); border: 1px solid #f59e0b; border-radius: 16px; padding: 24px; margin-bottom: 32px; box-shadow: 0 4px 16px rgba(245, 158, 11, 0.15);">
+            <div class="myday-header-container">
                 <div class="row g-4">
                     <div class="col-lg-8">
                         <div class="d-flex align-items-center">
-                            <div style="width: 64px; height: 64px; background: linear-gradient(135deg, #f59e0b, #fbbf24); border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-right: 20px; box-shadow: 0 4px 16px rgba(245, 158, 11, 0.3);">
+                            <div class="myday-icon-box">
                                 <i class="bi bi-calendar-day-fill" style="color: white; font-size: 28px;"></i>
                             </div>
                             <div>
-                                <h4 style="color: #92400e; font-weight: 700; margin: 0; margin-bottom: 4px;">My Day</h4>
-                                <p style="color: #d97706; margin: 0; font-size: 16px;">
+                                <h4 class="loading-title warning" style="margin: 0; margin-bottom: 4px;">My Day</h4>
+                                <p class="loading-text warning" style="margin: 0;">
                                     ${new Date().toLocaleDateString('en-US', { 
                                         weekday: 'long', 
                                         year: 'numeric', 
@@ -2036,15 +2034,6 @@ renderProjectDetails() {
 }
 
     // Helpers (UI + API)
-    addMemberToSelected() {
-        const input = document.getElementById('newMemberInput');
-        const username = input?.value || '';
-        if (username && this.selectedProjectId) {
-            this.addMember(this.selectedProjectId, username);
-            input.value = '';
-        }
-    }
-
     async promptRenameProject(projectId, currentName) {
         const name = prompt('New project name:', currentName || '');
         if (!name) return;
@@ -2320,15 +2309,6 @@ renderProjectDetails() {
     }
 
     // Helper methods for UI interactions
-    addMemberToSelected() {
-        const input = document.getElementById('newMemberInput');
-        const username = input?.value || '';
-        if (username && this.selectedProjectId) {
-            this.addMember(this.selectedProjectId, username);
-            input.value = '';
-        }
-    }
-
     updateProjectOptions() {
         const select = document.getElementById('taskProject');
         if (!select) return;

@@ -1,68 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="landing-html">
   <head>
     <title>Task Management</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta charset="utf-8" />
     <meta property="twitter:card" content="summary_large_image" />
-
-    <style data-tag="reset-style-sheet">
-      html { line-height: 1.15; }
-      body { margin: 0; }
-      * { box-sizing: border-box; border-width: 0; border-style: solid; -webkit-font-smoothing: antialiased; }
-      p, li, ul, pre, div, h1, h2, h3, h4, h5, h6, figure, blockquote, figcaption { margin: 0; padding: 0; }
-      button { background-color: transparent; }
-      button, input, optgroup, select, textarea { font-family: inherit; font-size: 100%; line-height: 1.15; margin: 0; }
-      button, select { text-transform: none; }
-      button, [type="button"], [type="reset"], [type="submit"] { appearance: none; -webkit-appearance: none; color: inherit; }
-      button::-moz-focus-inner, [type="button"]::-moz-focus-inner, [type="reset"]::-moz-focus-inner, [type="submit"]::-moz-focus-inner { border-style: none; padding: 0; }
-      button:-moz-focus, [type="button"]:-moz-focus, [type="reset"]:-moz-focus, [type="submit"]:-moz-focus { outline: 1px dotted ButtonText; }
-      a { color: inherit; text-decoration: inherit; }
-      input { padding: 2px 4px; }
-      img { display: block; }
-      details { display: block; margin: 0; padding: 0; }
-      summary::-webkit-details-marker { display: none; }
-      [data-thq="accordion"] [data-thq="accordion-content"] { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-in-out; padding: 0; }
-      [data-thq="accordion"] details[data-thq="accordion-trigger"][open] + [data-thq="accordion-content"] { max-height: 1000vh; }
-      details[data-thq="accordion-trigger"][open] summary [data-thq="accordion-icon"] { transform: rotate(180deg); }
-      html { scroll-behavior: smooth; }
-    </style>
-    <style data-tag="default-style-sheet">
-      html {
-        font-family: Inter;
-        font-size: 16px;
-      }
-      body {
-        margin: 0;
-        padding: 0;
-        font-weight: 400;
-        font-style: normal;
-        text-decoration: none;
-        text-transform: none;
-        letter-spacing: normal;
-        line-height: 1.15;
-        color: var(--text-primary);
-        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
-        fill: var(--text-primary);
-      }
-      
-      /* Simple scroll offset for navbar */
-      #home, #team, #about, #contact {
-        scroll-margin-top: 100px;
-      }
-      #home {
-        padding-top: 100px;
-      }
-    </style>
     <link rel="stylesheet" href="https://unpkg.com/animate.css@4.1.1/animate.css" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" data-tag="font" />
     <link rel="stylesheet" href="https://unpkg.com/@teleporthq/teleport-custom-scripts/dist/style.css" />
-  </head>
-  <body>
     <link rel="stylesheet" href="assets/style.css" />
-    <div>
-      <link href="assets/index.css" rel="stylesheet" />
-      <div class="home-container">
+    <link href="assets/index.css" rel="stylesheet" />
+  </head>
+  <body class="landing-page">
         <navbar-wrapper class="navbar-wrapper">
           <header class="navbar-container">
             <header data-thq="thq-navbar" class="navbar-navbar-interactive">
@@ -173,16 +122,6 @@
             </div>
             <div>
               <div class="hero-container2">
-                <style>
-                  @keyframes scroll-x {
-                    from { transform: translateX(0); }
-                    to { transform: translateX(calc(-100% - 16px)); }
-                  }
-                  @keyframes scroll-y {
-                    from { transform: translateY(0); }
-                    to { transform: translateY(calc(-100% - 16px)); }
-                  }
-                </style>
               </div>
             </div>
           </div>
@@ -351,7 +290,7 @@
               <div class="about-content">
                 <h2 class="thq-heading-2">About TaskFlow</h2>
                 <p class="thq-body-large">TaskFlow is your ultimate web-based solution for managing tasks and projects with ease. Built with cutting-edge web technologies, TaskFlow empowers individuals and teams to organize tasks, track deadlines, monitor progress, and collaborate seamlessly. Whether you're working on web development projects or managing daily workflows, TaskFlow is designed to streamline your processes and boost productivity. Our mission is to simplify task management, making it intuitive, efficient, and accessible for everyone.</p>
-                <div class="thq-button-filled" style="margin-top: 20px;">
+                <div class="thq-button-filled landing-mt-20">>
                   <a href="#features" class="thq-body-small">Explore Features</a>
                 </div>
               </div>
