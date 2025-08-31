@@ -33,17 +33,20 @@ if ($method === 'GET') {
         $stmt->execute([':uid' => $userId]);
         $projects = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Fetch members per project
+        // Fetch members per project with their status
         $projectIds = array_map(fn($p) => (int)$p['id'], $projects);
         $membersByProject = [];
         if ($projectIds) {
             $in = implode(',', array_fill(0, count($projectIds), '?'));
-            $stmtM = $pdo->prepare("SELECT pm.project_id, u.username FROM project_members pm JOIN users u ON u.id = pm.user_id WHERE pm.project_id IN ($in)");
+            $stmtM = $pdo->prepare("SELECT pm.project_id, u.username, COALESCE(u.is_active, 1) as is_active FROM project_members pm JOIN users u ON u.id = pm.user_id WHERE pm.project_id IN ($in)");
             $stmtM->execute($projectIds);
             while ($row = $stmtM->fetch(PDO::FETCH_ASSOC)) {
                 $pid = (int)$row['project_id'];
                 if (!isset($membersByProject[$pid])) $membersByProject[$pid] = [];
-                $membersByProject[$pid][] = $row['username'];
+                $membersByProject[$pid][] = [
+                    'username' => $row['username'],
+                    'is_active' => (bool)$row['is_active']
+                ];
             }
         }
 

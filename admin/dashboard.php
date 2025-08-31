@@ -68,6 +68,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     $action = $_POST['action'];
     
     try {
+        if ($action === 'get_csrf_token') {
+            // Just return a fresh CSRF token
+            echo json_encode(['success' => true, 'csrf_token' => $next]);
+            exit;
+        }
+        
         if ($action === 'toggle_user_status') {
             $userId = (int)($_POST['user_id'] ?? 0);
             $isActive = $_POST['is_active'] === '1' ? 1 : 0;
@@ -76,9 +82,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 exit;
             }
             
-            $stmt = $pdo->prepare('UPDATE users SET is_active = ? WHERE id = ?');
-            $stmt->execute([$isActive, $userId]);
-            echo json_encode(['success' => true, 'message' => 'User status updated successfully', 'csrf_token' => $next]);
+            try {
+                // Start transaction
+                $pdo->beginTransaction();
+                
+                // Get username for logging
+                $userStmt = $pdo->prepare('SELECT username FROM users WHERE id = ?');
+                $userStmt->execute([$userId]);
+                $username = $userStmt->fetchColumn();
+                
+                // Update user status
+                $stmt = $pdo->prepare('UPDATE users SET is_active = ? WHERE id = ?');
+                $stmt->execute([$isActive, $userId]);
+                
+                // If deactivating user (is_active = 0), handle task reassignments
+                if ($isActive == 0) {
+                    // Unassign all tasks assigned to this user
+                    $taskStmt = $pdo->prepare('UPDATE tasks SET assignee_id = NULL WHERE assignee_id = ?');
+                    $taskStmt->execute([$userId]);
+                    $unassignedTasks = $taskStmt->rowCount();
+                    
+                    // Log the deactivation for the user to see when they try to login
+                    $logStmt = $pdo->prepare('INSERT INTO user_activity_log (user_id, activity_type, description, created_at) VALUES (?, ?, ?, NOW())');
+                    $logStmt->execute([
+                        $userId, 
+                        'account_deactivated', 
+                        'Your account has been deactivated by an administrator. Please contact support if you believe this is an error.'
+                    ]);
+                    
+                    $pdo->commit();
+                    
+                    echo json_encode([
+                        'success' => true, 
+                        'message' => "User '{$username}' has been deactivated. {$unassignedTasks} task(s) have been unassigned.",
+                        'csrf_token' => $next
+                    ]);
+                } else {
+                    // Reactivating user
+                    // Log the reactivation
+                    $logStmt = $pdo->prepare('INSERT INTO user_activity_log (user_id, activity_type, description, created_at) VALUES (?, ?, ?, NOW())');
+                    $logStmt->execute([
+                        $userId, 
+                        'account_reactivated', 
+                        'Your account has been reactivated by an administrator. Welcome back!'
+                    ]);
+                    
+                    $pdo->commit();
+                    
+                    echo json_encode([
+                        'success' => true, 
+                        'message' => "User '{$username}' has been reactivated.",
+                        'csrf_token' => $next
+                    ]);
+                }
+                
+            } catch (Exception $e) {
+                $pdo->rollBack();
+                echo json_encode(['success' => false, 'message' => 'Failed to update user status: ' . $e->getMessage(), 'csrf_token' => $next]);
+            }
             exit;
         }
         
@@ -550,11 +611,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
         // Get CSRF token
         function getCSRFToken() {
-            return fetch('../admin_api/users.php', {credentials: 'same-origin'})
+            return fetch('dashboard.php', {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'action=get_csrf_token'
+            })
                 .then(res => res.json())
                 .then(data => {
                     csrfToken = data.csrf_token || '';
                     return csrfToken;
+                })
+                .catch(error => {
+                    console.error('Error getting CSRF token:', error);
+                    return '';
                 });
         }
 
@@ -568,6 +638,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         // Toggle user status function
         function toggleUserStatus(userId, newStatus) {
             if (!confirm('Are you sure you want to ' + (newStatus ? 'activate' : 'deactivate') + ' this user?')) {
+                return;
+            }
+
+            // Check if we have a CSRF token, if not get one first
+            if (!csrfToken) {
+                getCSRFToken().then(() => {
+                    toggleUserStatus(userId, newStatus);
+                }).catch(error => {
+                    showAlert('Failed to get security token: ' + error.message, 'danger');
+                });
                 return;
             }
 

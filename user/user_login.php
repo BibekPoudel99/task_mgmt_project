@@ -6,6 +6,7 @@ $db = new Database();
 $conn = $db->getConnection();
 
 $error = '';
+$account_message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
@@ -19,13 +20,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$username]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($user && (int)$user['is_active'] === 1 && Hash::verify($password, $user['hashed_password'])) {
-                $_SESSION['user_logged_in'] = true;
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['username'] = $user['username'];
-                $_SESSION['role'] = 'user';
-                header('Location: user_dashboard.php');
-                exit;
+            if ($user && Hash::verify($password, $user['hashed_password'])) {
+                // Check if account is active
+                if ((int)$user['is_active'] === 0) {
+                    // Get the latest deactivation message
+                    $logStmt = $conn->prepare('
+                        SELECT description 
+                        FROM user_activity_log 
+                        WHERE user_id = ? AND activity_type = "account_deactivated" 
+                        ORDER BY created_at DESC 
+                        LIMIT 1
+                    ');
+                    $logStmt->execute([$user['id']]);
+                    $logResult = $logStmt->fetch(PDO::FETCH_ASSOC);
+                    
+                    $account_message = $logResult ? $logResult['description'] : 
+                        'Your account has been deactivated by an administrator. Please contact support.';
+                    
+                    $error = 'account_deactivated';
+                } else {
+                    // Login successful
+                    $_SESSION['user_logged_in'] = true;
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['username'] = $user['username'];
+                    $_SESSION['role'] = 'user';
+                    header('Location: user_dashboard.php');
+                    exit;
+                }
             } else {
                 $error = 'Invalid username or password.';
             }
@@ -57,14 +78,57 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .login-title { font-weight: 800; color: #2D3B2D; margin-bottom: 1.25rem; text-align: center; }
         .btn-theme { background-color: #7AA874; color: #fff; font-weight: 600; border: none; }
         .btn-theme:hover { background-color: #6A9767; }
+        
+        .alert-deactivated {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            border: 1px solid #f87171;
+            color: #dc2626;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .alert-deactivated .alert-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .support-contact {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: center;
+        }
     </style>
 </head>
 <body class="bg-cream">
     <div class="login-container">
         <div class="login-title">User Login</div>
-        <?php if ($error): ?>
+        
+        <?php if ($error === 'account_deactivated'): ?>
+            <div class="alert-deactivated">
+                <div class="text-center">
+                    <i class="bi bi-exclamation-triangle-fill alert-icon"></i>
+                    <h5 style="color: #dc2626; font-weight: 600; margin-bottom: 15px;">Account Deactivated</h5>
+                </div>
+                <p style="margin: 0; line-height: 1.5; text-align: center;">
+                    <?php echo htmlspecialchars($account_message); ?>
+                </p>
+                
+                <div class="support-contact">
+                    <p style="margin: 0; font-size: 14px; color: #64748b; font-weight: 500;">
+                        <i class="bi bi-envelope me-2"></i>
+                        Need help? Contact support: 
+                        <a href="mailto:poudelbibek86@gmail.com" style="color: #3182ce; text-decoration: none;">
+                            support@taskflow.com
+                        </a>
+                    </p>
+                </div>
+            </div>
+        <?php elseif ($error): ?>
             <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
         <?php endif; ?>
+        
         <form method="post" autocomplete="off" novalidate onsubmit="return validateForm();">
             <div class="mb-3">
                 <label for="username" class="form-label">Username</label>
@@ -73,7 +137,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     class="form-control" 
                     id="username" 
                     name="username" 
-                    required
+                    value="<?php echo htmlspecialchars($_POST['username'] ?? ''); ?>"
+                    <?php echo ($error === 'account_deactivated') ? 'readonly' : 'required'; ?>
                     autofocus
                 >
                 <div class="invalid-feedback" id="usernameError">Username is required.</div>
@@ -86,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         class="form-control" 
                         id="password" 
                         name="password" 
-                        required
+                        <?php echo ($error === 'account_deactivated') ? 'readonly' : 'required'; ?>
                     >
                     <span class="input-group-text" id="togglePassword" style="cursor:pointer;">
                         <i class="bi bi-eye"></i>
@@ -94,7 +159,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <div class="invalid-feedback" id="passwordError">Password is required.</div>
             </div>
-            <button type="submit" class="btn btn-theme w-100">Login</button>
+            
+            <?php if ($error !== 'account_deactivated'): ?>
+                <button type="submit" class="btn btn-theme w-100">Login</button>
+            <?php else: ?>
+                <div class="text-center">
+                    <button type="button" class="btn btn-secondary w-100" disabled>
+                        <i class="bi bi-lock-fill me-2"></i>
+                        Account Deactivated
+                    </button>
+                </div>
+            <?php endif; ?>
         </form>
         <div class="mt-3 text-center"><a href="../index.html">Back</a></div>
         <div class="mt-3 text-center">

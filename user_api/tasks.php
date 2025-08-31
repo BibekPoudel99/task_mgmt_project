@@ -32,7 +32,9 @@ if ($method === 'GET') {
         $sql = "
             SELECT DISTINCT t.id, t.title, t.project_id, t.due_date, t.completed, t.owner_id, t.assignee_id, t.is_missed,
                    au.username AS assignee,
-                   ou.username AS owner_username
+                   COALESCE(au.is_active, 1) AS assignee_is_active,
+                   ou.username AS owner_username,
+                   COALESCE(ou.is_active, 1) AS owner_is_active
             FROM tasks t
             LEFT JOIN users au ON au.id = t.assignee_id
             LEFT JOIN users ou ON ou.id = t.owner_id
@@ -61,7 +63,9 @@ if ($method === 'GET') {
                 'owner_id' => (int)$t['owner_id'],
                 'assignee_id' => $t['assignee_id'] ? (int)$t['assignee_id'] : null,
                 'assignee' => $t['assignee'],
+                'assignee_is_active' => (bool)$t['assignee_is_active'],
                 'owner_username' => $t['owner_username'],
+                'owner_is_active' => (bool)$t['owner_is_active'],
                 'is_missed' => (bool)$t['is_missed'],
             ];
         }, $stmt->fetchAll(PDO::FETCH_ASSOC));

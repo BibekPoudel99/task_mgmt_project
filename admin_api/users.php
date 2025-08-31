@@ -57,12 +57,63 @@ if ($method === 'POST') {
             exit;
         }
         try {
+            // Start transaction
+            $pdo->beginTransaction();
+            
+            // Get username for logging
+            $userStmt = $pdo->prepare('SELECT username FROM users WHERE id = ?');
+            $userStmt->execute([$userId]);
+            $username = $userStmt->fetchColumn();
+            
+            // Update user status
             $stmt = $pdo->prepare('UPDATE users SET is_active = ? WHERE id = ?');
             $stmt->execute([$isActive, $userId]);
-            echo json_encode(['success' => true, 'csrf_token' => $next]);
+            
+            // If deactivating user (is_active = 0), handle task reassignments
+            if ($isActive == 0) {
+                // Unassign all tasks assigned to this user
+                $taskStmt = $pdo->prepare('UPDATE tasks SET assignee_id = NULL WHERE assignee_id = ?');
+                $taskStmt->execute([$userId]);
+                $unassignedTasks = $taskStmt->rowCount();
+                
+                // Log the deactivation for the user to see when they try to login
+                $logStmt = $pdo->prepare('INSERT INTO user_activity_log (user_id, activity_type, description, created_at) VALUES (?, ?, ?, NOW())');
+                $logStmt->execute([
+                    $userId, 
+                    'account_deactivated', 
+                    'Your account has been deactivated by an administrator. Please contact support if you believe this is an error.'
+                ]);
+                
+                $pdo->commit();
+                
+                echo json_encode([
+                    'success' => true, 
+                    'message' => "User '{$username}' has been deactivated. {$unassignedTasks} task(s) have been unassigned.",
+                    'csrf_token' => $next
+                ]);
+            } else {
+                // Reactivating user
+                // Log the reactivation
+                $logStmt = $pdo->prepare('INSERT INTO user_activity_log (user_id, activity_type, description, created_at) VALUES (?, ?, ?, NOW())');
+                $logStmt->execute([
+                    $userId, 
+                    'account_reactivated', 
+                    'Your account has been reactivated by an administrator. Welcome back!'
+                ]);
+                
+                $pdo->commit();
+                
+                echo json_encode([
+                    'success' => true, 
+                    'message' => "User '{$username}' has been reactivated.",
+                    'csrf_token' => $next
+                ]);
+            }
+            
         } catch (Exception $e) {
+            $pdo->rollBack();
             http_response_code(500);
-            echo json_encode(['success' => false, 'message' => 'Failed to update user', 'csrf_token' => $next]);
+            echo json_encode(['success' => false, 'message' => 'Failed to update user status: ' . $e->getMessage(), 'csrf_token' => $next]);
         }
         exit;
     }
