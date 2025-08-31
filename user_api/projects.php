@@ -1,20 +1,12 @@
 <?php
-session_start();
-header('Content-Type: application/json');
+require_once __DIR__ . '/../library/ApiAuth.php';
 
-if (empty($_SESSION['user_logged_in']) || empty($_SESSION['user_id'])) {
-    http_response_code(401);
-    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
-    exit;
-}
+ApiAuth::initApiResponse();
+$auth = ApiAuth::requireUserAuth();
+$userId = $auth['user_id'];
 
-require_once __DIR__ . '/../library/Database.php';
-require_once __DIR__ . '/../library/Session.php';
-require_once __DIR__ . '/../library/Token.php';
-
-$db = new Database();
+$db = ApiAuth::getDatabase();
 $pdo = $db->getConnection();
-$userId = (int) $_SESSION['user_id'];
 
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -71,13 +63,7 @@ if ($method === 'GET') {
 if ($method === 'POST') {
     // CSRF
     $csrf = $_POST['csrf_token'] ?? '';
-    if (!Token::check($csrf)) {
-        $newToken = Session::put('csrf_token', md5(uniqid()));
-        http_response_code(419);
-        echo json_encode(['success' => false, 'message' => 'Invalid CSRF token', 'csrf_token' => $newToken]);
-        exit;
-    }
-    $nextToken = Session::put('csrf_token', md5(uniqid()));
+    $nextToken = ApiAuth::validateCsrfToken($csrf);
 
     $action = $_POST['action'] ?? '';
 

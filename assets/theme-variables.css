@@ -1,0 +1,86 @@
+/* 
+ * Consolidated Theme Variables - Eliminates duplication across CSS files
+ * This file contains all shared theme variables to be imported by other CSS files
+ */
+
+:root {
+  /* Blue Theme Primary Colors - Consolidated from multiple files */
+  --accent-primary: #3182ce;
+  --accent-secondary: #4299e1;
+  --accent-success: #10b981;
+  --accent-warning: #f59e0b;
+  --accent-danger: #ef4444;
+  
+  /* Layout and spacing - consolidated */
+  --layout-size-large: 144px;
+  --layout-size-medium: 96px;
+  --layout-size-small: 48px;
+  --layout-size-xsmall: 16px;
+  --layout-space-unit: 16px;
+  --layout-space-halfunit: 8px;
+  
+  /* Border radius - consolidated */
+  --border-radius: 8px;
+  --border-radius-small: 4px;
+  --border-radius-large: 12px;
+  --border-radius-round: 50%;
+  
+  /* Background Colors - consolidated */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: #f1f5f9;
+  --bg-cream: #fdfdfb;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f1f5f9;
+  
+  /* Text Colors - consolidated */
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --text-olive-dark: #4a5540;
+  --text-olive-light: #9a9e92;
+  
+  /* Border Colors - consolidated */
+  --border-primary: #e2e8f0;
+  --border-secondary: #cbd5e0;
+  
+  /* Shadow Colors - consolidated */
+  --shadow-light: rgba(49, 130, 206, 0.1);
+  --shadow-medium: rgba(49, 130, 206, 0.15);
+  --shadow-heavy: rgba(49, 130, 206, 0.25);
+  --shadow-subtle: 0 2px 8px rgba(124, 132, 113, 0.1);
+  --shadow-elevated: 0 4px 16px rgba(124, 132, 113, 0.15);
+  
+  /* Transitions - consolidated */
+  --transition: all 0.3s ease;
+  --transition-fast: all 0.2s ease;
+  --transition-slow: all 0.4s ease;
+}
+
+/* Base font styling to be inherited */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    font-size: 1.05em;
+}
+
+/* Utility classes for consistent theming */
+.btn-theme {
+    background-color: var(--accent-primary);
+    border-color: var(--accent-primary);
+    color: white;
+    transition: var(--transition);
+}
+
+.btn-theme:hover {
+    background-color: var(--accent-secondary);
+    border-color: var(--accent-secondary);
+}
+
+.text-theme {
+    color: var(--accent-primary);
+}
+
+.bg-theme {
+    background-color: var(--accent-primary);
+}

@@ -1,20 +1,23 @@
+@import 'theme-variables.css';
+
+/* Legacy variables for backward compatibility - will use consolidated theme variables */
 :root {
-  --dl-layout-size-large: 144px;
-  --dl-layout-size-small: 48px;
-  --dl-layout-space-unit: 16px;
-  --dl-layout-size-medium: 96px;
+  --dl-layout-size-large: var(--layout-size-large);
+  --dl-layout-size-small: var(--layout-size-small);
+  --dl-layout-space-unit: var(--layout-space-unit);
+  --dl-layout-size-medium: var(--layout-size-medium);
   --dl-layout-size-xlarge: 192px;
-  --dl-layout-size-xsmall: 16px;
+  --dl-layout-size-xsmall: var(--layout-size-xsmall);
   
-  /* Blue Theme Colors - Updated to match index.css */
-  --dl-color-theme-accent1: #3182ce;
-  --dl-color-theme-accent2: #4299e1;
-  --dl-color-theme-primary1: #3182ce;
-  --dl-color-theme-primary2: #4299e1;
-  --dl-color-theme-secondary1: #f8fafc;
-  --dl-color-theme-secondary2: #ffffff;
-  --dl-color-theme-neutral-dark: #1e293b;
-  --dl-color-theme-neutral-light: #f8fafc;
+  /* Blue Theme Colors - Now using consolidated variables */
+  --dl-color-theme-accent1: var(--accent-primary);
+  --dl-color-theme-accent2: var(--accent-secondary);
+  --dl-color-theme-primary1: var(--accent-primary);
+  --dl-color-theme-primary2: var(--accent-secondary);
+  --dl-color-theme-secondary1: var(--bg-secondary);
+  --dl-color-theme-secondary2: var(--bg-primary);
+  --dl-color-theme-neutral-dark: var(--text-primary);
+  --dl-color-theme-neutral-light: var(--bg-secondary);
   
   --dl-layout-radius-round: 50%;
   --dl-layout-size-xxlarge: 288px;

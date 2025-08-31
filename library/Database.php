@@ -133,10 +133,9 @@ class Database{
 }	
 
     public static function instantiate(){
-	if(!isset(self::$_instance)){
-		return self::$_instance = new Database();
-	}else{
-		return self::$_instance;
-	}
-}	
+        if(!isset(self::$_instance)){
+            self::$_instance = new Database();
+        }
+        return self::$_instance;
+    }	
 }

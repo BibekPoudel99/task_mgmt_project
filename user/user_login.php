@@ -1,6 +1,5 @@
 <?php
 session_start();
-require_once '../library/Hash.php';
 require_once '../library/Database.php';
 $db = new Database();
 $conn = $db->getConnection();
@@ -20,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$username]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($user && Hash::verify($password, $user['hashed_password'])) {
+            if ($user && password_verify($password, $user['hashed_password'])) {
                 // Check if account is active
                 if ((int)$user['is_active'] === 0) {
                     // Get the latest deactivation message

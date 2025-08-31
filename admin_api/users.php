@@ -1,17 +1,10 @@
 <?php
-session_start();
-header('Content-Type: application/json');
-if (empty($_SESSION['admin_logged_in']) || ($_SESSION['role'] ?? '') !== 'admin') {
-    http_response_code(401);
-    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
-    exit;
-}
+require_once __DIR__ . '/../library/ApiAuth.php';
 
-require_once __DIR__ . '/../library/Database.php';
-require_once __DIR__ . '/../library/Session.php';
-require_once __DIR__ . '/../library/Token.php';
+ApiAuth::initApiResponse();
+ApiAuth::requireAdminAuth();
 
-$db = new Database();
+$db = ApiAuth::getDatabase();
 $pdo = $db->getConnection();
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -40,13 +33,7 @@ if ($method === 'GET') {
 
 if ($method === 'POST') {
     $csrf = $_POST['csrf_token'] ?? '';
-    if (!Token::check($csrf)) {
-        $new = Session::put('csrf_token', md5(uniqid()));
-        http_response_code(419);
-        echo json_encode(['success' => false, 'message' => 'Invalid CSRF token', 'csrf_token' => $new]);
-        exit;
-    }
-    $next = Session::put('csrf_token', md5(uniqid()));
+    $next = ApiAuth::validateCsrfToken($csrf);
     $action = $_POST['action'] ?? '';
     if ($action === 'set_active') {
         $userId = (int)($_POST['user_id'] ?? 0);

@@ -1,5 +1,0 @@
-[11-Aug-2025 17:57:28 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\task_mgmt\config\config.php on line 2
-[11-Aug-2025 17:57:31 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\task_mgmt\config\config.php on line 2
-[11-Aug-2025 17:57:38 Europe/Berlin] PHP Notice:  session_start(): Ignoring session_start() because a session is already active in C:\xampp\htdocs\task_mgmt\config\config.php on line 2
-[26-Aug-2025 08:38:47 Europe/Berlin] PHP Warning:  session_start(): open(C:\xampp\tmp\sess_i5tmdgsca0khqak8u2270sa7v4, O_RDWR) failed: Permission denied (13) in C:\xampp\htdocs\task_mgmt\user_api\tasks.php on line 6
-[26-Aug-2025 08:38:47 Europe/Berlin] PHP Warning:  session_start(): Failed to read session data: files (path: C:\xampp\tmp) in C:\xampp\htdocs\task_mgmt\user_api\tasks.php on line 6

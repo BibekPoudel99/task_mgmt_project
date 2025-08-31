@@ -1,7 +1,5 @@
 <?php
-require_once '../library/Database.php'; // Make sure $conn is your PDO connection
-$db = new Database();
-$conn = $db->getConnection();
+require_once '../library/User.php';
 
 $error = '';
 $success = '';
@@ -17,21 +15,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Passwords do not match.';
     } else {
         try {
-            // Check if user already exists
-            $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
-            $stmt->execute([$username]);
-            if ($stmt->fetch()) {
-                $error = 'Username already exists. Please choose another.';
-            } else {
-                // Hash the password
-                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-                // Insert new user
-                $stmt = $conn->prepare("INSERT INTO users (username, hashed_password) VALUES (?, ?)");
-                $stmt->execute([$username, $hashed_password]);
+            $user = new User();
+            
+            // Prepare data for User class
+            $userData = [
+                'username' => $username,
+                'password' => $password,
+                'cpassword' => $confirm_password,
+                'email' => $username . '@example.com', // Temporary email since original doesn't collect it
+                'usertype' => 'user' // Default user type
+            ];
+            
+            $result = $user->createUser($userData);
+            
+            if ($result['success']) {
                 $success = 'Registration successful! You can now <a href="user_login.php">login</a>.';
+            } else {
+                $error = implode(', ', $result['errors']);
             }
         } catch (Exception $e) {
-            $error = 'Database error: ' . htmlspecialchars($e->getMessage());
+            $error = 'Registration error: ' . htmlspecialchars($e->getMessage());
         }
     }
 }

@@ -1,16 +1,20 @@
+@import 'theme-variables.css';
+
+/* User-specific theme variables - extending consolidated theme */
 :root {
+    /* Cream theme - specific to user interface */
     --cream: #fdfdfb; /* more whitish */
     --cream-dark: #fcfcfa; /* more whitish */
     --olive: #101507; /* even darker green */
-    --olive-light: #9a9e92; /* lighter for text */
-    --olive-dark: #4a5540; /* lighter for main text */
+    --olive-light: var(--text-olive-light); /* using consolidated variable */
+    --olive-dark: var(--text-olive-dark); /* using consolidated variable */
     --sage: #7a8a6a; /* darkened */
     --warm-gray: #7a7670; /* lighter */
-    --soft-white: #ffffff;
-    --shadow-subtle: 0 2px 8px rgba(124, 132, 113, 0.1);
-    --shadow-elevated: 0 4px 16px rgba(124, 132, 113, 0.15);
-    --border-radius: 8px;
-    --transition: all 0.3s ease;
+    --soft-white: var(--bg-primary); /* using consolidated variable */
+    --shadow-subtle: var(--shadow-subtle); /* using consolidated variable */
+    --shadow-elevated: var(--shadow-elevated); /* using consolidated variable */
+    --border-radius: var(--border-radius); /* using consolidated variable */
+    --transition: var(--transition); /* using consolidated variable */
 }
 
 /* Base Styles */

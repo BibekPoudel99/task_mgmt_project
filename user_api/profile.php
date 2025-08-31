@@ -1,18 +1,12 @@
 <?php
-session_start();
-header('Content-Type: application/json');
+require_once __DIR__ . '/../library/ApiAuth.php';
 
-if (empty($_SESSION['user_logged_in']) || empty($_SESSION['user_id'])) {
-    http_response_code(401);
-    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
-    exit;
-}
+ApiAuth::initApiResponse();
+$auth = ApiAuth::requireUserAuth();
+$userId = $auth['user_id'];
 
-require_once __DIR__ . '/../library/Database.php';
-
-$db = new Database();
+$db = ApiAuth::getDatabase();
 $pdo = $db->getConnection();
-$userId = (int) $_SESSION['user_id'];
 
 try {
     // First, update missed tasks
