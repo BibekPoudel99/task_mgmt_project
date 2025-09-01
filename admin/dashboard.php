@@ -102,14 +102,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     $taskStmt->execute([$userId]);
                     $unassignedTasks = $taskStmt->rowCount();
                     
-                    // Log the deactivation for the user to see when they try to login
-                    $logStmt = $pdo->prepare('INSERT INTO user_activity_log (user_id, activity_type, description, created_at) VALUES (?, ?, ?, NOW())');
-                    $logStmt->execute([
-                        $userId, 
-                        'account_deactivated', 
-                        'Your account has been deactivated by an administrator. Please contact support if you believe this is an error.'
-                    ]);
-                    
                     $pdo->commit();
                     
                     echo json_encode([
@@ -119,14 +111,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     ]);
                 } else {
                     // Reactivating user
-                    // Log the reactivation
-                    $logStmt = $pdo->prepare('INSERT INTO user_activity_log (user_id, activity_type, description, created_at) VALUES (?, ?, ?, NOW())');
-                    $logStmt->execute([
-                        $userId, 
-                        'account_reactivated', 
-                        'Your account has been reactivated by an administrator. Welcome back!'
-                    ]);
-                    
                     $pdo->commit();
                     
                     echo json_encode([
@@ -203,7 +187,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             <h2 class="thq-heading-4">User Management</h2>
             
             <div class="search-bar">
-                <input type="text" id="user-search" class="form-control" placeholder="Search users by name or email..." value="">
+                <input type="text" id="user-search" class="form-control" placeholder="Search users by username..." value="">
                 <select id="user-status" class="form-select">
                     <option value="">All Status</option>
                     <option value="1">Active</option>
@@ -279,7 +263,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     <tr>
                         <th>ID</th>
                         <th>Username</th>
-                        <th>Email</th>
+                        <th>Created Date</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -287,10 +271,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 <tbody>`;
             
             users.forEach(u => {
+                const createdDate = u.created_at ? new Date(u.created_at).toLocaleDateString() : 'N/A';
                 html += `<tr>
                     <td>${u.id}</td>
                     <td>${escapeHtml(u.username || '')}</td>
-                    <td>${escapeHtml(u.email || '')}</td>
+                    <td>${createdDate}</td>
                     <td>${u.is_active == 1 ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-secondary">Inactive</span>'}</td>
                     <td>
                         <button class="btn btn-sm ${u.is_active == 1 ? 'btn-warning' : 'btn-success'}" onclick="toggleUserStatus(${u.id}, ${u.is_active == 1 ? 0 : 1})">
@@ -360,12 +345,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }
 
             const formData = new FormData();
-            formData.append('action', 'toggle_user_status');
+            formData.append('action', 'set_active');
             formData.append('user_id', userId);
             formData.append('is_active', newStatus);
             formData.append('csrf_token', csrfToken);
 
-            fetch('dashboard.php', {
+            fetch('../admin_api/users.php', {
                 method: 'POST',
                 body: formData
             })

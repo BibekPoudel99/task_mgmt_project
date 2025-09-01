@@ -14,15 +14,14 @@ if ($method === 'GET') {
     $params = [];
     $where = [];
     if ($q !== '') {
-        $where[] = '(username LIKE ? OR email LIKE ?)';
-        $params[] = "%$q%";
+        $where[] = 'username LIKE ?';
         $params[] = "%$q%";
     }
     if ($status !== '' && ($status === '0' || $status === '1')) {
         $where[] = 'is_active = ?';
         $params[] = (int)$status;
     }
-    $sql = 'SELECT id, username, email, COALESCE(is_active, 1) AS is_active FROM users';
+    $sql = 'SELECT id, username, COALESCE(is_active, 1) AS is_active, created_at FROM users';
     if ($where) $sql .= ' WHERE ' . implode(' AND ', $where);
     $sql .= ' ORDER BY id DESC LIMIT 200';
     $stmt = $pdo->prepare($sql);
@@ -35,7 +34,7 @@ if ($method === 'POST') {
     $csrf = $_POST['csrf_token'] ?? '';
     $next = ApiAuth::validateCsrfToken($csrf);
     $action = $_POST['action'] ?? '';
-    if ($action === 'set_active') {
+    if ($action === 'set_active' || $action === 'toggle_user_status') {
         $userId = (int)($_POST['user_id'] ?? 0);
         $isActive = $_POST['is_active'] === '1' ? 1 : 0;
         if (!$userId) {

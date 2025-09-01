@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <i class="bi bi-exclamation-triangle-fill alert-icon"></i>
                     <h5 class="alert-deactivated-title">Account Deactivated</h5>
                 </div>
-                <p class="alert-deactivated-text">>
+                <p class="alert-deactivated-text">
                     <?php echo htmlspecialchars($account_message); ?>
                 </p>
                 
