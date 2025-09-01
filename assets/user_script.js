@@ -274,6 +274,8 @@ class TaskFlowApp {
             const data = await this.makeApiCall('../user_api/projects.php', body);
             if (data.success) {
                 await this.fetchProjects();
+                // Fetch tasks to refresh task assignments and user info
+                await this.fetchTasks();
                 this.render();
                 this.showToast(`${memberUsername} removed from project`);
             } else {
@@ -492,7 +494,7 @@ class TaskFlowApp {
                     <h5 class="loading-title success">All Clear for Today!</h5>
                     <p class="loading-text success">No tasks due today. Great job staying organized!</p>
                     <div style="margin-top: 24px;">
-                        <button onclick="document.querySelector('[data-bs-target=\\"#tasks\\"]').click()" 
+                        <button onclick="app.navigateToAddTask()" 
                                 class="quick-add-button">
                             <i class="bi bi-plus-circle-fill me-2"></i>Add New Tasks
                         </button>
@@ -1105,7 +1107,7 @@ class TaskFlowApp {
             
             return `
                 <div class="project-item ${isSelected ? 'active' : ''}" data-project-id="${project.id}" 
-                     style="border-radius: 16px; padding: 24px; margin-bottom: 16px; 
+                     style="border-radius: 16px; padding: 24px; margin-bottom: 24px; 
                             background: ${isSelected ? 'linear-gradient(135deg, #dbeafe, #f0f9ff)' : 'linear-gradient(135deg, #ffffff, #fafbfc)'}; 
                             border: ${isSelected ? '2px solid #3182ce' : '1px solid #e2e8f0'}; 
                             box-shadow: ${isSelected ? '0 4px 20px rgba(49, 130, 206, 0.2)' : '0 2px 8px rgba(49, 130, 206, 0.1)'}; 
@@ -1136,12 +1138,11 @@ class TaskFlowApp {
             ` : ''}
         </div>
     </div>
-    <div class="progress mb-3" style="height: 10px; border-radius: 6px; background-color: #f1f5f9;">
+    <div class="progress" style="height: 10px; border-radius: 6px; background-color: #f1f5f9; margin-top: 16px; margin-bottom: 8px;">
         <div class="progress-bar" role="progressbar" style="width: ${percent}%; background: linear-gradient(135deg, #3182ce, #4299e1); border-radius: 6px; transition: width 0.5s ease; box-shadow: 0 1px 3px rgba(49, 130, 206, 0.4);" aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100"></div>
     </div>
-    <div class="d-flex justify-content-between align-items-center">
+    <div class="d-flex justify-content-between align-items-center" style="margin-bottom: 16px;">
         <span class="small text-muted" style="font-size: 14px; font-weight: 500;">${percent}% completed</span>
-        <span class="small text-muted" style="font-size: 14px;">${projectTasks.length - completedCount} remaining</span>
         <span class="small text-muted" style="font-size: 14px;">${projectTasks.length - completedCount} remaining</span>
     </div>
 </div>
@@ -1692,7 +1693,7 @@ renderProjectDetails() {
                     <h5 style="color: #64748b; margin-bottom: 12px; font-weight: 600;">No Team Members Yet</h5>
                     <p style="color: #94a3b8; margin: 0; font-size: 16px;">Create projects and add team members to see them here</p>
                     <div style="margin-top: 24px;">
-                        <button onclick="document.querySelector('[data-bs-target=\\"#projects\\"]').click()" 
+                        <button onclick="app.navigateToProjects()" 
                                 style="background: linear-gradient(135deg, #3182ce, #4299e1); color: white; border: none; border-radius: 12px; padding: 12px 24px; font-weight: 600; font-size: 14px; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(49, 130, 206, 0.3);"
                                 onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 16px rgba(49, 130, 206, 0.4)'"
                                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(49, 130, 206, 0.3)'">
@@ -2402,6 +2403,32 @@ renderProjectDetails() {
         const toast = new bootstrap.Toast(toastElement);
         toast.show();
         toastElement.addEventListener('hidden.bs.toast', () => toastElement.remove());
+    }
+
+    // Navigate to Tasks tab and focus on task creation
+    navigateToAddTask() {
+        // Switch to Tasks tab
+        const tasksTab = document.querySelector('[data-bs-target="#tasks"]');
+        if (tasksTab) {
+            tasksTab.click();
+            
+            // Small delay to ensure tab has switched, then focus on task input
+            setTimeout(() => {
+                const taskTitleInput = document.getElementById('taskTitle');
+                if (taskTitleInput) {
+                    taskTitleInput.focus();
+                    taskTitleInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 300);
+        }
+    }
+
+    // Navigate to Projects tab
+    navigateToProjects() {
+        const projectsTab = document.querySelector('[data-bs-target="#projects"]');
+        if (projectsTab) {
+            projectsTab.click();
+        }
     }
 
     escapeHtml(str) {

@@ -46,17 +46,13 @@ $email = $_SESSION['email'] ?? 'Loading...';
     <input type="hidden" id="csrfTokenInput" value="<?php echo htmlspecialchars($csrfToken); ?>">
     
     <!-- Navbar -->
-    <nav style="background-color: #f7f4ef; border-bottom: 1px solid #e0e0e0; padding: 12px 0; position: sticky; top: 0; z-index: 1000;">
-        <div style="max-width: 1200px; margin: 0 auto; padding: 0 16px; display: flex; justify-content: space-between; align-items: center;">
-            <a href="user_dashboard.php" style="color: #7c8471; font-weight: 700; font-size: 1.25rem; text-decoration: none; display: flex; align-items: center;">
-                <i class="bi bi-check-circle-fill" style="margin-right: 8px;"></i>TaskFlow
+    <nav style="background: linear-gradient(135deg, #f7f4ef 0%, #f2eee4 100%); border-bottom: 2px solid #e5ddc8; padding: 16px 0; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 12px rgba(124,132,113,0.1);">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 16px; display: flex; justify-content: center; align-items: center;">
+            <a href="user_dashboard.php" style="display: inline-flex; align-items: center; padding: 12px 32px; background: linear-gradient(135deg, #3182ce 0%, #4299e1 100%); color: #ffffff; text-decoration: none; border-radius: 16px; font-weight: 600; font-size: 1.1rem; transition: all 0.3s ease; box-shadow: 0 4px 16px rgba(49,130,206,0.25); border: 2px solid transparent;" onmouseover="this.style.transform='translateY(-2px) scale(1.02)'; this.style.boxShadow='0 8px 24px rgba(49,130,206,0.35)'; this.style.borderColor='rgba(255,255,255,0.2)'" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 4px 16px rgba(49,130,206,0.25)'; this.style.borderColor='transparent'">
+                <i class="bi bi-house-door-fill" style="margin-right: 10px; font-size: 1.2rem;"></i>
+                <span>Dashboard</span>
+                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.2) 0%, transparent 70%); border-radius: 16px; pointer-events: none;"></div>
             </a>
-            <div style="display: flex; gap: 20px;">
-                <a href="user_dashboard.php" style="color: #7c8471; font-size: 0.95rem; text-decoration: none; display: flex; align-items: center; transition: color 0.3s ease;">
-                    <i class="bi bi-house-door" style="margin-right: 4px;"></i>Dashboard
-                </a>
-                
-            </div>
         </div>
     </nav>
 
@@ -64,7 +60,7 @@ $email = $_SESSION['email'] ?? 'Loading...';
     <main style="max-width: 960px; margin: 24px auto; padding: 0 16px;">
         <!-- Profile Header -->
         <div style="margin-bottom: 24px;">
-            <div style="background: linear-gradient(135deg, #7c8471 0%, #9a9e92 100%); border-radius: 16px; padding: 32px 24px; color: #ffffff; position: relative; overflow: hidden; transition: all 0.3s ease;">
+            <div style="background: linear-gradient(135deg, #3182ce 0%, #4299e1 100%); border-radius: 16px; padding: 32px 24px; color: #ffffff; position: relative; overflow: hidden; transition: all 0.3s ease;">
                 <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.15) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255,255,255,0.1) 0%, transparent 50%); opacity: 0.7;"></div>
                 <div style="position: relative; text-align: center;">
                     <!-- Profile Avatar -->
@@ -97,17 +93,6 @@ $email = $_SESSION['email'] ?? 'Loading...';
                                 <div>
                                     <small style="color: #6c757d; font-size: 0.75rem; display: block;">Username</small>
                                     <span style="font-weight: 500; font-size: 0.9rem;" id="profile-username"><?php echo htmlspecialchars($username); ?></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div style="background: #f8f9fa; border-radius: 8px; padding: 12px; border-left: 4px solid #7c8471; transition: all 0.3s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
-                            <div style="display: flex; align-items: center;">
-                                <i class="bi bi-envelope" style="color: #7c8471; font-size: 1.1rem; margin-right: 8px;"></i>
-                                <div>
-                                    <small style="color: #6c757d; font-size: 0.75rem; display: block;">Email Address</small>
-                                    <span style="font-weight: 500; font-size: 0.9rem;" id="profile-email">
-                                        <span class="loading-shimmer" style="display: inline-block; width: 120px; height: 16px; border-radius: 4px;">Loading...</span>
-                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -216,9 +201,6 @@ $email = $_SESSION['email'] ?? 'Loading...';
 
         <!-- Action Buttons -->
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
-            <a href="user_dashboard.php" style="display: flex; align-items: center; justify-content: center; padding: 14px 24px; background: linear-gradient(135deg, #7c8471, #9a9e92); color: #ffffff; text-decoration: none; border-radius: 10px; font-weight: 500; font-size: 0.95rem; transition: all 0.3s ease; box-shadow: 0 3px 12px rgba(124,132,113,0.3);" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(124,132,113,0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 3px 12px rgba(124,132,113,0.3)'">
-                <i class="bi bi-house-door" style="margin-right: 8px; font-size: 1.1rem;"></i>Dashboard
-            </a>
             <button onclick="alert('Profile editing feature coming soon!')" style="display: flex; align-items: center; justify-content: center; padding: 14px 24px; background: transparent; border: 2px solid #7c8471; color: #7c8471; border-radius: 10px; font-weight: 500; font-size: 0.95rem; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#7c8471'; this.style.color='#ffffff'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(124,132,113,0.3)'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#7c8471'; this.style.transform='translateY(0)'; this.style.boxShadow='none'">
                 <i class="bi bi-pencil" style="margin-right: 8px; font-size: 1.1rem;"></i>Edit Profile
             </button>
@@ -309,12 +291,6 @@ $email = $_SESSION['email'] ?? 'Loading...';
             }
 
             updateProfileInfo(user) {
-                // Update email
-                const emailEl = document.getElementById('profile-email');
-                if (emailEl) {
-                    emailEl.innerHTML = user.email;
-                }
-
                 // Update member since
                 const memberSinceEl = document.getElementById('profile-member-since');
                 if (memberSinceEl) {

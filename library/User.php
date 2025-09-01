@@ -18,27 +18,16 @@ class User extends Model
 		if (!empty($validation_errors)) {
 			return ['success' => false, 'errors' => $validation_errors];
 		}
-
-		// Hash password
-		$data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
+		// Hash password and use correct column name
+		$data['hashed_password'] = password_hash($data['password'], PASSWORD_DEFAULT);
 		
-		// Remove confirm password (not needed in database)
+		// Remove original password and confirm password (not needed in database)
+		unset($data['password']);
 		unset($data['cpassword']);
 
-		// Handle profile image upload if provided
-		if ($profile_image && !empty($profile_image['tmp_name'])) {
-			$upload_result = $this->handleProfileImageUpload($profile_image);
-			
-			if ($upload_result['success']) {
-				$data['profile_image'] = $upload_result['filename'];
-			} else {
-				return ['success' => false, 'errors' => $upload_result['errors']];
-			}
-		}
-
-		// Add timestamps
+		// Set default values for existing columns
+		$data['is_active'] = 1; // Default active user
 		$data['created_at'] = date('Y-m-d H:i:s');
-		$data['updated_at'] = date('Y-m-d H:i:s');
 
 		// Save user to database
 		try {
@@ -62,24 +51,19 @@ class User extends Model
 	{
 		$errors = [];
 
-		// Username validation
+		// Username validation (no spaces allowed, limit to 20 characters)
 		if (empty($data['username'])) {
 			$errors[] = 'Username is required';
 		} elseif (strlen($data['username']) < 3) {
 			$errors[] = 'Username must be at least 3 characters';
 		} elseif (strlen($data['username']) > 20) {
 			$errors[] = 'Username must not exceed 20 characters';
+		} elseif (strpos($data['username'], ' ') !== false) {
+			$errors[] = 'Username cannot contain spaces';
+		} elseif (!preg_match('/^[a-zA-Z0-9_-]+$/', $data['username'])) {
+			$errors[] = 'Username can only contain letters, numbers, underscores, and hyphens';
 		} elseif ($this->usernameExists($data['username'])) {
 			$errors[] = 'Username already exists';
-		}
-
-		// Email validation
-		if (empty($data['email'])) {
-			$errors[] = 'Email is required';
-		} elseif (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-			$errors[] = 'Please enter a valid email address';
-		} elseif ($this->emailExists($data['email'])) {
-			$errors[] = 'Email already exists';
 		}
 
 		// Password validation
@@ -96,10 +80,7 @@ class User extends Model
 			$errors[] = 'Passwords do not match';
 		}
 
-		// User type validation
-		if (empty($data['usertype'])) {
-			$errors[] = 'User type is required';
-		}
+		// Note: usertype validation removed as field is not used in database
 
 		return $errors;
 	}
@@ -136,9 +117,11 @@ class User extends Model
 	public function usernameExists($username)
 	{
 		$result = $this->getBy('username = ?', [$username], true);
-		return $result !== false;
+		return $result !== false && !empty($result);
 	}
 
+	// Note: Email-related methods commented out as email column doesn't exist in database
+	/*
 	// Check if email exists
 	public function emailExists($email)
 	{
@@ -151,6 +134,7 @@ class User extends Model
 	{
 		return $this->getBy('email = ?', [$email], true);
 	}
+	*/
 
 	// Find user by username (for login)
 	public function findByUsername($username)

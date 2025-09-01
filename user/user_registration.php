@@ -15,6 +15,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'All fields are required.';
     } elseif ($password !== $confirm_password) {
         $error = 'Passwords do not match.';
+    } elseif (strlen($password) < 8) {
+        $error = 'Password must be at least 8 characters long.';
+    } elseif (!preg_match('/[0-9]/', $password)) {
+        $error = 'Password must contain at least one number.';
+    } elseif (!preg_match('/[!@#$%^&*(),.?":{}|<>]/', $password)) {
+        $error = 'Password must contain at least one special character (!@#$%^&*(),.?":{}|<>).';
     } else {
         try {
             $user = new User();
@@ -23,9 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $userData = [
                 'username' => $username,
                 'password' => $password,
-                'cpassword' => $confirm_password,
-                'email' => $username . '@example.com', // Temporary email since original doesn't collect it
-                'usertype' => 'user' // Default user type
+                'cpassword' => $confirm_password
             ];
             
             $result = $user->createUser($userData);
@@ -80,7 +84,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     name="password" 
                     required
                 >
-                <div class="invalid-feedback" id="passwordError">Password is required.</div>
+                <div class="form-text text-muted">
+                    Password must be at least 8 characters and contain at least one number and one special character.
+                </div>
+                <div class="invalid-feedback" id="passwordError">Password requirements not met.</div>
             </div>
             <div class="mb-3">
                 <label for="confirm_password" class="form-label">Confirm Password</label>
@@ -110,8 +117,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         const passwordError = document.getElementById('passwordError');
         const confirmPasswordError = document.getElementById('confirmPasswordError');
 
+        // Username validation
         if (username.value.trim() === '') {
             username.classList.add('is-invalid');
+            usernameError.textContent = 'Username is required.';
             usernameError.style.display = 'block';
             valid = false;
         } else {
@@ -119,8 +128,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             usernameError.style.display = 'none';
         }
 
-        if (password.value.trim() === '') {
+        // Password validation
+        const passwordValue = password.value.trim();
+        if (passwordValue === '') {
             password.classList.add('is-invalid');
+            passwordError.textContent = 'Password is required.';
+            passwordError.style.display = 'block';
+            valid = false;
+        } else if (passwordValue.length < 8) {
+            password.classList.add('is-invalid');
+            passwordError.textContent = 'Password must be at least 8 characters long.';
+            passwordError.style.display = 'block';
+            valid = false;
+        } else if (!/[0-9]/.test(passwordValue)) {
+            password.classList.add('is-invalid');
+            passwordError.textContent = 'Password must contain at least one number.';
+            passwordError.style.display = 'block';
+            valid = false;
+        } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(passwordValue)) {
+            password.classList.add('is-invalid');
+            passwordError.textContent = 'Password must contain at least one special character.';
             passwordError.style.display = 'block';
             valid = false;
         } else {
@@ -128,6 +155,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             passwordError.style.display = 'none';
         }
 
+        // Confirm password validation
         if (confirmPassword.value.trim() === '' || confirmPassword.value !== password.value) {
             confirmPassword.classList.add('is-invalid');
             confirmPasswordError.style.display = 'block';

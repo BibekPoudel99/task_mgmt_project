@@ -116,7 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         name="password" 
                         <?php echo ($error === 'account_deactivated') ? 'readonly' : 'required'; ?>
                     >
-                    <span class="input-group-text toggle-password" id="togglePassword">>
+                    <span class="input-group-text toggle-password" id="togglePassword">
                         <i class="bi bi-eye"></i>
                     </span>
                 </div>
