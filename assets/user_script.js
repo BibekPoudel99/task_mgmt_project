@@ -1101,16 +1101,29 @@ class TaskFlowApp {
             const percent = Math.round((completedCount / total) * 100);
             const isProjectOwner = String(project.owner_id) === String(window.currentUser?.id);
             
+            const isSelected = this.selectedProjectId == project.id;
+            
             return `
-                <div class="project-item ${this.selectedProjectId == project.id ? 'active' : ''}" data-project-id="${project.id}" style="border-radius: 16px; padding: 24px; margin-bottom: 16px; background: linear-gradient(135deg, #ffffff, #fafbfc); border: 1px solid #e2e8f0; box-shadow: 0 2px 8px rgba(49, 130, 206, 0.1); transition: all 0.3s ease; cursor: pointer;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 16px rgba(49, 130, 206, 0.15)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(49, 130, 206, 0.1)'">
+                <div class="project-item ${isSelected ? 'active' : ''}" data-project-id="${project.id}" 
+                     style="border-radius: 16px; padding: 24px; margin-bottom: 16px; 
+                            background: ${isSelected ? 'linear-gradient(135deg, #dbeafe, #f0f9ff)' : 'linear-gradient(135deg, #ffffff, #fafbfc)'}; 
+                            border: ${isSelected ? '2px solid #3182ce' : '1px solid #e2e8f0'}; 
+                            box-shadow: ${isSelected ? '0 4px 20px rgba(49, 130, 206, 0.2)' : '0 2px 8px rgba(49, 130, 206, 0.1)'}; 
+                            transition: all 0.3s ease; cursor: pointer; 
+                            transform: ${isSelected ? 'translateY(-2px)' : 'translateY(0)'};" 
+                     onmouseover="if (!${isSelected}) { this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 16px rgba(49, 130, 206, 0.15)'; }" 
+                     onmouseout="if (!${isSelected}) { this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(49, 130, 206, 0.1)'; }"
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="d-flex align-items-center flex-grow-1" onclick="app.selectProject('${project.id}')">
-            <div class="project-icon me-4" style="width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, #3182ce, #4299e1); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 26px; box-shadow: 0 2px 8px rgba(49, 130, 206, 0.3);">
+            <div class="project-icon me-4" style="width: 48px; height: 48px; border-radius: 12px; background: ${isSelected ? 'linear-gradient(135deg, #1e40af, #3182ce)' : 'linear-gradient(135deg, #3182ce, #4299e1)'}; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 26px; box-shadow: ${isSelected ? '0 4px 12px rgba(30, 64, 175, 0.4)' : '0 2px 8px rgba(49, 130, 206, 0.3)'} position: relative;">
                 ${this.escapeHtml(project.name.charAt(0).toUpperCase())}
+                ${isSelected ? `
+                    <div style="position: absolute; top: -6px; right: -6px; width: 16px; height: 16px; background: #10b981; border: 2px solid white; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>
+                ` : ''}
             </div>
             <div class="flex-grow-1">
-                <h6 class="project-name mb-1" style="font-weight: 600; color: #374151; font-size: 26px; margin: 0;">${this.escapeHtml(project.name)}</h6>
-                <p class="text-muted small mb-0" style="font-size: 15px;">${projectTasks.length} task${projectTasks.length !== 1 ? 's' : ''} • ${completedCount} completed</p>
+                <h6 class="project-name mb-1" style="font-weight: 600; color: ${isSelected ? '#1e40af' : '#374151'}; font-size: 26px; margin: 0;">${this.escapeHtml(project.name)}</h6>
+                <p class="text-muted small mb-0" style="font-size: 15px; color: ${isSelected ? '#3b82f6' : '#6b7280'};">${projectTasks.length} task${projectTasks.length !== 1 ? 's' : ''} • ${completedCount} completed</p>
             </div>
         </div>
         <div class="d-flex align-items-center" style="gap: 8px;">
@@ -1128,6 +1141,7 @@ class TaskFlowApp {
     </div>
     <div class="d-flex justify-content-between align-items-center">
         <span class="small text-muted" style="font-size: 14px; font-weight: 500;">${percent}% completed</span>
+        <span class="small text-muted" style="font-size: 14px;">${projectTasks.length - completedCount} remaining</span>
         <span class="small text-muted" style="font-size: 14px;">${projectTasks.length - completedCount} remaining</span>
     </div>
 </div>
@@ -1403,6 +1417,58 @@ renderProjectDetails() {
                                         </span>
                                     </div>
                                 ` : ''}
+                                
+                                <!-- Edit and Delete Section for Authorized Users -->
+                                ${(isTaskOwner || isProjectOwner) ? `
+                                    <div class="task-actions-section" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #f1f5f9;">
+                                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+                                            <!-- Edit Title Section -->
+                                            <div style="flex-grow: 1; min-width: 200px;">
+                                                <label style="color: #64748b; font-size: 13px; font-weight: 500; margin-bottom: 6px; display: block;">
+                                                    <i class="bi bi-pencil me-1"></i>Edit Task Title
+                                                </label>
+                                                <input type="text" value="${this.escapeHtml(task.title)}" 
+                                                       onchange="app.updateTaskTitle('${task.id}', this.value)"
+                                                       style="border: 2px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; font-size: 1rem; width: 100%; background: #ffffff; transition: all 0.3s ease;"
+                                                       onfocus="this.style.borderColor='#7c8471'; this.style.boxShadow='0 0 0 3px rgba(124,132,113,0.1)'"
+                                                       onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'"
+                                                       placeholder="Enter task title...">
+                                            </div>
+                                            
+                                            <!-- Delete Button -->
+                                            <div style="flex-shrink: 0;">
+                                                <label style="color: #64748b; font-size: 13px; font-weight: 500; margin-bottom: 6px; display: block;">
+                                                    <i class="bi bi-trash me-1"></i>Actions
+                                                </label>
+                                                <button onclick="app.deleteTask('${task.id}')" 
+                                                        style="background: linear-gradient(135deg, #dc2626, #ef4444); color: white; border: none; border-radius: 8px; padding: 10px 16px; font-size: 14px; font-weight: 600; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);"
+                                                        onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(220, 38, 38, 0.4)'"
+                                                        onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(220, 38, 38, 0.3)'"
+                                                        title="Delete this task">
+                                                    <i class="bi bi-trash-fill me-1"></i>Delete Task
+                                                </button>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Permission Info -->
+                                        <div style="margin-top: 12px; padding: 8px 12px; background: ${isTaskOwner ? '#dcfce7' : '#dbeafe'}; border-radius: 8px; border-left: 4px solid ${isTaskOwner ? '#16a34a' : '#3182ce'};">
+                                            <span style="color: ${isTaskOwner ? '#16a34a' : '#1e40af'}; font-size: 13px; font-weight: 500;">
+                                                <i class="bi ${isTaskOwner ? 'bi-person-check-fill' : 'bi-shield-check'} me-1"></i>
+                                                ${isTaskOwner ? 'You created this task' : 'You can edit as project owner'}
+                                            </span>
+                                        </div>
+                                    </div>
+                                ` : `
+                                    <!-- View Only Message for Non-Authorized Users -->
+                                    <div class="task-actions-section" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #f1f5f9;">
+                                        <div style="padding: 12px; background: #fef3c7; border-radius: 8px; border-left: 4px solid #d97706; text-align: center;">
+                                            <span style="color: #92400e; font-size: 14px; font-weight: 500;">
+                                                <i class="bi bi-info-circle me-1"></i>
+                                                Only task creator or project owner can edit/delete this task
+                                            </span>
+                                        </div>
+                                    </div>
+                                `}
                             </div>
                         </div>
                     </div>
