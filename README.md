@@ -1,6 +1,6 @@
 # Task Management Project
 
-A simple task management app to create, organize, and track your tasks.
+A simple task management app to create, organize, and track your tasks. Also have the feature of collaborating on a single project for multiple users.
 
 ## Features
 - Create, edit, and delete tasks
@@ -8,6 +8,7 @@ A simple task management app to create, organize, and track your tasks.
 - Clean task list view for quick tracking
 
 ## Tech Stack
+- Frontend: HTML, CSS, Javascript
 - Backend: PHP
 - Database: MySQL
 - Local dev: XAMPP
@@ -15,6 +16,5 @@ A simple task management app to create, organize, and track your tasks.
 ## Setup (Local)
 1. Clone the repo
 2. Start **Apache** + **MySQL** in XAMPP
-3. Import the database (if provided)
-4. Configure DB credentials (if needed)
-5. Open the app in your browser via `http://localhost/...`
+3. Configure DB credentials (if needed)
+4. Open the app in your browser via `http://localhost/...`
